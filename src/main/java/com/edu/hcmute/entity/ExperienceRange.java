@@ -5,6 +5,7 @@ import com.edu.hcmute.constant.Status;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -12,9 +13,9 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.time.Instant;
 
 @Data
-@Builder
 @Entity
 @Table(name = "experience_range")
+@NoArgsConstructor
 public class ExperienceRange {
     @Id
     @Column(name = "id")

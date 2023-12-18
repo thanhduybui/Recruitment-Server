@@ -1,13 +1,13 @@
 package com.edu.hcmute.dto;
 
 
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Data;
 
-import static com.edu.hcmute.constant.Message.EMAIL_VALIDATION_ERROR;
-import static com.edu.hcmute.constant.Message.PASSWORD_VALIDATION_ERROR;
+import static com.edu.hcmute.constant.Message.*;
 
 @Data
 @Builder
@@ -18,6 +18,8 @@ public class RegisterDTO {
     private String password;
     @NotBlank(message = "Confirm Password is required")
     private String confirmPassword;
+    @Pattern(regexp = "^(CANDIDATE|EMPLOYER|ADMIN)$", message = INVALID_ROLE)
+    private String role;
 
     public boolean isPasswordMatching() {
         return password != null && password.equals(confirmPassword);

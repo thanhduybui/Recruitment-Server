@@ -4,6 +4,7 @@ package com.edu.hcmute.entity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -13,7 +14,7 @@ import java.time.Instant;
 @Data
 @Table(name = "black_list")
 @Entity
-@Builder
+@NoArgsConstructor
 public class BlackList {
     @Id
     @Column(name = "id")

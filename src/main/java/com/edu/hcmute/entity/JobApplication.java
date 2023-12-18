@@ -4,11 +4,12 @@ package com.edu.hcmute.entity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "job_application")
 @Data
-@Builder
+@Table(name = "job_application")
+@NoArgsConstructor
 public class JobApplication {
     @Id
     @Column(name = "id")
