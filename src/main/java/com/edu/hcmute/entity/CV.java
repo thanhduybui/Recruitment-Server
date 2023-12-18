@@ -19,7 +19,7 @@ public class CV {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column (name = "name")
+    @Column(name = "name")
     private String name;
     @Column(name = "cv_url")
     @Lob

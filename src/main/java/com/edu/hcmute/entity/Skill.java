@@ -20,11 +20,11 @@ public class Skill {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column (name = "name", unique = true)
+    @Column(name = "name", unique = true)
     private String name;
-    @Column (name = "description")
+    @Column(name = "description")
     private String description;
-    @Column (name = "status")
+    @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
     @CreatedDate

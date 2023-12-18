@@ -20,15 +20,15 @@ public class Company {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column (name = "name")
+    @Column(name = "name")
     private String name;
-    @Column (name = "description")
+    @Column(name = "description")
     private String description;
-    @Column (name = "scale")
+    @Column(name = "scale")
     private Integer scale;
-    @Column (name = "branch")
+    @Column(name = "branch")
     private String branch;
-    @Column (name = "status")
+    @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
     @CreatedDate

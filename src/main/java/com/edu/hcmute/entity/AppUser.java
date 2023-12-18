@@ -45,7 +45,7 @@ public class AppUser {
     private Boolean warning;
     @Column(name = "work_location")
     private Integer workLocation;
-    @Column(name= "provider_id")
+    @Column(name = "provider_id")
     private String providerId;
     @Column(name = "provider")
     private String provider;

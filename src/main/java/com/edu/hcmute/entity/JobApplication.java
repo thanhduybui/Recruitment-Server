@@ -18,6 +18,6 @@ public class JobApplication {
     private String email;
     @Column(name = "phone")
     private String phone;
-    @Column (name = "name")
+    @Column(name = "name")
     private String name;
 }

@@ -19,11 +19,11 @@ public class BlackList {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name="phone", unique = true)
+    @Column(name = "phone", unique = true)
     private String phone;
-    @Column(name="email", unique = true)
+    @Column(name = "email", unique = true)
     private String email;
-    @Column(name="reason")
+    @Column(name = "reason")
     @Lob
     private String reason;
     @CreatedDate

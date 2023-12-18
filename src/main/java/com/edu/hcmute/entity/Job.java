@@ -10,8 +10,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.Instant;
-import java.time.LocalDate;
-import java.util.Date;
 
 @Data
 @Builder
@@ -24,7 +22,7 @@ public class Job {
     private Long id;
     @Column(name = "title")
     private String title;
-    @Column (name = "description")
+    @Column(name = "description")
     @Lob
     private String description;
     @Column(name = "requirement")
@@ -55,6 +53,6 @@ public class Job {
     @LastModifiedDate
     @Column(name = "updated_at")
     private Instant updatedAt;
-    @Column(name="created_by")
+    @Column(name = "created_by")
     private String createdBy;
 }
