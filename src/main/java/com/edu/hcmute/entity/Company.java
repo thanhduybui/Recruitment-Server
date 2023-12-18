@@ -5,6 +5,7 @@ import com.edu.hcmute.constant.Status;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -12,23 +13,23 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.time.Instant;
 
 @Data
-@Builder
 @Entity
 @Table(name = "company")
+@NoArgsConstructor
 public class Company {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column (name = "name")
+    @Column(name = "name")
     private String name;
-    @Column (name = "description")
+    @Column(name = "description")
     private String description;
-    @Column (name = "scale")
+    @Column(name = "scale")
     private Integer scale;
-    @Column (name = "branch")
+    @Column(name = "branch")
     private String branch;
-    @Column (name = "status")
+    @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
     @CreatedDate

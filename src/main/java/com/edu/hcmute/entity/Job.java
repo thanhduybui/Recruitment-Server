@@ -6,17 +6,16 @@ import com.edu.hcmute.constant.Status;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.Instant;
-import java.time.LocalDate;
-import java.util.Date;
 
 @Data
-@Builder
 @Entity
 @Table(name = "job")
+@NoArgsConstructor
 public class Job {
     @Column(name = "id")
     @Id
@@ -24,7 +23,7 @@ public class Job {
     private Long id;
     @Column(name = "title")
     private String title;
-    @Column (name = "description")
+    @Column(name = "description")
     @Lob
     private String description;
     @Column(name = "requirement")
@@ -55,6 +54,6 @@ public class Job {
     @LastModifiedDate
     @Column(name = "updated_at")
     private Instant updatedAt;
-    @Column(name="created_by")
+    @Column(name = "created_by")
     private String createdBy;
 }

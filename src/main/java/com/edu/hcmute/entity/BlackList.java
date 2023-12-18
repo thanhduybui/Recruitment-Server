@@ -4,6 +4,7 @@ package com.edu.hcmute.entity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -13,17 +14,17 @@ import java.time.Instant;
 @Data
 @Table(name = "black_list")
 @Entity
-@Builder
+@NoArgsConstructor
 public class BlackList {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name="phone", unique = true)
+    @Column(name = "phone", unique = true)
     private String phone;
-    @Column(name="email", unique = true)
+    @Column(name = "email", unique = true)
     private String email;
-    @Column(name="reason")
+    @Column(name = "reason")
     @Lob
     private String reason;
     @CreatedDate

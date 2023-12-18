@@ -1,3 +1,8 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1
+
 spring:
   main:
     banner-mode: off
@@ -15,3 +20,15 @@ spring:
         format_sql: true
       properties:
         hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
+app:
+  security:
+    cors:
+      allowedOrigin: "*"
+      allowedMethods: "GET, POST, PUT, DELETE, OPTIONS"
+      allowedHeaders: "Content-Type, Authorization"
+      allowedCredentials: false
+      corsConfiguration: "/**"
+logging:
+  level:
+    com.edu.hcmute: TRACE
+    root: INFO
