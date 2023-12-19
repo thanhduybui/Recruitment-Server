@@ -7,11 +7,13 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 
+import java.io.Serializable;
+
 import static com.edu.hcmute.constant.Message.*;
 
 @Data
 @Builder
-public class RegisterDTO {
+public class RegisterDTO implements Serializable {
     @Pattern(regexp = "^[a-zA-Z ]+$", message = FULL_NAME_VALIDATION_ERROR)
     @Size(max = 100, message = FULL_NAME_INVALID_LENGTH)
     @NotBlank(message = FULL_NAME_NOT_EMPTY)

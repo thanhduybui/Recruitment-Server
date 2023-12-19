@@ -11,4 +11,5 @@ import org.springframework.stereotype.Service;
 @Service
 public interface AuthService {
      ServiceResponse register(RegisterDTO registerDTO);
+     ServiceResponse verifyRegister(String token);
 }

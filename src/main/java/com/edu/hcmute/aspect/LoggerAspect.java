@@ -42,6 +42,9 @@ public class LoggerAspect {
     @Around("applicationPackagePointcut() && springBeanPointcut()")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes == null) {
+            return joinPoint.proceed();
+        }
         HttpServletRequest request = attributes.getRequest();
         if (isRestController(joinPoint.getTarget())) {
             String url = request.getRequestURL().toString();
