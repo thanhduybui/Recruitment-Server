@@ -20,6 +20,27 @@ spring:
         format_sql: true
       properties:
         hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: bookstoregroup174@gmail.com
+    password: gbwg pwnz fdbw lvjr
+    properties:
+      mail:
+        smtp:
+          ssl:
+            trust: "*"
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000
+
 app:
   security:
     cors:

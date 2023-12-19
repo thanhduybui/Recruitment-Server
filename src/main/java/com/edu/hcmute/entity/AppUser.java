@@ -5,9 +5,7 @@ import com.edu.hcmute.constant.Gender;
 import com.edu.hcmute.constant.Role;
 import com.edu.hcmute.constant.Status;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -17,7 +15,9 @@ import java.time.Instant;
 @Entity
 @Table(name = "user")
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

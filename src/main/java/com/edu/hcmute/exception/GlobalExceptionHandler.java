@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ResponseData.builder()
-                        .status(ResponseDataSatus.SUCCESS)
+                        .status(ResponseDataSatus.ERROR)
                         .message(errors.get(0)).build());
     }
 
