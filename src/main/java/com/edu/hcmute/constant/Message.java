@@ -12,6 +12,11 @@ public class Message {
     public static final String FULL_NAME_NOT_EMPTY = "Tên không được để trống";
     public static final String FULL_NAME_INVALID_LENGTH = "Tên không được vượt quá 100 kí tự";
     public static final String OTP_VALIDATION_ERROR = "Mã OTP chỉ chứa 6 kí tự số";
-    public static final String INVALID_OTP = "Mã xác thực không hợp lệ";
+    public static final String INVALID_OTP = "Mã xác thực không đúng";
     public static final String VERIFY_SUCCESS = "Xác thực tài khoản thành công, bây giờ bạn đã có thể đăng nhập";
+    public static final String EXPIRED_OTP = "Mã xác thực đã hết hạn";
+    public static final String EXPIRED_VERIFICATION_TIME = "Hết thời gian xác thực. Mời bạn đăng ký lại";
+    public static final String RESEND_OTP_SUCCESS = "Gửi lại mã xác thực thành công";
+    public static final String LOGIN_SUCCESS = "Đăng nhập thành công";
+    public static final String ACCOUNT_NOT_FOUND = "Không tìm thấy tài khoản";
 }
