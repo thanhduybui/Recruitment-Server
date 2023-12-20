@@ -1,6 +1,10 @@
 package com.edu.hcmute.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+
+@Slf4j
 
 public class BcryptUtils {
 
@@ -11,6 +15,8 @@ public class BcryptUtils {
     }
 
     public static boolean verifyPassword(String plainTextPassword, String hashedPassword) {
+        log.info("plainTextPassword: " + plainTextPassword);
+        log.info("hashedPassword: " + hashedPassword);
         return bCryptPasswordEncoder.matches(plainTextPassword, hashedPassword);
     }
 }
