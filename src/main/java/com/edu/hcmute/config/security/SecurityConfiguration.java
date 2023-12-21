@@ -1,6 +1,7 @@
 package com.edu.hcmute.config.security;
 
 
+import com.edu.hcmute.service.AppUserDetailServiceImpl;
 import com.edu.hcmute.service.AppUserService;
 import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -34,7 +36,7 @@ public class SecurityConfiguration {
         http.cors(cors -> cors.disable());
         http.csrf(csrf -> csrf.disable());
         http.authorizeHttpRequests(request -> request
-                .requestMatchers( "/home","auth/**").permitAll()
+                .requestMatchers( "/home","auth/**", "users/**").permitAll()
                 .anyRequest().authenticated()
         ).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
@@ -46,7 +48,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public DaoAuthenticationProvider authenticationProvider(AppUserService userService) {
+    public DaoAuthenticationProvider authenticationProvider(UserDetailsService userService) {
         DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
         auth.setUserDetailsService(userService);
         auth.setPasswordEncoder(passwordEncoder());
