@@ -32,6 +32,7 @@ build/
 ### VS Code ###
 .vscode/
 
-/resources/application.yml
-classpath:/resources/application.yml
 /src/main/resources/firebase.json
+
+.DS_Store
+secrets.yml
