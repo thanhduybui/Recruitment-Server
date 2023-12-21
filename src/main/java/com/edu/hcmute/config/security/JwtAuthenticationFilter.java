@@ -1,6 +1,5 @@
 package com.edu.hcmute.config.security;
 
-import com.edu.hcmute.service.AppUserService;
 import com.edu.hcmute.utils.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -27,8 +26,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final AppUserService userDetailsService;
-
+    private final UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,

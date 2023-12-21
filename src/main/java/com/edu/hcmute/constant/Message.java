@@ -19,4 +19,6 @@ public class Message {
     public static final String RESEND_OTP_SUCCESS = "Gửi lại mã xác thực thành công";
     public static final String LOGIN_SUCCESS = "Đăng nhập thành công";
     public static final String ACCOUNT_NOT_FOUND = "Không tìm thấy tài khoản";
+    public static final String UPLOAD_FILE_FAILED = "Cập nhật ảnh đại diện thất bại";
+    public static final String UPLOAD_FILE_SUCCESS = "Cập nhật ảnh đại diện thành công";
 }
