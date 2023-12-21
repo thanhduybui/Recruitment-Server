@@ -1,3 +1,5 @@
+spring.config.import: optional:secrets.yml
+
 server:
   port: 8080
   servlet:
@@ -19,27 +21,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
   data:
     redis:
       host: localhost
       port: 6379
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: bookstoregroup174@gmail.com
-    password: gbwg pwnz fdbw lvjr
-    properties:
-      mail:
-        smtp:
-          ssl:
-            trust: "*"
-          auth: true
-          starttls:
-            enable: true
-          connectiontimeout: 5000
-          timeout: 3000
-          writetimeout: 5000
 
 app:
   security:
