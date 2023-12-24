@@ -11,6 +11,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @Entity
@@ -41,4 +42,11 @@ public class Company {
     @CreatedBy
     @Column(name = "created_by")
     private String createdBy;
+
+
+    @OneToOne(mappedBy = "company", fetch = FetchType.LAZY)
+    private Recruiter recruiter;
+
+    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+    private List<Job> jobs;
 }

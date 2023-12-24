@@ -2,7 +2,6 @@ package com.edu.hcmute.entity;
 
 import com.edu.hcmute.constant.Status;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
@@ -37,4 +36,8 @@ public class Major {
     @CreatedBy
     @Column(name = "created_by")
     private String createdBy;
+
+    @ManyToOne
+    @JoinColumn(name = "field_id")
+    private Field field;
 }

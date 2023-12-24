@@ -25,6 +25,8 @@ public class CV {
     @Column(name = "cv_url")
     @Lob
     private String cvUrl;
+    @Column(name = "is_default")
+    private Boolean isDefault;
     @CreatedDate
     @Column(name = "created_at")
     private Instant createdAt;
@@ -34,4 +36,8 @@ public class CV {
     @CreatedBy
     @Column(name = "created_by")
     private String createdBy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private AppUser appUser;
 }

@@ -10,6 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.Instant;
+import java.util.List;
 
 
 @Data
@@ -37,4 +38,7 @@ public class Field {
     @CreatedBy
     @Column(name = "created_by")
     private String createdBy;
+
+    @OneToMany(mappedBy = "field", fetch = FetchType.LAZY)
+    private List<Major> majors;
 }
