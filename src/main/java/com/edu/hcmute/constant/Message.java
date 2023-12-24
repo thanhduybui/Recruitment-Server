@@ -21,4 +21,6 @@ public class Message {
     public static final String ACCOUNT_NOT_FOUND = "Không tìm thấy tài khoản";
     public static final String UPLOAD_FILE_FAILED = "Cập nhật ảnh đại diện thất bại";
     public static final String UPLOAD_FILE_SUCCESS = "Cập nhật ảnh đại diện thành công";
+    public static final String FILE_EXTENSION_NOT_SUPPORT = "Định dạng file không được hỗ trợ";
+    public static final String FILE_SIZE_EXCEEDED_LIMIT = "Kích thước file vượt quá giới hạn cho phép";
 }

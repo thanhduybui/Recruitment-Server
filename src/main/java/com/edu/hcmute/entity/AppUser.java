@@ -11,6 +11,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -18,6 +19,7 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
 public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,13 +32,13 @@ public class AppUser {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "role", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Role role;
-
     @Column(name = "gender")
     @Enumerated(EnumType.STRING)
     private Gender gender;
+
+    @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Column(name = "email", unique = true)
     private String email;
@@ -46,16 +48,12 @@ public class AppUser {
 
     @Column(name = "status")
     private Status status;
-
     @Lob
     @Column(name = "avatar_url")
     private String avatar;
 
     @Column(name = "warning")
     private Boolean warning;
-
-    @Column(name = "work_location")
-    private Integer workLocation;
 
     @Column(name = "provider_id")
     private String providerId;
@@ -74,4 +72,7 @@ public class AppUser {
     @CreatedBy
     @Column(name = "created_by")
     private String createdBy;
+
+    @OneToMany(mappedBy = "appUser", cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<CV> cvList;
 }

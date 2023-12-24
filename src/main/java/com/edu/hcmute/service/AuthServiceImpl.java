@@ -7,7 +7,9 @@ import com.edu.hcmute.dto.LoginDTO;
 import com.edu.hcmute.dto.RegisterDTO;
 import com.edu.hcmute.dto.VerifyDTO;
 import com.edu.hcmute.entity.AppUser;
+import com.edu.hcmute.entity.Canditdate;
 import com.edu.hcmute.repository.AppUserRepository;
+import com.edu.hcmute.repository.CandidateRepository;
 import com.edu.hcmute.response.ResponseDataSatus;
 import com.edu.hcmute.response.ServiceResponse;
 import com.edu.hcmute.utils.BcryptUtils;
@@ -31,12 +33,16 @@ public class AuthServiceImpl implements AuthService {
     private final AppUserRepository userRepository;
     private final EmailSender emailSender;
     private final RedisTemplate redisTemplate;
+    private final CandidateRepository candidateRepository;
 
     @Override
     public ServiceResponse register(RegisterDTO registerDTO) {
-        AppUser user = userRepository.findByEmail(registerDTO.getEmail().trim())
+
+        Canditdate canditdate = candidateRepository.findByEmail(registerDTO.getEmail().trim())
                 .orElse(null);
-        if (user != null) {
+
+
+        if (canditdate != null) {
             return ServiceResponse.builder()
                     .statusCode(HttpStatus.BAD_REQUEST)
                     .status(ResponseDataSatus.ERROR)
