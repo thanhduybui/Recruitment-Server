@@ -14,7 +14,7 @@ import static com.edu.hcmute.constant.Message.*;
 @Data
 @Builder
 public class RegisterDTO implements Serializable {
-    @Pattern(regexp = "^[a-zA-Z ]+$", message = FULL_NAME_VALIDATION_ERROR)
+    @Pattern(regexp = "^[a-zA-Z\\s\\p{L}]*$", message = FULL_NAME_VALIDATION_ERROR)
     @Size(max = 100, message = FULL_NAME_INVALID_LENGTH)
     @NotBlank(message = FULL_NAME_NOT_EMPTY)
     @JsonAlias("full_name")

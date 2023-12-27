@@ -26,15 +26,6 @@ spring:
       host: localhost
       port: 6379
 
-app:
-  security:
-    cors:
-      allowedOrigin: "*"
-      allowedMethods: "GET, POST, PUT, DELETE, OPTIONS"
-      allowedHeaders: "Content-Type, Authorization"
-      allowedCredentials: false
-      corsConfiguration: "/**"
-
 logging:
   level:
     com.edu.hcmute: TRACE
