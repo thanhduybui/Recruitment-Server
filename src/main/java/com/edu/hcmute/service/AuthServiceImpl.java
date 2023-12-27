@@ -7,9 +7,7 @@ import com.edu.hcmute.dto.LoginDTO;
 import com.edu.hcmute.dto.RegisterDTO;
 import com.edu.hcmute.dto.VerifyDTO;
 import com.edu.hcmute.entity.AppUser;
-import com.edu.hcmute.entity.Canditdate;
 import com.edu.hcmute.repository.AppUserRepository;
-import com.edu.hcmute.repository.CandidateRepository;
 import com.edu.hcmute.response.ResponseDataSatus;
 import com.edu.hcmute.response.ServiceResponse;
 import com.edu.hcmute.utils.BcryptUtils;
@@ -33,16 +31,15 @@ public class AuthServiceImpl implements AuthService {
     private final AppUserRepository userRepository;
     private final EmailSender emailSender;
     private final RedisTemplate redisTemplate;
-    private final CandidateRepository candidateRepository;
 
     @Override
     public ServiceResponse register(RegisterDTO registerDTO) {
 
-        Canditdate canditdate = candidateRepository.findByEmail(registerDTO.getEmail().trim())
+        AppUser candidate = userRepository.findByEmail(registerDTO.getEmail().trim())
                 .orElse(null);
 
 
-        if (canditdate != null) {
+        if (candidate != null) {
             return ServiceResponse.builder()
                     .statusCode(HttpStatus.BAD_REQUEST)
                     .status(ResponseDataSatus.ERROR)
@@ -76,6 +73,7 @@ public class AuthServiceImpl implements AuthService {
     public ServiceResponse verifyRegister(VerifyDTO verifyDTO) {
         RegisterDTO registerDTO = (RegisterDTO) redisTemplate.opsForValue().get(verifyDTO.getEmail());
         String verifyCode = (String) redisTemplate.opsForValue().get(verifyDTO.getEmail() + "_otp");
+        log.info("verifyCode: {}", verifyCode);
 
         if (registerDTO == null) {
             return ServiceResponse.builder()
@@ -84,6 +82,8 @@ public class AuthServiceImpl implements AuthService {
                     .message(Message.EXPIRED_VERIFICATION_TIME)
                     .build();
         }
+
+
 
         if (verifyCode == null) {
             return ServiceResponse.builder()
@@ -101,15 +101,14 @@ public class AuthServiceImpl implements AuthService {
                     .build();
         }
 
-        AppUser user = AppUser.builder()
+        AppUser candidate = AppUser.builder()
                 .email(registerDTO.getEmail())
                 .password(BcryptUtils.hashPassword(registerDTO.getPassword()))
                 .fullName(registerDTO.getFullName())
-                .role(Role.valueOf(registerDTO.getRole()))
+                .role(Role.CANDIDATE)
                 .build();
 
-        // save user into database
-        userRepository.save(user);
+        userRepository.save(candidate);
 
         // delete otp save in redis
         redisTemplate.delete(verifyDTO.getEmail() + "_otp");

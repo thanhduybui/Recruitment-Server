@@ -45,7 +45,7 @@ public class Company {
 
 
     @OneToOne(mappedBy = "company", fetch = FetchType.LAZY)
-    private Recruiter recruiter;
+    private AppUser recruiter;
 
     @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
     private List<Job> jobs;

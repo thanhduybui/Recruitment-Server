@@ -2,7 +2,6 @@ package com.edu.hcmute.entity;
 
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
@@ -38,6 +37,6 @@ public class CV {
     private String createdBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private AppUser appUser;
+    @JoinColumn(name = "candidate_id", referencedColumnName = "id")
+    private AppUser candidate;
 }
