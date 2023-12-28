@@ -30,7 +30,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http)
             throws Exception {
 
-        http.cors(cors -> cors.disable());
+        http.cors(Customizer.withDefaults());
         http.csrf(csrf -> csrf.disable());
         http.authorizeHttpRequests(request -> request
                 .requestMatchers( "/home","auth/**", "users/**").permitAll()

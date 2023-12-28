@@ -27,7 +27,7 @@ public class JobApplication {
 
     @ManyToOne
     @JoinColumn(name = "candidate_id")
-    private Canditdate canditdate;
+    private AppUser appUser;
 
     @ManyToOne
     @JoinColumn(name = "job_id")

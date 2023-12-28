@@ -11,22 +11,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
 
-    @Autowired
-    private Environment env;
-    @Value("${app.security.cors.allowedMethods}")
-    private String allowedMethods;
-
-    @Value("${app.security.cors.allowedHeaders}")
-    private String allowedHeaders;
-
-    @Value("${app.security.cors.corsConfiguration}")
-    private String corsConfiguration;
-
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping(corsConfiguration)
-                .allowedMethods(allowedMethods)
-                .allowedHeaders(allowedHeaders);
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedMethods("*");
     }
 
 }
