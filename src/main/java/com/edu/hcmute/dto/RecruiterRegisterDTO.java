@@ -1,9 +1,9 @@
 package com.edu.hcmute.dto;
 
 
+import com.edu.hcmute.service.auth.RegisterContainer;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -16,7 +16,7 @@ import static com.edu.hcmute.constant.Message.INVALID_ROLE;
 
 @Data
 @Builder
-public class RecruiterRegisterDTO implements Serializable {
+public class RecruiterRegisterDTO implements Serializable, RegisterContainer {
 
     @Pattern(regexp = "^[a-zA-Z\\s\\p{L}]*$", message = FULL_NAME_VALIDATION_ERROR)
     @Size(max = 100, message = FULL_NAME_INVALID_LENGTH)

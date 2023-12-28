@@ -1,5 +1,6 @@
 package com.edu.hcmute.dto;
 
+import com.edu.hcmute.service.auth.RegisterContainer;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Null;
@@ -14,7 +15,7 @@ import static com.edu.hcmute.constant.Message.*;
 
 @Data
 @Builder
-public class RegisterDTO implements Serializable {
+public class RegisterDTO implements Serializable, RegisterContainer {
     @Pattern(regexp = "^[a-zA-Z\\s\\p{L}]*$", message = FULL_NAME_VALIDATION_ERROR)
     @Size(max = 100, message = FULL_NAME_INVALID_LENGTH)
     @NotBlank(message = FULL_NAME_NOT_EMPTY)

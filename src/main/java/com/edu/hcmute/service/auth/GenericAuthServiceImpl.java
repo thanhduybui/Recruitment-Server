@@ -1,6 +1,6 @@
 package com.edu.hcmute.service.auth;
 
-
+import com.edu.hcmute.constant.Gender;
 import com.edu.hcmute.constant.Message;
 import com.edu.hcmute.constant.Role;
 import com.edu.hcmute.dto.LoginDTO;
@@ -8,14 +8,13 @@ import com.edu.hcmute.dto.RecruiterRegisterDTO;
 import com.edu.hcmute.dto.RegisterDTO;
 import com.edu.hcmute.dto.VerifyDTO;
 import com.edu.hcmute.entity.AppUser;
+import com.edu.hcmute.entity.Company;
 import com.edu.hcmute.repository.AppUserRepository;
 import com.edu.hcmute.response.ResponseDataSatus;
 import com.edu.hcmute.response.ServiceResponse;
-import com.edu.hcmute.service.EmailSender;
 import com.edu.hcmute.utils.BcryptUtils;
 import com.edu.hcmute.utils.JwtUtils;
 import com.edu.hcmute.utils.MailUtils;
-import com.edu.hcmute.utils.VerificationCodeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -26,17 +25,18 @@ import java.time.Duration;
 import java.util.Map;
 
 
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AuthServiceImpl implements AuthService<RegisterDTO> {
+public class GenericAuthServiceImpl<T extends RegisterContainer> implements AuthService<T> {
+
     private final AppUserRepository userRepository;
     private final RedisTemplate redisTemplate;
     private final MailUtils mailUtils;
 
     @Override
-    public ServiceResponse register(RegisterDTO registerDTO) {
+    public ServiceResponse register(T registerDTO) {
+
 
         AppUser user = userRepository.findByEmail(registerDTO.getEmail().trim())
                 .orElse(null);
@@ -71,17 +71,20 @@ public class AuthServiceImpl implements AuthService<RegisterDTO> {
 
     @Override
     public ServiceResponse verifyRegister(VerifyDTO verifyDTO) {
-        RegisterDTO registerDTO = (RegisterDTO) redisTemplate.opsForValue().get(verifyDTO.getEmail());
-        String verifyCode = (String) redisTemplate.opsForValue().get(verifyDTO.getEmail() + "_otp");
-        log.info("verifyCode: {}", verifyCode);
+        Object dto = redisTemplate.opsForValue().get(verifyDTO.getEmail());
 
-        if (registerDTO == null) {
+        if (dto == null) {
             return ServiceResponse.builder()
                     .statusCode(HttpStatus.BAD_REQUEST)
                     .status(ResponseDataSatus.ERROR)
                     .message(Message.EXPIRED_VERIFICATION_TIME)
                     .build();
         }
+
+        String verifyCode = (String) redisTemplate.opsForValue().get(verifyDTO.getEmail() + "_otp");
+        log.info("verifyCode: {}", verifyCode);
+
+
 
         if (verifyCode == null) {
             return ServiceResponse.builder()
@@ -99,14 +102,29 @@ public class AuthServiceImpl implements AuthService<RegisterDTO> {
                     .build();
         }
 
-
-        AppUser user = AppUser.builder()
-                .email(registerDTO.getEmail())
-                .password(BcryptUtils.hashPassword(registerDTO.getPassword()))
-                .fullName(registerDTO.getFullName())
-                .role(Role.CANDIDATE)
-                .build();
-
+        AppUser user = null;
+        if (dto instanceof RegisterDTO) {
+            RegisterDTO registerDTO = (RegisterDTO) dto;
+            user = AppUser.builder()
+                    .email(registerDTO.getEmail())
+                    .password(BcryptUtils.hashPassword(registerDTO.getPassword()))
+                    .fullName(registerDTO.getFullName())
+                    .role(Role.CANDIDATE)
+                    .build();
+        } else if (dto instanceof RecruiterRegisterDTO) {
+            RecruiterRegisterDTO recruiterRegisterDTO = (RecruiterRegisterDTO) dto;
+            Company company = Company.builder()
+                    .name(recruiterRegisterDTO.getCompanyName())
+                    .build();
+            user = AppUser.builder()
+                    .email(recruiterRegisterDTO.getEmail())
+                    .password(BcryptUtils.hashPassword(recruiterRegisterDTO.getPassword()))
+                    .fullName(recruiterRegisterDTO.getFullName())
+                    .gender(Gender.valueOf(recruiterRegisterDTO.getGender()))
+                    .company(company)
+                    .role(Role.RECRUITER)
+                    .build();
+        }
 
         userRepository.save(user);
 
@@ -124,14 +142,16 @@ public class AuthServiceImpl implements AuthService<RegisterDTO> {
 
     @Override
     public ServiceResponse resendVerifyCode(String email) {
-        RegisterDTO registerDTO = (RegisterDTO) redisTemplate.opsForValue().get(email);
+        Object dto = redisTemplate.opsForValue().get(email);
         // check if registerDTO is expired
-        if (registerDTO == null) {
+        if (dto == null) {
             return ServiceResponse.builder()
                     .statusCode(HttpStatus.BAD_REQUEST)
                     .status(ResponseDataSatus.ERROR)
                     .message(Message.EXPIRED_VERIFICATION_TIME)
                     .build();
+
+
         }
         // delete old otp
         redisTemplate.delete(email + "_otp");
@@ -142,9 +162,6 @@ public class AuthServiceImpl implements AuthService<RegisterDTO> {
                 .message(Message.RESEND_OTP_SUCCESS)
                 .build();
     }
-
-
-
 
     @Override
     public ServiceResponse login(LoginDTO loginDTO) {
@@ -173,5 +190,4 @@ public class AuthServiceImpl implements AuthService<RegisterDTO> {
                 .data(Map.of("access_token", JwtUtils.generateToken(user.getEmail())))
                 .build();
     }
-
 }
