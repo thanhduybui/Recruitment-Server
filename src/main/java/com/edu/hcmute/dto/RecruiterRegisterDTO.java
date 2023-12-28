@@ -1,5 +1,6 @@
 package com.edu.hcmute.dto;
 
+
 import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Null;
@@ -11,10 +12,12 @@ import lombok.Data;
 import java.io.Serializable;
 
 import static com.edu.hcmute.constant.Message.*;
+import static com.edu.hcmute.constant.Message.INVALID_ROLE;
 
 @Data
 @Builder
-public class RegisterDTO implements Serializable {
+public class RecruiterRegisterDTO implements Serializable {
+
     @Pattern(regexp = "^[a-zA-Z\\s\\p{L}]*$", message = FULL_NAME_VALIDATION_ERROR)
     @Size(max = 100, message = FULL_NAME_INVALID_LENGTH)
     @NotBlank(message = FULL_NAME_NOT_EMPTY)
@@ -27,12 +30,22 @@ public class RegisterDTO implements Serializable {
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", message = PASSWORD_VALIDATION_ERROR)
     private String password;
 
-    @NotBlank(message = "Confirm Password is required")
+    @NotBlank(message = "Mật khẩu xác nhận không được để trống")
     @JsonAlias("confirm_password")
     private String confirmPassword;
 
-    @Pattern(regexp = "^(CANDIDATE|EMPLOYER|ADMIN)$", message = INVALID_ROLE)
+    @Pattern(regexp = "^(CANDIDATE|RECRUITER|ADMIN)$", message = INVALID_ROLE)
     private String role;
+
+    @Pattern(regexp = "^(\\+?\\d{1,3}[- ]?)?\\d{9,}$", message = PHONE_VALIDATION_ERROR)
+    private String phone;
+
+    @NotBlank(message = "Tên công ty không được để trống")
+    @JsonAlias("company_name")
+    private String companyName;
+
+    @Pattern(regexp = "^(MALE|FEMALE|OTHER)$", message = INVALID_ROLE)
+    private String gender;
     public boolean isPasswordMatching() {
         return password != null && password.equals(confirmPassword);
     }

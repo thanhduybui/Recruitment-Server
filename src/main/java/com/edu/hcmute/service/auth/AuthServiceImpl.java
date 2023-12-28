@@ -1,17 +1,20 @@
-package com.edu.hcmute.service;
+package com.edu.hcmute.service.auth;
 
 
 import com.edu.hcmute.constant.Message;
 import com.edu.hcmute.constant.Role;
 import com.edu.hcmute.dto.LoginDTO;
+import com.edu.hcmute.dto.RecruiterRegisterDTO;
 import com.edu.hcmute.dto.RegisterDTO;
 import com.edu.hcmute.dto.VerifyDTO;
 import com.edu.hcmute.entity.AppUser;
 import com.edu.hcmute.repository.AppUserRepository;
 import com.edu.hcmute.response.ResponseDataSatus;
 import com.edu.hcmute.response.ServiceResponse;
+import com.edu.hcmute.service.EmailSender;
 import com.edu.hcmute.utils.BcryptUtils;
 import com.edu.hcmute.utils.JwtUtils;
+import com.edu.hcmute.utils.MailUtils;
 import com.edu.hcmute.utils.VerificationCodeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,25 +24,25 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+
 
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AuthServiceImpl implements AuthService {
+public class AuthServiceImpl implements AuthService<RegisterDTO> {
     private final AppUserRepository userRepository;
-    private final EmailSender emailSender;
     private final RedisTemplate redisTemplate;
+    private final MailUtils mailUtils;
 
     @Override
     public ServiceResponse register(RegisterDTO registerDTO) {
 
-        AppUser candidate = userRepository.findByEmail(registerDTO.getEmail().trim())
+        AppUser user = userRepository.findByEmail(registerDTO.getEmail().trim())
                 .orElse(null);
 
 
-        if (candidate != null) {
+        if (user != null) {
             return ServiceResponse.builder()
                     .statusCode(HttpStatus.BAD_REQUEST)
                     .status(ResponseDataSatus.ERROR)
@@ -55,11 +58,8 @@ public class AuthServiceImpl implements AuthService {
                     .build();
         }
 
-
-        // save data in redis in form of "email": "verifyCode" and "email": {...registerDTO}
         redisTemplate.opsForValue().set(registerDTO.getEmail(), registerDTO, Duration.ofHours(8));
-        generateCodeAndSendMail(registerDTO.getEmail());
-
+        mailUtils.generateCodeAndSendMail(registerDTO.getEmail());
 
         return ServiceResponse.builder()
                 .statusCode(HttpStatus.CREATED)
@@ -83,8 +83,6 @@ public class AuthServiceImpl implements AuthService {
                     .build();
         }
 
-
-
         if (verifyCode == null) {
             return ServiceResponse.builder()
                     .statusCode(HttpStatus.BAD_REQUEST)
@@ -101,14 +99,16 @@ public class AuthServiceImpl implements AuthService {
                     .build();
         }
 
-        AppUser candidate = AppUser.builder()
+
+        AppUser user = AppUser.builder()
                 .email(registerDTO.getEmail())
                 .password(BcryptUtils.hashPassword(registerDTO.getPassword()))
                 .fullName(registerDTO.getFullName())
                 .role(Role.CANDIDATE)
                 .build();
 
-        userRepository.save(candidate);
+
+        userRepository.save(user);
 
         // delete otp save in redis
         redisTemplate.delete(verifyDTO.getEmail() + "_otp");
@@ -135,7 +135,7 @@ public class AuthServiceImpl implements AuthService {
         }
         // delete old otp
         redisTemplate.delete(email + "_otp");
-        generateCodeAndSendMail(email);
+        mailUtils.generateCodeAndSendMail(email);
         return ServiceResponse.builder()
                 .statusCode(HttpStatus.OK)
                 .status(ResponseDataSatus.SUCCESS)
@@ -143,18 +143,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
-    private void generateCodeAndSendMail(String email) {
-        String verifyCode = VerificationCodeUtils.generateSixDigitCode();
-        redisTemplate.opsForValue().set(email + "_otp", verifyCode, Duration.ofMinutes(5));
 
-        log.info("verifyCode: {}", redisTemplate.opsForValue().get(email + "_otp"));
-        CompletableFuture.runAsync(() -> {
-            emailSender.send(
-                    email,
-                    "Xác thực tài khoản",
-                    "<h1>Mã xác thực của bạn là: " + verifyCode + "</h1>");
-        });
-    }
 
 
     @Override

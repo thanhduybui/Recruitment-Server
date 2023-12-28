@@ -3,6 +3,7 @@ package com.edu.hcmute.entity;
 
 import com.edu.hcmute.constant.Status;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,8 +16,10 @@ import java.util.List;
 
 @Data
 @Entity
+@Builder
 @Table(name = "company")
 @NoArgsConstructor
+@AllArgsConstructor
 public class Company {
     @Id
     @Column(name = "id")
