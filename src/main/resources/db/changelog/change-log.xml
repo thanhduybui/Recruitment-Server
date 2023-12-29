@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet author="yourName" id="createTableExample">
+        <sql>
+            CREATE TABLE example_table (
+            id INT PRIMARY KEY,
+            name VARCHAR(255)
+            )
+        </sql>
+    </changeSet>
+
+    <changeSet author="yourName" id="insertPositionData">
+        <sql>
+            INSERT INTO position (id, name, status) VALUES (1, 'Nhân viên', 'ACTIVE');
+            INSERT INTO position (id, name, status) VALUES (2, 'Thực tập sinh', 'ACTIVE');
+            INSERT INTO position (id, name, status) VALUES (3, 'Quản lý', 'ACTIVE');
+            INSERT INTO position (id, name, status) VALUES (4, 'Trưởng phòng', 'ACTIVE');
+            INSERT INTO position (id, name, status) VALUES (5, 'Khác', 'ACTIVE');
+        </sql>
+    </changeSet>
+
+    <changeSet author="yourName" id="insertSalaryData">
+        <sql>
+            INSERT INTO salary_range (id, name, status) VALUES (1, 'Dưới 5 triệu', 'ACTIVE');
+            INSERT INTO salary_range (id, name, status) VALUES (2, 'Từ 5 triệu đến 10 triệu', 'ACTIVE');
+            INSERT INTO salary_range (id, name, status) VALUES (3, 'Từ 10 triệu đến 20 triệu', 'ACTIVE');
+            INSERT INTO salary_range (id, name, status) VALUES (4, 'Trên 20 triệu', 'ACTIVE');
+            INSERT INTO salary_range (id, name, status) VALUES (5, 'Khác', 'ACTIVE');
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

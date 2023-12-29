@@ -15,12 +15,15 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
+      hibernate.dialect: org.hibernate.dialect.MySQLDialect
       ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/change-log.xml
   data:
     redis:
       host: localhost
