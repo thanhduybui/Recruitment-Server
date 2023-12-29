@@ -5,6 +5,7 @@ import com.edu.hcmute.response.ResponseData;
 import com.edu.hcmute.response.ResponseDataSatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,6 +21,8 @@ import java.util.List;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final String INVALID_ARGUMENT = "Tham số đường dẫn không hợp lệ";
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
@@ -36,6 +40,20 @@ public class GlobalExceptionHandler {
                         .message(errors.get(0)).build());
     }
 
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class})
+    public ResponseEntity<ResponseData> handleMethodArgumentTypeMismatch(Exception ex) {
+        return ResponseEntity.badRequest().body(
+                ResponseData.builder()
+                        .status(ResponseDataSatus.ERROR)
+                        .message(INVALID_ARGUMENT).build());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ResponseData> handleAccessDeniedException(AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                ResponseData.builder()
+                        .status(ResponseDataSatus.ERROR).message("Không có quyền truy cập").build());
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseData> globalExceptionHandler(Exception ex, WebRequest request) {

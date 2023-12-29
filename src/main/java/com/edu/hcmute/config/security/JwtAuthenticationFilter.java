@@ -33,9 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         try {
-
             String jwt = getJwtFromRequest(request);
-
             log.info("JWT: " + jwt);
             if (StringUtils.hasText(jwt) && JwtUtils.isTokenValid(jwt)) {
                 String email = JwtUtils.getEmailFromToken(jwt);

@@ -114,7 +114,7 @@ public class AppUser {
     )
     private List<Job> favoriteJobs;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "company_id")
     private Company company;
 
