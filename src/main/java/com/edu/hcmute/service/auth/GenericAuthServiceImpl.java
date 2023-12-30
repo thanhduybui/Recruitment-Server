@@ -10,9 +10,10 @@ import com.edu.hcmute.dto.VerifyDTO;
 import com.edu.hcmute.entity.AppUser;
 import com.edu.hcmute.entity.Company;
 import com.edu.hcmute.repository.AppUserRepository;
-import com.edu.hcmute.response.ResponseDataSatus;
+import com.edu.hcmute.response.ResponseDataStatus;
 import com.edu.hcmute.response.ServiceResponse;
 import com.edu.hcmute.utils.BcryptUtils;
+import com.edu.hcmute.utils.CustomClaim;
 import com.edu.hcmute.utils.JwtUtils;
 import com.edu.hcmute.utils.MailUtils;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +46,7 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
         if (user != null) {
             return ServiceResponse.builder()
                     .statusCode(HttpStatus.BAD_REQUEST)
-                    .status(ResponseDataSatus.ERROR)
+                    .status(ResponseDataStatus.ERROR)
                     .message(Message.EMAIL_ALREADY_EXISTS)
                     .build();
         }
@@ -53,7 +54,7 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
         if (!registerDTO.isPasswordMatching()) {
             return ServiceResponse.builder()
                     .statusCode(HttpStatus.BAD_REQUEST)
-                    .status(ResponseDataSatus.ERROR)
+                    .status(ResponseDataStatus.ERROR)
                     .message(Message.PASSWORD_NOT_MATCHING)
                     .build();
         }
@@ -63,7 +64,7 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
 
         return ServiceResponse.builder()
                 .statusCode(HttpStatus.CREATED)
-                .status(ResponseDataSatus.SUCCESS)
+                .status(ResponseDataStatus.SUCCESS)
                 .message(Message.REGISTER_SUCCESS)
                 .data(registerDTO)
                 .build();
@@ -76,7 +77,7 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
         if (dto == null) {
             return ServiceResponse.builder()
                     .statusCode(HttpStatus.BAD_REQUEST)
-                    .status(ResponseDataSatus.ERROR)
+                    .status(ResponseDataStatus.ERROR)
                     .message(Message.EXPIRED_VERIFICATION_TIME)
                     .build();
         }
@@ -85,11 +86,10 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
         log.info("verifyCode: {}", verifyCode);
 
 
-
         if (verifyCode == null) {
             return ServiceResponse.builder()
                     .statusCode(HttpStatus.BAD_REQUEST)
-                    .status(ResponseDataSatus.ERROR)
+                    .status(ResponseDataStatus.ERROR)
                     .message(Message.EXPIRED_OTP)
                     .build();
         }
@@ -97,7 +97,7 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
         if (!verifyDTO.getOtp().equals(verifyCode)) {
             return ServiceResponse.builder()
                     .statusCode(HttpStatus.BAD_REQUEST)
-                    .status(ResponseDataSatus.ERROR)
+                    .status(ResponseDataStatus.ERROR)
                     .message(Message.INVALID_OTP)
                     .build();
         }
@@ -135,7 +135,7 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
 
         return ServiceResponse.builder()
                 .statusCode(HttpStatus.OK)
-                .status(ResponseDataSatus.SUCCESS)
+                .status(ResponseDataStatus.SUCCESS)
                 .message(Message.VERIFY_SUCCESS)
                 .build();
     }
@@ -147,7 +147,7 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
         if (dto == null) {
             return ServiceResponse.builder()
                     .statusCode(HttpStatus.BAD_REQUEST)
-                    .status(ResponseDataSatus.ERROR)
+                    .status(ResponseDataStatus.ERROR)
                     .message(Message.EXPIRED_VERIFICATION_TIME)
                     .build();
 
@@ -158,7 +158,7 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
         mailUtils.generateCodeAndSendMail(email);
         return ServiceResponse.builder()
                 .statusCode(HttpStatus.OK)
-                .status(ResponseDataSatus.SUCCESS)
+                .status(ResponseDataStatus.SUCCESS)
                 .message(Message.RESEND_OTP_SUCCESS)
                 .build();
     }
@@ -170,7 +170,7 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
         if (user == null) {
             return ServiceResponse.builder()
                     .statusCode(HttpStatus.BAD_REQUEST)
-                    .status(ResponseDataSatus.ERROR)
+                    .status(ResponseDataStatus.ERROR)
                     .message(Message.ACCOUNT_NOT_FOUND)
                     .build();
         }
@@ -178,16 +178,21 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
         if (!BcryptUtils.verifyPassword(loginDTO.getPassword(), user.getPassword())) {
             return ServiceResponse.builder()
                     .statusCode(HttpStatus.BAD_REQUEST)
-                    .status(ResponseDataSatus.ERROR)
+                    .status(ResponseDataStatus.ERROR)
                     .message(Message.PASSWORD_NOT_MATCHING)
                     .build();
         }
 
+        CustomClaim customClaim = CustomClaim.builder()
+                .email(user.getEmail())
+                .role(user.getRole() + "")
+                .build();
+
         return ServiceResponse.builder()
                 .statusCode(HttpStatus.OK)
-                .status(ResponseDataSatus.SUCCESS)
+                .status(ResponseDataStatus.SUCCESS)
                 .message(Message.LOGIN_SUCCESS)
-                .data(Map.of("access_token", JwtUtils.generateToken(user.getEmail())))
+                .data(Map.of("access_token", JwtUtils.generateToken(customClaim)))
                 .build();
     }
 }

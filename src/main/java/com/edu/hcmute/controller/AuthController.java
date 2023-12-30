@@ -60,7 +60,7 @@ public class AuthController {
                         .build());
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<ResponseData> candidate(@RequestBody LoginDTO loginDTO) {
         ServiceResponse responseService = candidateAuthService.login(loginDTO);
         return ResponseEntity.status(responseService.getStatusCode())

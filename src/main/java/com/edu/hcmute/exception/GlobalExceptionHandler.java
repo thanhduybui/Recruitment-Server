@@ -2,7 +2,7 @@ package com.edu.hcmute.exception;
 
 
 import com.edu.hcmute.response.ResponseData;
-import com.edu.hcmute.response.ResponseDataSatus;
+import com.edu.hcmute.response.ResponseDataStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ResponseData.builder()
-                        .status(ResponseDataSatus.ERROR)
+                        .status(ResponseDataStatus.ERROR)
                         .message(errors.get(0)).build());
     }
 
@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseData> handleMethodArgumentTypeMismatch(Exception ex) {
         return ResponseEntity.badRequest().body(
                 ResponseData.builder()
-                        .status(ResponseDataSatus.ERROR)
+                        .status(ResponseDataStatus.ERROR)
                         .message(INVALID_ARGUMENT).build());
     }
 
@@ -52,13 +52,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseData> handleAccessDeniedException(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                 ResponseData.builder()
-                        .status(ResponseDataSatus.ERROR).message("Không có quyền truy cập").build());
+                        .status(ResponseDataStatus.ERROR).message("Không có quyền truy cập").build());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseData> globalExceptionHandler(Exception ex, WebRequest request) {
         ResponseData responseData = ResponseData.builder()
-                .status(ResponseDataSatus.ERROR)
+                .status(ResponseDataStatus.ERROR)
                 .message(request.getDescription(false))
                 .timestamp(new Date())
                 .build();

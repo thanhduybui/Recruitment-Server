@@ -49,4 +49,15 @@ public class PositionController {
                         .data(res.getData())
                         .build());
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseData> deletePosition(@PathVariable("id") Integer Id){
+        ServiceResponse res = positionService.delete(Id);
+        return ResponseEntity.status(res.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(res.getStatus())
+                        .message(res.getMessage())
+                        .data(res.getData())
+                        .build());
+    }
 }
