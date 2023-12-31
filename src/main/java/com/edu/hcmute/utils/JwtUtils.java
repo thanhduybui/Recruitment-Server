@@ -1,22 +1,29 @@
 package com.edu.hcmute.utils;
 
+import com.edu.hcmute.entity.AppUser;
+import com.edu.hcmute.repository.AppUserRepository;
 import io.jsonwebtoken.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
 
 @Slf4j
+@RequiredArgsConstructor
 public class JwtUtils {
+
+    private final AppUserRepository appUserRepository;
     private static final long EXPIRATION_TIME = 86400000; // 1 day
 
     private static final String SECRET_KEY = "Bui Thanh Duy";
 
-    public static String generateToken(String email) {
+    public static String generateToken(CustomClaim claim) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + EXPIRATION_TIME);
 
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(claim.getEmail())
+                .claim("role", claim.getRole())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY)

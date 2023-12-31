@@ -24,4 +24,6 @@ public class Message {
     public static final String FILE_EXTENSION_NOT_SUPPORT = "Định dạng file không được hỗ trợ";
     public static final String FILE_SIZE_EXCEEDED_LIMIT = "Kích thước file vượt quá giới hạn cho phép";
     public static final String PHONE_VALIDATION_ERROR = "Số điện thoại không hợp lệ";
+
+    public static final String INVALID_GENDER = "Giới tính không hợp lệ";
 }

@@ -1,4 +1,4 @@
-package com.edu.hcmute.service;
+package com.edu.hcmute.service.user;
 
 import com.edu.hcmute.config.security.AuthUser;
 import com.edu.hcmute.constant.Message;
