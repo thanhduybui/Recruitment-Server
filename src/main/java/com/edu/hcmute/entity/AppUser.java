@@ -44,7 +44,7 @@ public class AppUser {
     private String email;
 
     @Column(name = "phone", unique = true)
-    private String phone;
+    private String phoneNumber;
 
     @Column(name = "status")
     private Status status;
