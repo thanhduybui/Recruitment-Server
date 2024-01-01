@@ -10,13 +10,14 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import java.io.Serializable;
 import java.time.Instant;
 
 @Data
 @Entity
 @Table(name = "skill")
 @NoArgsConstructor
-public class Skill {
+public class Skill implements Serializable {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

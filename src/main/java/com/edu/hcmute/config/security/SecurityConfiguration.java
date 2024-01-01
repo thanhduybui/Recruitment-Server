@@ -36,6 +36,11 @@ public class SecurityConfiguration {
         http.authorizeHttpRequests(request -> request
                 .requestMatchers( "/home","auth/**", "users/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/positions/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/fields/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/companies/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/jobs/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/salaries/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/majors/**").permitAll()
                 .anyRequest().authenticated()
         ).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

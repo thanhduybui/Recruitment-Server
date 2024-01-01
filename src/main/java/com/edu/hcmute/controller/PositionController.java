@@ -1,7 +1,7 @@
 package com.edu.hcmute.controller;
 
 
-import com.edu.hcmute.dto.PositionDTO;
+import com.edu.hcmute.dto.OptionDTO;
 import com.edu.hcmute.response.ResponseData;
 import com.edu.hcmute.response.ServiceResponse;
 import com.edu.hcmute.service.PositionService;
@@ -17,8 +17,8 @@ public class PositionController {
 
     private final PositionService positionService;
     @GetMapping
-    public ResponseEntity<ResponseData> getAllPosition(){
-        ServiceResponse res = positionService.getAll();
+    public ResponseEntity<ResponseData> getAllPosition(@RequestParam(value = "all", required = false, defaultValue = "false") Boolean all){
+        ServiceResponse res = positionService.getAll(all);
         return ResponseEntity.status(res.getStatusCode())
                 .body(ResponseData.builder()
                         .status(res.getStatus())
@@ -40,7 +40,7 @@ public class PositionController {
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('RECRUITER')")
-    public ResponseEntity<ResponseData> createPosition(@RequestBody PositionDTO position){
+    public ResponseEntity<ResponseData> createPosition(@RequestBody OptionDTO position){
         ServiceResponse res = positionService.create(position);
         return ResponseEntity.status(res.getStatusCode())
                 .body(ResponseData.builder()
