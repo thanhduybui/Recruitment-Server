@@ -2,36 +2,60 @@ package com.edu.hcmute.service;
 
 
 import com.edu.hcmute.constant.Status;
-import com.edu.hcmute.dto.PositionDTO;
+import com.edu.hcmute.dto.OptionDTO;
 import com.edu.hcmute.entity.Position;
+import com.edu.hcmute.mapper.PositionMapper;
 import com.edu.hcmute.repository.PositionRepository;
 import com.edu.hcmute.response.ResponseDataStatus;
 import com.edu.hcmute.response.ServiceResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class PositionService implements GenericService<PositionDTO, Integer> {
+@Slf4j
+public class PositionService implements GenericService<OptionDTO, Integer> {
     private static final String GET_ALL_POSITION_SUCCESS = "Lấy danh sách vị trí thành công";
     private static final String NOT_FOUND_POSITION = "Không tìm thấy vị trí";
     private static final String DELETE_POSITION_FAIL = "Xoá vị trí thất bại";
     private static final String CREATE_POSITION_SUCCESS = "Tạo vị trí mới thành công";
     private static final String DELETE_POSITION_SUCCESS = "Xoá vị trí thành công";
+
     private final PositionRepository positionRepository;
+    private final RedisTemplate redisTemplate;
+    private final PositionMapper positionMapper;
 
     @Override
-    public ServiceResponse getAll() {
-        List<Position> positions = this.positionRepository.findAllByStatus(Status.ACTIVE);
+    public ServiceResponse getAll(Boolean isAll) {
+        List<OptionDTO> foundPositionDTOList;
+        if (isAll) {
+            List<Position> positions = this.positionRepository.findAll();
+            foundPositionDTOList = positions.stream().map(positionMapper::positionToOptionDTO).toList();
+            return ServiceResponse.builder()
+                    .status(ResponseDataStatus.SUCCESS)
+                    .statusCode(HttpStatus.OK)
+                    .message(GET_ALL_POSITION_SUCCESS)
+                    .data(Map.of("positions", foundPositionDTOList))
+                    .build();
+        }
+
+        foundPositionDTOList = redisTemplate.opsForList().range("activePositions", 0, -1);
+        if (foundPositionDTOList == null || foundPositionDTOList.isEmpty()) {
+            List<Position> foundPositions = this.positionRepository.findAllByStatus(Status.ACTIVE);
+            foundPositionDTOList = foundPositions.stream().map(positionMapper::positionToOptionDTO).toList();
+            redisTemplate.opsForList().rightPushAll("activePositions", foundPositionDTOList);
+        }
+
         return ServiceResponse.builder()
                 .status(ResponseDataStatus.SUCCESS)
                 .statusCode(HttpStatus.OK)
                 .message(GET_ALL_POSITION_SUCCESS)
-                .data(Map.of("positions", positions))
+                .data(Map.of("positions", foundPositionDTOList))
                 .build();
     }
 
@@ -46,19 +70,21 @@ public class PositionService implements GenericService<PositionDTO, Integer> {
                     .build();
         }
 
+        OptionDTO positionDTO = positionMapper.positionToOptionDTO(position);
+
         return ServiceResponse.builder()
                 .status(ResponseDataStatus.SUCCESS)
                 .statusCode(HttpStatus.OK)
                 .message(GET_ALL_POSITION_SUCCESS)
-                .data(Map.of("position", position))
+                .data(Map.of("position", positionDTO))
                 .build();
     }
 
     @Override
-    public ServiceResponse create(PositionDTO positionDTO) {
+    public ServiceResponse create(OptionDTO optionDTO) {
         Position position = Position.builder()
-                .name(positionDTO.getName())
-                .description(positionDTO.getDescription())
+                .name(optionDTO.getName())
+                .description(optionDTO.getDescription())
                 .status(Status.ACTIVE)
                 .build();
 
@@ -71,7 +97,7 @@ public class PositionService implements GenericService<PositionDTO, Integer> {
     }
 
     @Override
-    public ServiceResponse update(PositionDTO positionDTO) {
+    public ServiceResponse update(OptionDTO optionDTO) {
         return null;
     }
 
@@ -95,6 +121,5 @@ public class PositionService implements GenericService<PositionDTO, Integer> {
                 .statusCode(HttpStatus.NOT_FOUND)
                 .message(DELETE_POSITION_SUCCESS)
                 .build();
-
     }
 }

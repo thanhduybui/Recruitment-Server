@@ -9,6 +9,7 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import java.io.Serializable;
 import java.time.Instant;
 
 
@@ -16,7 +17,7 @@ import java.time.Instant;
 @Entity
 @Table(name = "work_mode")
 @NoArgsConstructor
-public class WorkMode {
+public class WorkMode implements Serializable {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
