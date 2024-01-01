@@ -39,8 +39,10 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.GET, "/fields/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/companies/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/jobs/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/salaries/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/salary-ranges/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/majors/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/work-modes/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/experience-ranges/**").permitAll()
                 .anyRequest().authenticated()
         ).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

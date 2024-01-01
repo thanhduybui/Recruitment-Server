@@ -13,8 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -34,18 +32,19 @@ public class PositionService implements GenericService<OptionDTO, Integer> {
 
     @Override
     public ServiceResponse getAll(Boolean isAll) {
+        List<OptionDTO> foundPositionDTOList;
         if (isAll) {
             List<Position> positions = this.positionRepository.findAll();
+            foundPositionDTOList = positions.stream().map(positionMapper::positionToOptionDTO).toList();
             return ServiceResponse.builder()
                     .status(ResponseDataStatus.SUCCESS)
                     .statusCode(HttpStatus.OK)
                     .message(GET_ALL_POSITION_SUCCESS)
-                    .data(Map.of("positions", positions))
+                    .data(Map.of("positions", foundPositionDTOList))
                     .build();
         }
 
-        List<OptionDTO> foundPositionDTOList = redisTemplate.opsForList().range("activePositions", 0, -1);
-        log.info("foundPositionDTOList: {}", foundPositionDTOList);
+        foundPositionDTOList = redisTemplate.opsForList().range("activePositions", 0, -1);
         if (foundPositionDTOList == null || foundPositionDTOList.isEmpty()) {
             List<Position> foundPositions = this.positionRepository.findAllByStatus(Status.ACTIVE);
             foundPositionDTOList = foundPositions.stream().map(positionMapper::positionToOptionDTO).toList();
@@ -60,16 +59,6 @@ public class PositionService implements GenericService<OptionDTO, Integer> {
                 .build();
     }
 
-    private ServiceResponse createSuccessResponse(List<OptionDTO> positions) {
-        return ServiceResponse.builder()
-                .status(ResponseDataStatus.SUCCESS)
-                .statusCode(HttpStatus.OK)
-                .message(GET_ALL_POSITION_SUCCESS)
-                .data(Map.of("positions", positions))
-                .build();
-    }
-
-
     @Override
     public ServiceResponse getOne(Integer id) {
         Position position = this.positionRepository.findById(id).orElse(null);
@@ -81,11 +70,13 @@ public class PositionService implements GenericService<OptionDTO, Integer> {
                     .build();
         }
 
+        OptionDTO positionDTO = positionMapper.positionToOptionDTO(position);
+
         return ServiceResponse.builder()
                 .status(ResponseDataStatus.SUCCESS)
                 .statusCode(HttpStatus.OK)
                 .message(GET_ALL_POSITION_SUCCESS)
-                .data(Map.of("position", position))
+                .data(Map.of("position", positionDTO))
                 .build();
     }
 
@@ -130,6 +121,5 @@ public class PositionService implements GenericService<OptionDTO, Integer> {
                 .statusCode(HttpStatus.NOT_FOUND)
                 .message(DELETE_POSITION_SUCCESS)
                 .build();
-
     }
 }
