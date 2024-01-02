@@ -28,6 +28,7 @@ public class SalaryRangeService implements GenericService<OptionDTO, Integer>{
     private static final String GET_ALL_SALARY_SUCCESS = "Lấy danh sách mức lương thành công";
     private static final String DELETE_SALARY_SUCCESS = "Xoá mức lương thành công";
     private static final String UPDATE_SALARY_SUCCESS = "Cập nhật mức lương thành công";
+    private static final String CREATE_SALARY_SUCCESS = "Tạo mức lương thành công";
 
     @Override
     public ServiceResponse getAll(Boolean isAll) {
@@ -82,7 +83,17 @@ public class SalaryRangeService implements GenericService<OptionDTO, Integer>{
 
     @Override
     public ServiceResponse create(OptionDTO object) {
-        return null;
+
+        SalaryRange salaryRange = salaryRangeMapper.optionDTOToSalaryRange(object);
+        salaryRange.setStatus(Status.ACTIVE);
+        this.salaryRangeRepository.save(salaryRange);
+        redisTemplate.delete("activeSalaryRanges");
+
+        return ServiceResponse.builder()
+                .status(ResponseDataStatus.SUCCESS)
+                .statusCode(HttpStatus.OK)
+                .message(CREATE_SALARY_SUCCESS)
+                .build();
     }
 
     @Override

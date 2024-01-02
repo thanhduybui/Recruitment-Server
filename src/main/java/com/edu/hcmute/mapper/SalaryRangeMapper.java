@@ -15,4 +15,6 @@ public interface SalaryRangeMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateSalaryRangeFromOptionDTO(OptionDTO optionDTO,@MappingTarget SalaryRange foundSalaryRange);
+
+    SalaryRange optionDTOToSalaryRange(OptionDTO optionDTO);
 }

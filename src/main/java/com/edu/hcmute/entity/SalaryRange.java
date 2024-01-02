@@ -3,12 +3,14 @@ package com.edu.hcmute.entity;
 
 import com.edu.hcmute.constant.Status;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -17,6 +19,9 @@ import java.time.Instant;
 @Entity
 @Table(name = "salary_range")
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class SalaryRange implements Serializable {
     @Id
     @Column(name = "id")
