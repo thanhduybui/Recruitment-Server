@@ -4,6 +4,7 @@ package com.edu.hcmute.service;
 import com.edu.hcmute.constant.Status;
 import com.edu.hcmute.dto.OptionDTO;
 import com.edu.hcmute.entity.SalaryRange;
+import com.edu.hcmute.exception.ResourceNotFoundException;
 import com.edu.hcmute.mapper.SalaryRangeMapper;
 import com.edu.hcmute.repository.SalaryRangeRepository;
 import com.edu.hcmute.response.ResponseDataStatus;
@@ -25,6 +26,9 @@ public class SalaryRangeService implements GenericService<OptionDTO, Integer>{
     private static final String NOT_FOUND_SALARY = "Không tìm thấy mức lương";
     private static final String GET_ONE_SALARY_SUCCESS = "Lấy mức lương thành công";
     private static final String GET_ALL_SALARY_SUCCESS = "Lấy danh sách mức lương thành công";
+    private static final String DELETE_SALARY_SUCCESS = "Xoá mức lương thành công";
+    private static final String UPDATE_SALARY_SUCCESS = "Cập nhật mức lương thành công";
+    private static final String CREATE_SALARY_SUCCESS = "Tạo mức lương thành công";
 
     @Override
     public ServiceResponse getAll(Boolean isAll) {
@@ -79,16 +83,47 @@ public class SalaryRangeService implements GenericService<OptionDTO, Integer>{
 
     @Override
     public ServiceResponse create(OptionDTO object) {
-        return null;
+
+        SalaryRange salaryRange = salaryRangeMapper.optionDTOToSalaryRange(object);
+        salaryRange.setStatus(Status.ACTIVE);
+        this.salaryRangeRepository.save(salaryRange);
+        redisTemplate.delete("activeSalaryRanges");
+
+        return ServiceResponse.builder()
+                .status(ResponseDataStatus.SUCCESS)
+                .statusCode(HttpStatus.OK)
+                .message(CREATE_SALARY_SUCCESS)
+                .build();
     }
 
     @Override
-    public ServiceResponse update(OptionDTO object) {
-        return null;
+    public ServiceResponse update(OptionDTO optionDTO, Integer id) {
+        SalaryRange foundSalaryRange = this.salaryRangeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(NOT_FOUND_SALARY));
+
+        salaryRangeMapper.updateSalaryRangeFromOptionDTO(optionDTO, foundSalaryRange);
+        this.salaryRangeRepository.save(foundSalaryRange);
+        redisTemplate.delete("activeSalaryRanges");
+
+        return ServiceResponse.builder()
+                .status(ResponseDataStatus.SUCCESS)
+                .statusCode(HttpStatus.OK)
+                .message(UPDATE_SALARY_SUCCESS)
+                .build();
     }
 
     @Override
     public ServiceResponse delete(Integer id) {
-        return null;
+        SalaryRange foundSalaryRange = this.salaryRangeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(NOT_FOUND_SALARY ));
+
+        foundSalaryRange.setStatus(Status.INACTIVE);
+        this.salaryRangeRepository.save(foundSalaryRange);
+        redisTemplate.delete("activeSalaryRanges");
+        return ServiceResponse.builder()
+                .status(ResponseDataStatus.SUCCESS)
+                .statusCode(HttpStatus.OK)
+                .message(DELETE_SALARY_SUCCESS)
+                .build();
     }
 }

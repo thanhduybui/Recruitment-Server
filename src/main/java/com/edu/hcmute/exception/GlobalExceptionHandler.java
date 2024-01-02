@@ -3,6 +3,7 @@ package com.edu.hcmute.exception;
 
 import com.edu.hcmute.response.ResponseData;
 import com.edu.hcmute.response.ResponseDataStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -20,9 +21,11 @@ import java.util.Date;
 import java.util.List;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
-
     private static final String INVALID_ARGUMENT = "Tham số đường dẫn không hợp lệ";
+    private static final String FORBIDDEN = "Không có quyền truy cập";
+    private static final String NOT_DEFINED_ERROR = "Lỗi không xác định khi xử lý yêu cầu";
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
@@ -48,20 +51,29 @@ public class GlobalExceptionHandler {
                         .message(INVALID_ARGUMENT).build());
     }
 
+    @ExceptionHandler({ResourceNotFoundException.class})
+    public ResponseEntity<ResponseData> handleResourceNotFoundException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseData.builder()
+                        .status(ResponseDataStatus.ERROR)
+                        .message(ex.getMessage()).build());
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ResponseData> handleAccessDeniedException(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                 ResponseData.builder()
-                        .status(ResponseDataStatus.ERROR).message("Không có quyền truy cập").build());
+                        .status(ResponseDataStatus.ERROR).message(FORBIDDEN).build());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseData> globalExceptionHandler(Exception ex, WebRequest request) {
         ResponseData responseData = ResponseData.builder()
                 .status(ResponseDataStatus.ERROR)
-                .message(request.getDescription(false))
+                .message(NOT_DEFINED_ERROR)
                 .timestamp(new Date())
                 .build();
+        log.error("Error: ", ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(responseData);
