@@ -64,7 +64,7 @@ public class WorkModeService implements GenericService<OptionDTO, Integer> {
     }
 
     @Override
-    public ServiceResponse update(OptionDTO object) {
+    public ServiceResponse update(OptionDTO object, Integer id) {
         return null;
     }
 

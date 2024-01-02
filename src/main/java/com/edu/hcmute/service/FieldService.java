@@ -3,6 +3,7 @@ package com.edu.hcmute.service;
 import com.edu.hcmute.constant.Status;
 import com.edu.hcmute.dto.OptionDTO;
 import com.edu.hcmute.entity.Field;
+import com.edu.hcmute.exception.ResourceNotFoundException;
 import com.edu.hcmute.mapper.FieldMapper;
 import com.edu.hcmute.repository.FieldRepository;
 import com.edu.hcmute.response.ResponseDataStatus;
@@ -83,24 +84,17 @@ public class FieldService implements GenericService<OptionDTO, Integer> {
     }
 
     @Override
-    public ServiceResponse update(OptionDTO object) {
+    public ServiceResponse update(OptionDTO object, Integer id) {
         return null;
     }
 
     @Override
     public ServiceResponse delete(Integer id) {
-        Field field = fieldRepository.findById(id).orElse(null);
-
-        if (field == null) {
-            return ServiceResponse.builder()
-                    .status(ResponseDataStatus.SUCCESS)
-                    .statusCode(HttpStatus.OK)
-                    .message(NOT_FOUND_FIELD + ", " + DELETE_FIELD_FAIL)
-                    .build();
-        }
+        Field field = fieldRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException(NOT_FOUND_FIELD));
 
         field.setStatus(Status.INACTIVE);
         fieldRepository.save(field);
+        redisTemplate.delete("activeFields");
 
         return ServiceResponse.builder()
                 .status(ResponseDataStatus.ERROR)

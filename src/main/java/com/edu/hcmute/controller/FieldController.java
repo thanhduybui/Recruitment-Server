@@ -36,4 +36,15 @@ public class FieldController {
                         .data(res.getData())
                         .build());
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseData> deleteField(@PathVariable("id") Integer id){
+        ServiceResponse res = fieldService.delete(id);
+        return ResponseEntity.status(res.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(res.getStatus())
+                        .message(res.getMessage())
+                        .data(res.getData())
+                        .build());
+    }
 }
