@@ -16,4 +16,6 @@ public interface AppUserMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateAppUserFromRequest(ProfileDTO profileDTO, @MappingTarget AppUser appUser);
+
+    ProfileDTO appUserToProfileDTO(AppUser user);
 }

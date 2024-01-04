@@ -22,7 +22,9 @@ public class ProfileDTO {
     @Pattern(regexp = "^(OTHER|FEMALE|MALE)$", message = INVALID_GENDER)
     private String gender;
 
-    @Pattern(regexp = "^(\\+?\\d{1,3}[- ]?)?\\d{9,}$", message = PHONE_VALIDATION_ERROR)
+    @Pattern(regexp = "^(\\+?\\d{1,3}[- ]?)?\\d{9,15}$", message = PHONE_VALIDATION_ERROR)
     @JsonAlias("phone_number")
     private String phoneNumber;
+
+    private String email;
 }

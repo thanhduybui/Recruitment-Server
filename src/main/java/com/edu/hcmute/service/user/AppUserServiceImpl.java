@@ -29,6 +29,7 @@ public class AppUserServiceImpl implements AppUserService {
     private final AppUserMapper appUserMapper;
 
     private static final String UPDATE_USER_PROFILE_SUCCESS = "Cập nhật thông tin cá nhân thành công";
+    private static final String GET_USER_PROFILE_SUCCESS = "Lấy thông tin cá nhân thành công";
     private static final Long MAX_FILE_SIZE = 10 * 1024 * 1024L;
 
     @Override
@@ -91,6 +92,29 @@ public class AppUserServiceImpl implements AppUserService {
                 .status(ResponseDataStatus.SUCCESS)
                 .statusCode(HttpStatus.OK)
                 .message(UPDATE_USER_PROFILE_SUCCESS)
+                .build();
+    }
+
+    @Override
+    public ServiceResponse getUserProfile() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        AppUser user = this.appUserRepository.findByEmail(email).orElse(null);
+
+        if (user ==  null){
+            return ServiceResponse.builder()
+                    .status(ResponseDataStatus.ERROR)
+                    .statusCode(HttpStatus.NOT_FOUND)
+                    .message(String.format(Message.USER_NOT_FOUND_BY_EMAIL, email) )
+                    .build();
+        }
+
+        ProfileDTO profileDTO = appUserMapper.appUserToProfileDTO(user);
+
+        return ServiceResponse.builder()
+                .status(ResponseDataStatus.SUCCESS)
+                .statusCode(HttpStatus.OK)
+                .message(GET_USER_PROFILE_SUCCESS)
+                .data(Map.of("profile", profileDTO))
                 .build();
     }
 }
