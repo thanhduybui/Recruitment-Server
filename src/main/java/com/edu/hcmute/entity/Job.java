@@ -4,11 +4,13 @@ package com.edu.hcmute.entity;
 import com.edu.hcmute.constant.Role;
 import com.edu.hcmute.constant.Status;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -18,6 +20,9 @@ import java.util.List;
 @Entity
 @Table(name = "job")
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Job implements Serializable {
     @Column(name = "id")
     @Id
@@ -79,7 +84,6 @@ public class Job implements Serializable {
     @Column(name = "is_hot")
     private Boolean isHot;
 
-
     @ManyToOne
     @JoinColumn(name = "salary_range_id")
     private SalaryRange salaryRange;
@@ -87,6 +91,10 @@ public class Job implements Serializable {
     @ManyToOne
     @JoinColumn(name = "company_id")
     private Company company;
+
+    @ManyToOne
+    @JoinColumn(name = "work_mode_id")
+    private WorkMode workMode;
 
     @ManyToOne
     @JoinColumn(name = "position_id")

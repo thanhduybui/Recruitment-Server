@@ -4,6 +4,7 @@ package com.edu.hcmute.service;
 import com.edu.hcmute.constant.Status;
 import com.edu.hcmute.dto.OptionDTO;
 import com.edu.hcmute.entity.Position;
+import com.edu.hcmute.exception.DuplicateEntryException;
 import com.edu.hcmute.exception.ResourceNotFoundException;
 import com.edu.hcmute.mapper.PositionMapper;
 import com.edu.hcmute.repository.PositionRepository;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +29,8 @@ public class PositionService implements GenericService<OptionDTO, Integer> {
     private static final String CREATE_POSITION_SUCCESS = "Tạo vị trí mới thành công";
     private static final String DELETE_POSITION_SUCCESS = "Xoá vị trí thành công";
     private static final String UPDATE_POSITION_SUCCESS = "Cập nhật vị trí thành công";
+    private static final String CREATE_POSITION_FAIL = "Tao vị trí mới thất bại";
+    private static final String DUPLICATE_POSITION_NAME = "Tên vị trí đã tồn tại";
 
     private final PositionRepository positionRepository;
     private final RedisTemplate redisTemplate;
@@ -77,13 +81,20 @@ public class PositionService implements GenericService<OptionDTO, Integer> {
 
     @Override
     public ServiceResponse create(OptionDTO optionDTO) {
-        Position position = Position.builder()
+        Position position = positionRepository.findByName(optionDTO.getName()).orElse(null);
+
+        if (position != null) {
+            throw new DuplicateEntryException(DUPLICATE_POSITION_NAME);
+        }
+
+        Position newPosition = Position.builder()
                 .name(optionDTO.getName())
                 .description(optionDTO.getDescription())
                 .status(Status.ACTIVE)
                 .build();
 
-        positionRepository.save(position);
+        positionRepository.save(newPosition);
+
         return ServiceResponse.builder()
                 .status(ResponseDataStatus.SUCCESS)
                 .statusCode(HttpStatus.CREATED)

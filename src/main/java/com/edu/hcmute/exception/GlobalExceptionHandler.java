@@ -43,6 +43,16 @@ public class GlobalExceptionHandler {
                         .message(errors.get(0)).build());
     }
 
+    @ExceptionHandler({DuplicateEntryException.class})
+    public ResponseEntity<ResponseData> handleDuplicateEntryException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                ResponseData.builder()
+                        .status(ResponseDataStatus.ERROR)
+                        .message(ex.getMessage())
+                        .build());
+    }
+
+
     @ExceptionHandler({MethodArgumentTypeMismatchException.class})
     public ResponseEntity<ResponseData> handleMethodArgumentTypeMismatch(Exception ex) {
         return ResponseEntity.badRequest().body(

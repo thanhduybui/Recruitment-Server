@@ -15,8 +15,6 @@ public class BcryptUtils {
     }
 
     public static boolean verifyPassword(String plainTextPassword, String hashedPassword) {
-        log.info("plainTextPassword: " + plainTextPassword);
-        log.info("hashedPassword: " + hashedPassword);
         return bCryptPasswordEncoder.matches(plainTextPassword, hashedPassword);
     }
 }
