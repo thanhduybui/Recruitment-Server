@@ -1,7 +1,5 @@
 package com.edu.hcmute.entity;
 
-
-import com.edu.hcmute.constant.Role;
 import com.edu.hcmute.constant.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

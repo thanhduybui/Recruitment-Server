@@ -3,6 +3,7 @@ package com.edu.hcmute.service;
 import com.edu.hcmute.constant.Status;
 import com.edu.hcmute.dto.OptionDTO;
 import com.edu.hcmute.entity.Field;
+import com.edu.hcmute.exception.DuplicateEntryException;
 import com.edu.hcmute.exception.ResourceNotFoundException;
 import com.edu.hcmute.mapper.FieldMapper;
 import com.edu.hcmute.repository.FieldRepository;
@@ -13,7 +14,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +25,11 @@ public class FieldService implements GenericService<OptionDTO, Integer> {
     private static final String GET_ONE_SUCCESS = "Lấy thông tin lĩnh vực thành công";
     private static final String NOT_FOUND_FIELD = "Không tìm thấy lĩnh vực";
     private static final String DELETE_FIELD_FAIL = "Xoá lĩnh vực thất bại";
+    private static final String CREATE_FIELD_SUCCESS = "Tạo lĩnh vực mới thành công";
+    private static final String DUPLICATE_FIELD_NAME = "Tên lĩnh vực đã tồn tại";
+    private static final String UPDATE_FIELD_SUCCESS = "Cập nhật lĩnh vực thành công";
     private static final String DELETE_FIELD_SUCCESS = "Xoá lĩnh vực thành công";
+
     private final FieldRepository fieldRepository;
     private final RedisTemplate redisTemplate;
     private final FieldMapper fieldMapper;
@@ -79,18 +83,45 @@ public class FieldService implements GenericService<OptionDTO, Integer> {
     }
 
     @Override
-    public ServiceResponse create(OptionDTO object) {
-        return null;
+    public ServiceResponse create(OptionDTO optionDTO) {
+        Field field = fieldRepository.findByName(optionDTO.getName()).orElse(null);
+        if (field != null) {
+            throw new DuplicateEntryException(DUPLICATE_FIELD_NAME);
+        }
+
+        Field newField = fieldMapper.optionDTOToField(optionDTO);
+        newField.setStatus(Status.ACTIVE);
+
+        fieldRepository.save(newField);
+        redisTemplate.delete("activeFields");
+
+        return ServiceResponse.builder()
+                .status(ResponseDataStatus.SUCCESS)
+                .statusCode(HttpStatus.CREATED)
+                .message(CREATE_FIELD_SUCCESS)
+                .build();
     }
 
     @Override
-    public ServiceResponse update(OptionDTO object, Integer id) {
-        return null;
+    public ServiceResponse update(OptionDTO optionDTO, Integer id) {
+        Field field = fieldRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(NOT_FOUND_FIELD));
+
+        fieldMapper.updateFieldFromOptionDTO(optionDTO, field);
+
+        fieldRepository.save(field);
+        redisTemplate.delete("activeFields");
+
+        return ServiceResponse.builder()
+                .status(ResponseDataStatus.SUCCESS)
+                .statusCode(HttpStatus.OK)
+                .message(UPDATE_FIELD_SUCCESS)
+                .build();
     }
 
     @Override
     public ServiceResponse delete(Integer id) {
-        Field field = fieldRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException(NOT_FOUND_FIELD));
+        Field field = fieldRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(NOT_FOUND_FIELD + ", " + DELETE_FIELD_FAIL));
 
         field.setStatus(Status.INACTIVE);
         fieldRepository.save(field);
