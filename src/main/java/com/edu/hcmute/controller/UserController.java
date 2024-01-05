@@ -15,13 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
-
     private final AppUserService appUserService;
-
-    @GetMapping()
-    public ResponseEntity<String> getUser() {
-        return ResponseEntity.ok("Hello");
-    }
 
     @GetMapping("/avatar")
     public ResponseEntity<ResponseData> changeUserAvatar(@RequestParam("file") MultipartFile multipartFile) {
@@ -37,6 +31,17 @@ public class UserController {
     @PutMapping("/profile")
     public ResponseEntity<ResponseData> updateUserProfile(@RequestBody @Valid ProfileDTO profileDTO) {
         ServiceResponse serviceResponse = appUserService.updateUserProfile(profileDTO);
+        return ResponseEntity.status(serviceResponse.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(serviceResponse.getStatus())
+                        .message(serviceResponse.getMessage())
+                        .data(serviceResponse.getData())
+                        .build());
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<ResponseData> getUserProfile() {
+        ServiceResponse serviceResponse = appUserService.getUserProfile();
         return ResponseEntity.status(serviceResponse.getStatusCode())
                 .body(ResponseData.builder()
                         .status(serviceResponse.getStatus())

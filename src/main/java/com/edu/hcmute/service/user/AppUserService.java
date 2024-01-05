@@ -19,4 +19,5 @@ public interface AppUserService {
    ServiceResponse changeUserAvatar(MultipartFile multipartFile);
 
     ServiceResponse updateUserProfile(ProfileDTO profileDTO);
+    ServiceResponse getUserProfile();
 }
