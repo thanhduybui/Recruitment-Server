@@ -30,12 +30,13 @@ public class Company {
     @Column(name = "image")
     @Lob
     private String image;
-    @Column(name = "description")
+    @Lob
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
     @Column(name = "scale")
-    private Integer scale;
+    private String scale;
     @Column(name = "branch")
-    private String branch;
+    private String address;
     @Column(name="email")
     private String email;
     @Column(name="phone")
