@@ -11,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Provider;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/companies")
@@ -42,4 +40,21 @@ public class CompanyController {
                         .data(response.getData())
                         .build());
     }
+
+    @GetMapping("/{id}/jobs")
+    public ResponseEntity<ResponseData> getCompanyJobs(@PathVariable("id") Integer id,
+                                                       @RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
+                                                       @RequestParam(value = "size", defaultValue = "10", required = false) Integer size) {
+        ServiceResponse response = companyService.getCompanyJobs(id, page, size);
+        return ResponseEntity.status(response.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(response.getStatus())
+                        .message(response.getMessage())
+                        .data(response.getData())
+                        .build());
+    }
+
+
+
+
 }

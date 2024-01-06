@@ -1,8 +1,10 @@
 package com.edu.hcmute.mapper;
 
 
+import com.edu.hcmute.dto.JobDTO;
 import com.edu.hcmute.dto.JobRequestBody;
-import com.edu.hcmute.entity.Job;
+import com.edu.hcmute.entity.*;
+import com.edu.hcmute.response.ShortData;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -17,4 +19,20 @@ public interface JobMapper {
     @Mapping(source = "skillIds", target = "skills")
     @Mapping(source = "workModeId", target = "workMode")
     Job jobRequestBodyToJob(JobRequestBody jobRequest);
+
+    JobDTO jobToJobDTO(Job job);
+
+    ShortData companyToShortData(Company company);
+
+    ShortData positionToShortData(Position position);
+
+    ShortData fieldToShortData(Field field);
+    ShortData salaryRangeToShortData(SalaryRange salaryRange);
+
+    ShortData experienceRangeToShortData(ExperienceRange experienceRange);
+
+    ShortData majorToShortData(Major major);
+
+    ShortData workModeToShortData(WorkMode workMode);
+
 }

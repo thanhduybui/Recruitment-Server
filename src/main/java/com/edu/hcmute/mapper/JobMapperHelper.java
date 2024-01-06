@@ -4,12 +4,16 @@ package com.edu.hcmute.mapper;
 import com.edu.hcmute.entity.*;
 import com.edu.hcmute.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JobMapperHelper {
     private final FieldRepository fieldRepository;
     private final PositionRepository positionRepository;
@@ -19,6 +23,7 @@ public class JobMapperHelper {
     private final CompanyRepository companyRepository;
     private final SkillRepository skillRepository;
     private final WorkModeRepository workModeRepository;
+    private static final String CAN_NOT_PARSE_TIME = "Không thể chuyển đổi thời gian";
 
     public Field mapFieldIdToField(Integer fieldId) {
         if (fieldId != null) {
@@ -73,6 +78,18 @@ public class JobMapperHelper {
             return workModeRepository.findById(workModeId).orElse(null);
         }
         return null;
+    }
+
+    public Instant mapStringToInstant(String time){
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+
+        try {
+            return Instant.from(formatter.parse(time));
+        } catch (Exception e) {
+           log.error(CAN_NOT_PARSE_TIME);
+            return null;
+        }
     }
 
 
