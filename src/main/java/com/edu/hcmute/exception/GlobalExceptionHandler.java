@@ -76,6 +76,14 @@ public class GlobalExceptionHandler {
                         .status(ResponseDataStatus.ERROR).message(FORBIDDEN).build());
     }
 
+    @ExceptionHandler(UndefinedException.class)
+    public ResponseEntity<ResponseData> handleUndefinedException(UndefinedException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                ResponseData.builder()
+                        .status(ResponseDataStatus.ERROR)
+                        .message(ex.getMessage()).build());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseData> globalExceptionHandler(Exception ex, WebRequest request) {
         ResponseData responseData = ResponseData.builder()

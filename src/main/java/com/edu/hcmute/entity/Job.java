@@ -29,17 +29,17 @@ public class Job implements Serializable {
 
     @Column(name = "title")
     private String title;
-
-    @Column(name = "description")
     @Lob
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
-    @Column(name = "requirement")
-    @Lob
 
-    private String requirement;
-    @Column(name = "benefit")
     @Lob
+    @Column(name = "benefit", columnDefinition = "TEXT")
     private String benefit;
+
+    @Lob
+    @Column(name = "requirement", columnDefinition = "TEXT")
+    private String requirement;
 
     @Column(name = "slots")
     private Integer slots;
@@ -60,11 +60,11 @@ public class Job implements Serializable {
     @Column(name = "deadline")
     private Instant deadline;
 
-    @Column(name = "work_location")
     @Lob
+    @Column(name = "work_location", columnDefinition = "TEXT")
     private String workLocation;
 
-    @Column(name = "work_time")
+    @Column(name = "work_time", columnDefinition = "TEXT")
     @Lob
     private String workTime;
 

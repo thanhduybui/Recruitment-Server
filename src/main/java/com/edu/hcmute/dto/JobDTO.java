@@ -3,6 +3,7 @@ package com.edu.hcmute.dto;
 
 import com.edu.hcmute.constant.Status;
 import com.edu.hcmute.entity.*;
+import com.edu.hcmute.response.ShortData;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -36,7 +37,7 @@ public class JobDTO {
 
     private Status status;
 
-    private Instant deadline;
+    private String deadline;
 
     @JsonAlias("work_location")
     private String workLocation;
@@ -44,12 +45,11 @@ public class JobDTO {
     @JsonAlias("work_time")
     private String workTime;
 
-
     @JsonAlias("created_at")
-    private Instant createdAt;
+    private String createdAt;
 
     @JsonAlias("updated_at")
-    private Instant updatedAt;
+    private String updatedAt;
 
     @JsonAlias("created_by")
     private String createdBy;
@@ -57,16 +57,18 @@ public class JobDTO {
     @JsonAlias("is_hot")
     private Boolean isHot;
 
-    private SalaryRange salaryRange;
+    private ShortData salaryRange;
 
-    private Company company;
+    private ShortData company;
 
-    private Position position;
+    private ShortData position;
 
-    private Major major;
+    private ShortData major;
 
-    private Field field;
+    private ShortData field;
 
-    private ExperienceRange experienceRange;
+    private ShortData experienceRange;
+
+    private ShortData workMode;
 
 }

@@ -9,10 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/jobs")
@@ -23,6 +20,31 @@ public class JobController {
     @PreAuthorize("hasAnyAuthority('RECRUITER')")
     public ResponseEntity<ResponseData> createNewJob(@RequestBody @Valid JobRequestBody jobRequestBody) {
         ServiceResponse serviceResponse = jobService.create(jobRequestBody);
+        return ResponseEntity.status(serviceResponse.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(serviceResponse.getStatus())
+                        .message(serviceResponse.getMessage())
+                        .data(serviceResponse.getData())
+                        .build());
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('RECRUITER')")
+    public ResponseEntity<ResponseData> updateJob(@PathVariable("id") Long id,
+                                                  @RequestBody @Valid JobRequestBody jobRequestBody) {
+        ServiceResponse serviceResponse = jobService.update(id, jobRequestBody);
+        return ResponseEntity.status(serviceResponse.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(serviceResponse.getStatus())
+                        .message(serviceResponse.getMessage())
+                        .data(serviceResponse.getData())
+                        .build());
+    }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseData> getJobDetail(@PathVariable("id") Long id) {
+        ServiceResponse serviceResponse = jobService.getOne(id);
         return ResponseEntity.status(serviceResponse.getStatusCode())
                 .body(ResponseData.builder()
                         .status(serviceResponse.getStatus())

@@ -11,7 +11,6 @@ import java.util.List;
 
 @Data
 public class JobRequestBody {
-
     @NotBlank
     private String title;
 
@@ -26,7 +25,7 @@ public class JobRequestBody {
 
     private Integer slots;
 
-    private Instant deadline;
+    private String deadline;
 
     @JsonAlias("work_location")
     private String workLocation;
