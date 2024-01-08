@@ -1,6 +1,8 @@
 package com.edu.hcmute.service;
 
 
+import com.edu.hcmute.constant.JobType;
+import com.edu.hcmute.constant.Status;
 import com.edu.hcmute.dto.CompanyDTO;
 import com.edu.hcmute.dto.CompanyRequestBody;
 import com.edu.hcmute.dto.JobDTO;
@@ -23,25 +25,29 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.edu.hcmute.constant.JobType.ACTIVE;
+
 @Service
 @RequiredArgsConstructor
 public class CompanyService {
-    private final AppUserRepository appUserRepository;
-    private final CompanyMapper companyMapper;
-    private final JobMapper jobMapper;
-    private final CompanyRepository companyRepository;
-    private final JobRepository jobRepository;
     private static final String UPDATE_COMPANY_SUCCESS = "Cập nhật thông tin công ty thành công";
     private static final String USER_NOT_FOUND = "Không tìm thấy người dùng để lấy thông tin công ty";
     private static final String GET_COMPANY_SUCCESS = "Lấy thông tin công ty thành công";
     private static final String GET_COMPANY_JOB_SUCCESS = "Lấy các công việc của công ty thành công";
     private static final String COMPANY_NOT_FOUND = "Lấy thông tin công ty thành công";
+    private final AppUserRepository appUserRepository;
+    private final CompanyMapper companyMapper;
+    private final JobMapper jobMapper;
+    private final CompanyRepository companyRepository;
+    private final JobRepository jobRepository;
 
-    public ServiceResponse getCompanyForUser(String email){
+    public ServiceResponse getCompanyForUser(String email) {
         AppUser appUser = appUserRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
 
@@ -76,19 +82,34 @@ public class CompanyService {
 
     }
 
-    public ServiceResponse getCompanyJobs(Integer id, Integer page, Integer size) {
-
+    public ServiceResponse getCompanyJobs(Integer id, Integer page, Integer size, String type) {
         Pageable pageable = PageRequest.of(page, size);
         Company company = companyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(COMPANY_NOT_FOUND));
 
-        Page<Job> companyJobs = jobRepository.findAllByCompany(company, pageable);
+        Instant now = Instant.now();
+
+        Page<Job> companyJobs;
+        switch (type) {
+            case "ACTIVE":
+                companyJobs = jobRepository.findAllByCompanyAndStatusAndDeadlineAfter(company, Status.ACTIVE, now, pageable);
+                break;
+            case "EXPIRED":
+                companyJobs = jobRepository.findAllByCompanyAndDeadlineBefore(company, now, pageable);
+                break;
+            case "HOT":
+                companyJobs = jobRepository.findAllByCompanyAndStatusAndIsHot(company, Status.ACTIVE, true, pageable);
+                break;
+            default:
+                companyJobs = jobRepository.findAllByCompany(company, pageable);
+                break;
+        }
 
         List<JobDTO> jobDTOs = companyJobs.getContent().stream().map(jobMapper::jobToJobDTO).collect(Collectors.toList());
 
         PagingResponseData data = PagingResponseData.builder()
-                .totalPage(companyJobs.getTotalPages())
-                .totalItem(companyJobs.getTotalElements())
+                .totalPages(companyJobs.getTotalPages())
+                .totalItems(companyJobs.getTotalElements())
                 .currentPage(companyJobs.getNumber())
                 .pageSize(companyJobs.getSize())
                 .listData(jobDTOs)

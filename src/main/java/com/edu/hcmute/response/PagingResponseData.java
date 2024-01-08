@@ -9,8 +9,8 @@ import lombok.Data;
 @Data
 public class PagingResponseData {
     private Object listData;
-    private Integer totalPage;
-    private Long totalItem;
+    private Integer totalPages;
+    private Long totalItems;
     private Integer currentPage;
     private Integer pageSize;
 }

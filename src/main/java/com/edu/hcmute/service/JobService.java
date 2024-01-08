@@ -1,6 +1,7 @@
 package com.edu.hcmute.service;
 
 
+import com.edu.hcmute.constant.Status;
 import com.edu.hcmute.dto.JobDTO;
 import com.edu.hcmute.dto.JobRequestBody;
 import com.edu.hcmute.entity.Job;
@@ -28,12 +29,16 @@ public class JobService {
     private static final String JOB_NOT_FOUND = "Không tìm thấy công việc";
     private static final String GET_JOB_SUCCESS = "Lấy thông tin công việc thành công";
     private static final String GET_JOB_FAIL = "Lấy thông tin công việc thất bại";
+    private static final String DELETE_JOB_SUCCESS = "Xóa công việc thành công";
+    private static final String DELETE_JOB_FAIL = "Xóa công việc thất bại";
 
     private final JobRepository jobRepository;
     private final JobMapper jobMapper;
     public ServiceResponse create(JobRequestBody jobRequestBody) {
         try {
             Job newJob = jobMapper.jobRequestBodyToJob(jobRequestBody);
+            newJob.setStatus(Status.ACTIVE);
+
             jobRepository.save(newJob);
             return ServiceResponse.builder()
                     .status(ResponseDataStatus.SUCCESS)
@@ -49,9 +54,7 @@ public class JobService {
     public ServiceResponse update(Long id, JobRequestBody jobRequestBody) {
         try{
             Job job = jobRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(JOB_NOT_FOUND));
-
             jobMapper.updateJobFromJobRequestBody(jobRequestBody, job);
-
             this.jobRepository.save(job);
 
             return ServiceResponse.builder()
@@ -79,6 +82,23 @@ public class JobService {
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new UndefinedException(GET_JOB_FAIL);
+        }
+    }
+
+    public ServiceResponse deleteJob(Long id){
+        try{
+            Job job = jobRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(JOB_NOT_FOUND));
+            job.setStatus(Status.INACTIVE);
+            jobRepository.save(job);
+
+            return ServiceResponse.builder()
+                    .status(ResponseDataStatus.SUCCESS)
+                    .statusCode(HttpStatus.OK)
+                    .message(DELETE_JOB_SUCCESS)
+                    .build();
+        }catch (Exception e){
+            log.error(e.getMessage());
+            throw new UndefinedException(DELETE_JOB_FAIL);
         }
     }
 }

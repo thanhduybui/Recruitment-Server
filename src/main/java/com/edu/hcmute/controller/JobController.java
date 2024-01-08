@@ -52,4 +52,16 @@ public class JobController {
                         .data(serviceResponse.getData())
                         .build());
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('RECRUITER')")
+    public ResponseEntity<ResponseData> deleteJob(@PathVariable("id") Long id) {
+        ServiceResponse serviceResponse = jobService.deleteJob(id);
+        return ResponseEntity.status(serviceResponse.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(serviceResponse.getStatus())
+                        .message(serviceResponse.getMessage())
+                        .data(serviceResponse.getData())
+                        .build());
+    }
 }

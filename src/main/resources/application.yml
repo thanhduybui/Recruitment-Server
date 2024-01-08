@@ -17,10 +17,10 @@ spring:
     hibernate:
       hibernate.dialect: org.hibernate.dialect.MySQLDialect
       ddl-auto: update
-#    show-sql: true
-#    properties:
-#      hibernate:
-#        format_sql: true
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/change-log.xml
