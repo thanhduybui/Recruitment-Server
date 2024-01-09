@@ -84,7 +84,6 @@ public class JobMapperHelper {
 
     public Instant mapStringToInstant(String time) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-
         try {
             LocalDateTime localDateTime = LocalDateTime.parse(time, formatter);
             return localDateTime.atZone(ZoneId.systemDefault()).toInstant();

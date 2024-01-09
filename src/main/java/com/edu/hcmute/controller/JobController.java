@@ -64,4 +64,22 @@ public class JobController {
                         .data(serviceResponse.getData())
                         .build());
     }
+
+    @GetMapping
+    public ResponseEntity<ResponseData> getAllJobs(@RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
+                                                   @RequestParam(value = "size", defaultValue = "10", required = false) Integer size,
+                                                    @RequestParam(value = "all", defaultValue = "false", required = false) Boolean all) {
+       ServiceResponse serviceResponse = jobService.getAll(page, size, all);
+       return ResponseEntity.status(serviceResponse.getStatusCode())
+               .body(ResponseData.builder()
+                       .status(serviceResponse.getStatus())
+                       .message(serviceResponse.getMessage())
+                       .data(serviceResponse.getData())
+                       .build());
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ResponseData> searchJobs(){
+        return null;
+    }
 }

@@ -49,4 +49,9 @@ public class UserController {
                         .data(serviceResponse.getData())
                         .build());
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<ResponseData> searchUser(@RequestParam("keyword") String keyword) {
+       return null;
+    }
 }

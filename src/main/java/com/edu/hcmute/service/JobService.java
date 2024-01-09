@@ -9,10 +9,14 @@ import com.edu.hcmute.exception.ResourceNotFoundException;
 import com.edu.hcmute.exception.UndefinedException;
 import com.edu.hcmute.mapper.JobMapper;
 import com.edu.hcmute.repository.JobRepository;
+import com.edu.hcmute.response.PagingResponseData;
 import com.edu.hcmute.response.ResponseDataStatus;
 import com.edu.hcmute.response.ServiceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -99,6 +103,35 @@ public class JobService {
         }catch (Exception e){
             log.error(e.getMessage());
             throw new UndefinedException(DELETE_JOB_FAIL);
+        }
+    }
+
+    public ServiceResponse getAll(Integer page, Integer size, Boolean all) {
+        try {
+
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Job> jobs;
+            if (all) {
+                jobs = jobRepository.findAll(pageable);
+            } else {
+                jobs = jobRepository.findAllByStatus(Status.ACTIVE, pageable);
+            }
+            PagingResponseData data = PagingResponseData.builder()
+                    .totalPages(jobs.getTotalPages())
+                    .currentPage(jobs.getNumber())
+                    .totalItems(jobs.getTotalElements())
+                    .pageSize(jobs.getSize())
+                    .listData(jobs.getContent().stream().map(jobMapper::jobToJobDTO))
+                    .build();
+            return ServiceResponse.builder()
+                    .status(ResponseDataStatus.SUCCESS)
+                    .statusCode(HttpStatus.OK)
+                    .message(GET_JOB_SUCCESS)
+                    .data(Map.of("jobs", data))
+                    .build();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new UndefinedException(GET_JOB_FAIL);
         }
     }
 }

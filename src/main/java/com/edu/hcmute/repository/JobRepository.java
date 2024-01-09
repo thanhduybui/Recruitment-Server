@@ -21,4 +21,6 @@ public interface JobRepository extends JpaRepository<Job, Long> {
     Page<Job> findAllByCompanyAndDeadlineBefore(Company company, Instant instant, Pageable pageable);
 
     Page<Job> findAllByCompanyAndStatusAndIsHot(Company company, Status status, boolean b, Pageable pageable);
+
+    Page<Job> findAllByStatus(Status status, Pageable pageable);
 }
