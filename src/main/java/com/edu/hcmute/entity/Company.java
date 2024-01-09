@@ -52,6 +52,8 @@ public class Company {
     @LastModifiedDate
     @Column(name = "updated_at")
     private Instant updatedAt;
+    @Column(name = "is_verified", columnDefinition = "boolean default false")
+    private Boolean isVerified;
     @CreatedBy
     @Column(name = "created_by")
     private String createdBy;
