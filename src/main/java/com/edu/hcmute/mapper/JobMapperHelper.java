@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -80,14 +82,13 @@ public class JobMapperHelper {
         return null;
     }
 
-    public Instant mapStringToInstant(String time){
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-
+    public Instant mapStringToInstant(String time) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         try {
-            return Instant.from(formatter.parse(time));
+            LocalDateTime localDateTime = LocalDateTime.parse(time, formatter);
+            return localDateTime.atZone(ZoneId.systemDefault()).toInstant();
         } catch (Exception e) {
-           log.error(CAN_NOT_PARSE_TIME);
+            log.error("Can't parse time: " + time, e);
             return null;
         }
     }

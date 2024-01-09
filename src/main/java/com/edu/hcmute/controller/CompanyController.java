@@ -43,9 +43,10 @@ public class CompanyController {
 
     @GetMapping("/{id}/jobs")
     public ResponseEntity<ResponseData> getCompanyJobs(@PathVariable("id") Integer id,
+                                                       @RequestParam(value = "type", defaultValue = "ACTIVE", required = false) String type,
                                                        @RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
                                                        @RequestParam(value = "size", defaultValue = "10", required = false) Integer size) {
-        ServiceResponse response = companyService.getCompanyJobs(id, page, size);
+        ServiceResponse response = companyService.getCompanyJobs(id, page, size, type);
         return ResponseEntity.status(response.getStatusCode())
                 .body(ResponseData.builder()
                         .status(response.getStatus())
