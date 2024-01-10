@@ -140,16 +140,6 @@ public class JobService {
 
     public ServiceResponse getAll(Integer page, Integer size, Boolean all, JobFilterCriteria filterCriteria) {
         try {
-            log.info("salaryId: {}", filterCriteria.getSalaryId());
-            log.info("keyword: {}", filterCriteria.getKeyword());
-            log.info("positionId: {}", filterCriteria.getPositionId());
-            log.info("fieldId: {}", filterCriteria.getFieldId());
-            log.info("experienceId: {}", filterCriteria.getExperienceId());
-            log.info("workModeId: {}", filterCriteria.getWorkModeId());
-            log.info("majorId: {}", filterCriteria.getMajorId());
-            log.info("locationId: {}", filterCriteria.getLocationId());
-            log.info("isHot: {}", filterCriteria.getHot());
-
             Pageable pageable = PageRequest.of(page, size);
             Page<Job> jobs;
             if (all) {
