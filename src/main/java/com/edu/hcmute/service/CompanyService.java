@@ -155,4 +155,18 @@ public class CompanyService {
         }
 
     }
+
+    public ServiceResponse getOneCompany(Integer id) {
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(COMPANY_NOT_FOUND));
+
+        CompanyDTO companyDTO = companyMapper.companyToCompanyDTO(company);
+
+        return ServiceResponse.builder()
+                .status(ResponseDataStatus.SUCCESS)
+                .statusCode(HttpStatus.OK)
+                .message(GET_COMPANY_SUCCESS)
+                .data(Map.of("company", companyDTO))
+                .build();
+    }
 }

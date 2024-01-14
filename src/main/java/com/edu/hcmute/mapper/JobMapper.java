@@ -1,6 +1,7 @@
 package com.edu.hcmute.mapper;
 
 
+import com.edu.hcmute.dto.CandidateJobDTO;
 import com.edu.hcmute.dto.JobDTO;
 import com.edu.hcmute.dto.JobRequestBody;
 import com.edu.hcmute.entity.*;
@@ -44,4 +45,12 @@ public interface JobMapper {
     @Mapping(source = "skillIds", target = "skills")
     @Mapping(source = "workModeId", target = "workMode")
     void updateJobFromJobRequestBody(JobRequestBody jobRequestBody, @MappingTarget Job job);
+
+
+
+    @Mapping(source = "company.name", target = "companyName")
+    @Mapping(source = "company.image", target = "companyImage")
+    @Mapping(source = "salaryRange.name", target = "salaryRange")
+    @Mapping(source = "deadline", target = "restAppliedDays")
+    CandidateJobDTO jobToCandidateJobDTO(Job job);
 }

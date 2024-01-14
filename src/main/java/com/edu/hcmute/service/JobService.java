@@ -138,14 +138,10 @@ public class JobService {
         }
     }
 
-    public ServiceResponse getAll(Integer page, Integer size, Boolean all, JobFilterCriteria filterCriteria) {
+    public ServiceResponse getAll(Integer page, Integer size, JobFilterCriteria filterCriteria) {
         try {
             Pageable pageable = PageRequest.of(page, size);
-            Page<Job> jobs;
-            if (all) {
-                jobs = jobRepository.findAll(pageable);
-            } else {
-                jobs = jobRepository.findByFilterCriteria(filterCriteria.getKeyword(),
+            Page<Job> jobs = jobRepository.findByFilterCriteria(filterCriteria.getKeyword(),
                         filterCriteria.getLocationId(),
                         filterCriteria.getWorkModeId(),
                         filterCriteria.getFieldId(),
@@ -154,15 +150,15 @@ public class JobService {
                         filterCriteria.getExperienceId(),
                         filterCriteria.getPositionId(),
                         filterCriteria.getHot(),
-                        Status.ACTIVE,
+                        filterCriteria.getStatus(),
                         pageable);
-            }
+
             PagingResponseData data = PagingResponseData.builder()
                     .totalPages(jobs.getTotalPages())
                     .currentPage(jobs.getNumber())
                     .totalItems(jobs.getTotalElements())
                     .pageSize(jobs.getSize())
-                    .listData(jobs.getContent().stream().map(jobMapper::jobToJobDTO))
+                    .listData(jobs.getContent().stream().map(jobMapper::jobToCandidateJobDTO))
                     .build();
             return ServiceResponse.builder()
                     .status(ResponseDataStatus.SUCCESS)

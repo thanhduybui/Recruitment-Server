@@ -34,8 +34,9 @@ public interface JobRepository extends JpaRepository<Job, Long> {
             "AND (:salaryId IS NULL OR j.salaryRange.id = :salaryId) " +
             "AND (:experienceId IS NULL OR j.experienceRange.Id = :experienceId) " +
             "AND (:positionId IS NULL OR j.position.id = :positionId) " +
-            "AND j.isHot = :isHot " +
-            "AND  j.status = :status ")
+            "AND (:isHot IS NULL OR j.isHot = :isHot) " +
+            "AND  j.status = :status " +
+            "ORDER BY j.createdAt DESC")
     Page<Job> findByFilterCriteria(@Param("keyword") String keyword,
                                    @Param("locationId") Integer locationId,
                                    @Param("wokeModeId") Integer wokeModeId,

@@ -93,5 +93,14 @@ public class JobMapperHelper {
         }
     }
 
+    public Integer mapDeadlineToRestAppliedDays(Instant deadline) {
+        if (deadline != null) {
+            Instant now = Instant.now();
+            long diff = deadline.toEpochMilli() - now.toEpochMilli();
+            return (int) (diff / (24 * 60 * 60 * 1000));
+        }
+        return null;
+    }
+
 
 }
