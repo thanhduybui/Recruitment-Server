@@ -25,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Map;
 
 @Service
@@ -138,24 +139,11 @@ public class JobService {
         }
     }
 
-    public ServiceResponse getAll(Integer page, Integer size, Boolean all, JobFilterCriteria filterCriteria) {
+    public ServiceResponse getAll(Integer page, Integer size, JobFilterCriteria filterCriteria) {
+        Instant conditionRenderTime = Instant.now().minusSeconds(24*7*60*60);
         try {
-            log.info("salaryId: {}", filterCriteria.getSalaryId());
-            log.info("keyword: {}", filterCriteria.getKeyword());
-            log.info("positionId: {}", filterCriteria.getPositionId());
-            log.info("fieldId: {}", filterCriteria.getFieldId());
-            log.info("experienceId: {}", filterCriteria.getExperienceId());
-            log.info("workModeId: {}", filterCriteria.getWorkModeId());
-            log.info("majorId: {}", filterCriteria.getMajorId());
-            log.info("locationId: {}", filterCriteria.getLocationId());
-            log.info("isHot: {}", filterCriteria.getHot());
-
             Pageable pageable = PageRequest.of(page, size);
-            Page<Job> jobs;
-            if (all) {
-                jobs = jobRepository.findAll(pageable);
-            } else {
-                jobs = jobRepository.findByFilterCriteria(filterCriteria.getKeyword(),
+            Page<Job> jobs = jobRepository.findByFilterCriteria(filterCriteria.getKeyword(),
                         filterCriteria.getLocationId(),
                         filterCriteria.getWorkModeId(),
                         filterCriteria.getFieldId(),
@@ -164,15 +152,16 @@ public class JobService {
                         filterCriteria.getExperienceId(),
                         filterCriteria.getPositionId(),
                         filterCriteria.getHot(),
-                        Status.ACTIVE,
+                        filterCriteria.getStatus(),
+                        conditionRenderTime,
                         pageable);
-            }
+
             PagingResponseData data = PagingResponseData.builder()
                     .totalPages(jobs.getTotalPages())
                     .currentPage(jobs.getNumber())
                     .totalItems(jobs.getTotalElements())
                     .pageSize(jobs.getSize())
-                    .listData(jobs.getContent().stream().map(jobMapper::jobToJobDTO))
+                    .listData(jobs.getContent().stream().map(jobMapper::jobToCandidateJobDTO))
                     .build();
             return ServiceResponse.builder()
                     .status(ResponseDataStatus.SUCCESS)

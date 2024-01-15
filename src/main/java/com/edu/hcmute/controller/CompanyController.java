@@ -55,7 +55,29 @@ public class CompanyController {
                         .build());
     }
 
+    @GetMapping
+    public ResponseEntity<ResponseData> getAllCompany(@RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
+                                                      @RequestParam(value = "size", defaultValue = "9", required = false) Integer size,
+                                                      @RequestParam(value = "all", required = false, defaultValue = "false") Boolean all) {
+        ServiceResponse response = companyService.getAllCompany(page, size, all);
+        return ResponseEntity.status(response.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(response.getStatus())
+                        .message(response.getMessage())
+                        .data(response.getData())
+                        .build());
+    }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseData> getOneCompany(@PathVariable("id") Integer id) {
+        ServiceResponse response = companyService.getOneCompany(id);
+        return ResponseEntity.status(response.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(response.getStatus())
+                        .message(response.getMessage())
+                        .data(response.getData())
+                        .build());
+    }
 
 
 }

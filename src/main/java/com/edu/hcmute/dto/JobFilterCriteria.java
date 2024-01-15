@@ -1,6 +1,7 @@
 package com.edu.hcmute.dto;
 
 
+import com.edu.hcmute.constant.Status;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +28,7 @@ public class JobFilterCriteria {
     private Integer positionId;
     @JsonAlias("is_hot")
     private Boolean isHot;
+    private Status status;
 
     public String getKeyword() {
         return keyword.isEmpty() ? null : keyword;
@@ -62,5 +64,9 @@ public class JobFilterCriteria {
 
     public Boolean getHot() {
         return isHot;
+    }
+
+    public Status getStatus() {
+        return status != null ? status : Status.ACTIVE;
     }
 }

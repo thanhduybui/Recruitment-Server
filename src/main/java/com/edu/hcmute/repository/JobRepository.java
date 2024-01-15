@@ -19,11 +19,12 @@ public interface JobRepository extends JpaRepository<Job, Long> {
 
     Page<Job> findAllByCompanyAndStatusAndDeadlineAfter(Company company, Status status, Instant instant, Pageable pageable);
 
+    Page<Job> findAllByStatus(Status status, Pageable pageable);
+
     Page<Job> findAllByCompanyAndDeadlineBefore(Company company, Instant instant, Pageable pageable);
 
     Page<Job> findAllByCompanyAndStatusAndIsHot(Company company, Status status, boolean b, Pageable pageable);
 
-    Page<Job> findAllByStatus(Status status, Pageable pageable);
 
     @Query("SELECT j FROM Job j " +
             "WHERE (:keyword IS NULL OR j.title LIKE %:keyword%) " +
@@ -34,8 +35,10 @@ public interface JobRepository extends JpaRepository<Job, Long> {
             "AND (:salaryId IS NULL OR j.salaryRange.id = :salaryId) " +
             "AND (:experienceId IS NULL OR j.experienceRange.Id = :experienceId) " +
             "AND (:positionId IS NULL OR j.position.id = :positionId) " +
-            "AND j.isHot = :isHot " +
-            "AND  j.status = :status ")
+            "AND (:isHot IS NULL OR j.isHot = :isHot) " +
+            "AND (:date IS NULL OR j.deadline > :date) " +
+            "AND  j.status = :status " +
+            "ORDER BY j.createdAt DESC")
     Page<Job> findByFilterCriteria(@Param("keyword") String keyword,
                                    @Param("locationId") Integer locationId,
                                    @Param("wokeModeId") Integer wokeModeId,
@@ -46,5 +49,6 @@ public interface JobRepository extends JpaRepository<Job, Long> {
                                    @Param("positionId") Integer positionId,
                                    @Param("isHot") Boolean isHot,
                                    @Param("status") Status status,
+                                   @Param("date") Instant date,
                                    Pageable pageable);
 }
