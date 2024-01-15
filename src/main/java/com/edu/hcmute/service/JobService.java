@@ -25,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Map;
 
 @Service
@@ -139,6 +140,7 @@ public class JobService {
     }
 
     public ServiceResponse getAll(Integer page, Integer size, JobFilterCriteria filterCriteria) {
+        Instant conditionRenderTime = Instant.now().minusSeconds(24*7*60*60);
         try {
             Pageable pageable = PageRequest.of(page, size);
             Page<Job> jobs = jobRepository.findByFilterCriteria(filterCriteria.getKeyword(),
@@ -151,6 +153,7 @@ public class JobService {
                         filterCriteria.getPositionId(),
                         filterCriteria.getHot(),
                         filterCriteria.getStatus(),
+                        conditionRenderTime,
                         pageable);
 
             PagingResponseData data = PagingResponseData.builder()

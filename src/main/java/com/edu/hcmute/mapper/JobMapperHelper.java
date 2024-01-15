@@ -83,7 +83,17 @@ public class JobMapperHelper {
     }
 
     public Instant mapStringToInstant(String time) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        DateTimeFormatter formatter;
+
+        if (time.length() == 19) {
+            formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        } else if (time.length() == 16) {
+            formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        } else {
+            log.error("Invalid time format: " + time);
+            return null;
+        }
+
         try {
             LocalDateTime localDateTime = LocalDateTime.parse(time, formatter);
             return localDateTime.atZone(ZoneId.systemDefault()).toInstant();
@@ -94,6 +104,7 @@ public class JobMapperHelper {
     }
 
     public Integer mapDeadlineToRestAppliedDays(Instant deadline) {
+        System.out.println(deadline);
         if (deadline != null) {
             Instant now = Instant.now();
             long diff = deadline.toEpochMilli() - now.toEpochMilli();
