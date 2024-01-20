@@ -98,13 +98,12 @@ public class JobMapperHelper {
             LocalDateTime localDateTime = LocalDateTime.parse(time, formatter);
             return localDateTime.atZone(ZoneId.systemDefault()).toInstant();
         } catch (Exception e) {
-            log.error("Can't parse time: " + time, e);
+            log.error(CAN_NOT_PARSE_TIME + time, e);
             return null;
         }
     }
 
     public Integer mapDeadlineToRestAppliedDays(Instant deadline) {
-        System.out.println(deadline);
         if (deadline != null) {
             Instant now = Instant.now();
             long diff = deadline.toEpochMilli() - now.toEpochMilli();

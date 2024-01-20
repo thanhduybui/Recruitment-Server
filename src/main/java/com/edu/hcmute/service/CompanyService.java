@@ -2,6 +2,7 @@ package com.edu.hcmute.service;
 
 
 import com.edu.hcmute.constant.Status;
+import com.edu.hcmute.dto.CandidateJobDTO;
 import com.edu.hcmute.dto.CompanyDTO;
 import com.edu.hcmute.dto.CompanyRequestBody;
 import com.edu.hcmute.dto.JobDTO;
@@ -106,7 +107,7 @@ public class CompanyService {
                 break;
         }
 
-        List<JobDTO> jobDTOs = companyJobs.getContent().stream().map(jobMapper::jobToJobDTO).collect(Collectors.toList());
+        List<CandidateJobDTO> jobDTOs = companyJobs.getContent().stream().map(jobMapper::jobToCandidateJobDTO).collect(Collectors.toList());
 
         PagingResponseData data = PagingResponseData.builder()
                 .totalPages(companyJobs.getTotalPages())

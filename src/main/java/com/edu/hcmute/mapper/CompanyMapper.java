@@ -19,6 +19,4 @@ public interface CompanyMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateCompanyFromCompanyDTO(CompanyRequestBody companyDTO, @MappingTarget  Company company);
-
-
 }

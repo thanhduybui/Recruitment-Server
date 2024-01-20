@@ -71,7 +71,7 @@ public class JobController {
     @GetMapping
     public ResponseEntity<ResponseData> getAllJobs(@RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
                                                    @RequestParam(value = "size", defaultValue = "10", required = false) Integer size,
-                                                   @RequestParam(value = "positionId", defaultValue = "0", required = false) Integer positionId,
+                                                   @RequestParam(value = "position", defaultValue = "0", required = false) Integer positionId,
                                                    @RequestParam(value = "status", defaultValue = "ACTIVE", required = false) Status status,
                                                    @RequestParam(value = "salary", defaultValue = "0", required = false) Integer salaryId,
                                                    @RequestParam(value = "experience", defaultValue = "0", required = false) Integer experienceId,
