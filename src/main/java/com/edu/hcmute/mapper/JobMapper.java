@@ -2,6 +2,7 @@ package com.edu.hcmute.mapper;
 
 
 import com.edu.hcmute.dto.CandidateJobDTO;
+import com.edu.hcmute.dto.CompanyDTO;
 import com.edu.hcmute.dto.JobDTO;
 import com.edu.hcmute.dto.JobRequestBody;
 import com.edu.hcmute.entity.*;
@@ -20,9 +21,11 @@ public interface JobMapper {
     @Mapping(source = "workModeId", target = "workMode")
     Job jobRequestBodyToJob(JobRequestBody jobRequest);
 
+
+    @Mapping(source = "deadline", target = "restAppliedDays")
     JobDTO jobToJobDTO(Job job);
 
-    ShortData companyToShortData(Company company);
+    CompanyDTO companyToCompanyDTO(Company company);
 
     ShortData positionToShortData(Position position);
 
@@ -45,7 +48,6 @@ public interface JobMapper {
     @Mapping(source = "skillIds", target = "skills")
     @Mapping(source = "workModeId", target = "workMode")
     void updateJobFromJobRequestBody(JobRequestBody jobRequestBody, @MappingTarget Job job);
-
 
 
     @Mapping(source = "company.name", target = "companyName")

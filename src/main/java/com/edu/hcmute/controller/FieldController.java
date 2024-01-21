@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 public class FieldController {
     private final FieldService fieldService;
 
-
     @GetMapping
     public ResponseEntity<ResponseData> getAllField(@RequestParam(value = "all", required = false, defaultValue = "false") Boolean all){
         ServiceResponse res = fieldService.getAll(all);

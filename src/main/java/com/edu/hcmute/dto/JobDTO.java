@@ -57,9 +57,13 @@ public class JobDTO {
     @JsonAlias("is_hot")
     private Boolean isHot;
 
+    private Integer locationId;
+
     private ShortData salaryRange;
 
-    private ShortData company;
+    private CompanyDTO company;
+
+    private Integer restAppliedDays;
 
     private ShortData position;
 

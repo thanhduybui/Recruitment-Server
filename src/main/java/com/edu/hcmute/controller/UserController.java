@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
     private final AppUserService appUserService;
 
-    @GetMapping("/avatar")
+    @PutMapping("/avatar")
     public ResponseEntity<ResponseData> changeUserAvatar(@RequestParam("file") MultipartFile multipartFile) {
         ServiceResponse serviceResponse = appUserService.changeUserAvatar(multipartFile);
         return ResponseEntity.status(serviceResponse.getStatusCode())
