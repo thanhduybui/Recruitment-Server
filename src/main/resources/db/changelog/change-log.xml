@@ -33,4 +33,15 @@
         </sql>
     </changeSet>
 
+    <changeSet author="yourName" id="insertMajorData">
+        <sql>
+            INSERT INTO major (id, name, status) VALUES (1, 'Lập trình viên Java', 'ACTIVE');
+            INSERT INTO major (id, name, status) VALUES (2, 'Lập trình viên Frontend', 'ACTIVE');
+            INSERT INTO major (id, name, status) VALUES (3, 'Kiến trúc sư', 'ACTIVE');
+            INSERT INTO major (id, name, status) VALUES (4, 'Kĩ sư xây dựng', 'ACTIVE');
+            INSERT INTO major (id, name, status) VALUES (5, 'Business Analyst', 'ACTIVE');
+            INSERT INTO major (id, name, status) VALUES (6, 'Giáo viên tiếng anh', 'ACTIVE');
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>
