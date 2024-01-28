@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -71,6 +72,18 @@ public class CompanyController {
     @GetMapping("/{id}")
     public ResponseEntity<ResponseData> getOneCompany(@PathVariable("id") Integer id) {
         ServiceResponse response = companyService.getOneCompany(id);
+        return ResponseEntity.status(response.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(response.getStatus())
+                        .message(response.getMessage())
+                        .data(response.getData())
+                        .build());
+    }
+
+
+    @PutMapping("/verify")
+    public ResponseEntity<ResponseData> verifyCompany(@RequestParam("file") MultipartFile multipartFile) {
+        ServiceResponse response = companyService.uploadBusinessFile(multipartFile);
         return ResponseEntity.status(response.getStatusCode())
                 .body(ResponseData.builder()
                         .status(response.getStatus())

@@ -50,6 +50,17 @@ public class UserController {
                         .build());
     }
 
+    @GetMapping("/{id}/cv")
+    public ResponseEntity<ResponseData> getAllCVOfUser(@PathVariable("id") Long id) {
+        ServiceResponse serviceResponse = appUserService.getAllCVOfUser(id);
+        return ResponseEntity.status(serviceResponse.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(serviceResponse.getStatus())
+                        .message(serviceResponse.getMessage())
+                        .data(serviceResponse.getData())
+                        .build());
+    }
+
     @GetMapping("/search")
     public ResponseEntity<ResponseData> searchUser(@RequestParam("keyword") String keyword) {
        return null;

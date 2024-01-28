@@ -46,14 +46,14 @@ public class Company {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
+    @Column(name ="business_license")
+    private String businessLicense;
     @CreatedDate
     @Column(name = "created_at")
     private Instant createdAt;
     @LastModifiedDate
     @Column(name = "updated_at")
     private Instant updatedAt;
-    @Column(name = "is_verified", columnDefinition = "boolean default false")
-    private Boolean isVerified;
     @CreatedBy
     @Column(name = "created_by")
     private String createdBy;

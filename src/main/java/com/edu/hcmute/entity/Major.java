@@ -42,7 +42,6 @@ public class Major {
     @CreatedBy
     @Column(name = "created_by")
     private String createdBy;
-
     @ManyToOne
     @JoinColumn(name = "field_id")
     private Field field;

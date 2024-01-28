@@ -19,6 +19,29 @@ import org.springframework.web.bind.annotation.*;
 public class JobController {
     private final JobService jobService;
 
+
+    @PostMapping("/favorite/{id}")
+    public ResponseEntity<ResponseData> addFavoriteJob(@PathVariable("id") Long id) {
+        ServiceResponse serviceResponse = jobService.addFavoriteJob(id);
+        return ResponseEntity.status(serviceResponse.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(serviceResponse.getStatus())
+                        .message(serviceResponse.getMessage())
+                        .build());
+    }
+
+    @DeleteMapping("/favorite/{id}")
+    public ResponseEntity<ResponseData> deleteFavoriteJob(@PathVariable("id") Long id) {
+        ServiceResponse serviceResponse = jobService.deleteFavoriteJob(id);
+        return ResponseEntity.status(serviceResponse.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(serviceResponse.getStatus())
+                        .message(serviceResponse.getMessage())
+                        .build());
+    }
+
+    @DeleteMapping("/favorite")
+
     @PostMapping
     @PreAuthorize("hasAnyAuthority('RECRUITER')")
     public ResponseEntity<ResponseData> createNewJob(@RequestBody @Valid JobRequestBody jobRequestBody) {
@@ -104,5 +127,4 @@ public class JobController {
                         .data(serviceResponse.getData())
                         .build());
     }
-
 }

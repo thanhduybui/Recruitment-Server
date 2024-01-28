@@ -5,7 +5,6 @@ import com.edu.hcmute.constant.Status;
 import com.edu.hcmute.dto.CandidateJobDTO;
 import com.edu.hcmute.dto.CompanyDTO;
 import com.edu.hcmute.dto.CompanyRequestBody;
-import com.edu.hcmute.dto.JobDTO;
 import com.edu.hcmute.entity.AppUser;
 import com.edu.hcmute.entity.Company;
 import com.edu.hcmute.entity.Job;
@@ -25,7 +24,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.List;
@@ -43,11 +44,15 @@ public class CompanyService {
     private static final String GET_ALL_COMPANY_JOB_SUCCESS = "Lấy danh sách công ty thành công";
     private static final String GET_ALL_COMPANY_FAIL = "Lấy danh sách công ty thất bại";
     private static final String COMPANY_NOT_FOUND = "Lấy thông tin công ty thành công";
+    private static final String UPDATE_BUSINESS_LICENSE_SUCCESS = "Cập nhật giấy phép kinh doanh thành công";
+    private static final String UPDATE_BUSINESS_LICENSE_FAIL = "Cập nhật giấy phép kinh doanh thất bại";
+
     private final AppUserRepository appUserRepository;
     private final CompanyMapper companyMapper;
     private final JobMapper jobMapper;
     private final CompanyRepository companyRepository;
     private final JobRepository jobRepository;
+    private final FileService fileService;
 
     public ServiceResponse getCompanyForUser(String email) {
         AppUser appUser = appUserRepository.findByEmail(email)
@@ -169,5 +174,26 @@ public class CompanyService {
                 .message(GET_COMPANY_SUCCESS)
                 .data(Map.of("company", companyDTO))
                 .build();
+    }
+
+    public ServiceResponse uploadBusinessFile(MultipartFile multipartFile) {
+        try {
+            String fileUrl = fileService.uploadFile(multipartFile, multipartFile.getOriginalFilename());
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+            AppUser appUser = appUserRepository.findByEmail(email)
+                    .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
+            appUser.getCompany().setBusinessLicense(fileUrl);
+
+            companyRepository.save(appUser.getCompany());
+            return ServiceResponse.builder()
+                    .status(ResponseDataStatus.SUCCESS)
+                    .statusCode(HttpStatus.OK)
+                    .message(UPDATE_BUSINESS_LICENSE_SUCCESS)
+                    .build();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new UndefinedException(UPDATE_BUSINESS_LICENSE_FAIL);
+        }
     }
 }

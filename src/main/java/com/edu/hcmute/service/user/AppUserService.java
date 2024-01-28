@@ -20,4 +20,5 @@ public interface AppUserService {
 
     ServiceResponse updateUserProfile(ProfileDTO profileDTO);
     ServiceResponse getUserProfile();
+    ServiceResponse getAllCVOfUser(Long id);
 }

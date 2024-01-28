@@ -42,6 +42,11 @@ public class JobService {
     private static final String DELETE_JOB_SUCCESS = "Xóa công việc thành công";
     private static final String DELETE_JOB_FAIL = "Xóa công việc thất bại";
     private static final String REACH_LIMIT_POST = "Tài khoản của bạn chưa cung cấp giấy chứng nhận doanh nghiệp, bạn chỉ có thể đăng tối đa 3 công việc";
+    private static final String USER_NOT_FOUND = "Không tìm thấy tài khoản";
+    private static final String ADD_FAVORITE_JOB_SUCCESS = "Thêm công việc vào danh sách yêu thích thành công";
+    private static final String ADD_FAVORITE_JOB_FAIL = "Thêm công việc vào danh sách yêu thích thất bại";
+    private static final String DELETE_FAVORITE_JOB_FAIL = "Xóa công việc khỏi danh sách yêu thích thất bại";
+    private static final String DELETE_FAVORITE_JOB_SUCCESS = "Xóa công việc khỏi danh sách yêu thích thành công";
 
     private final JobRepository jobRepository;
     private final AppUserRepository appUserRepository;
@@ -80,7 +85,7 @@ public class JobService {
         Company checkedCompany = user.getCompany();
 
         if (checkedCompany.getJobs().size() >= 3){
-            if (checkedCompany.getIsVerified()){
+            if (checkedCompany.getBusinessLicense() != null){
                 return true;
             }
             return false;
@@ -172,6 +177,76 @@ public class JobService {
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new UndefinedException(GET_JOB_FAIL);
+        }
+    }
+
+    public ServiceResponse addFavoriteJob(Long jobId) {
+        try {
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            AppUser user = appUserRepository.findByEmail(email).orElse(null);
+            if(user == null){
+                return ServiceResponse.builder()
+                        .status(ResponseDataStatus.INVALID)
+                        .statusCode(HttpStatus.BAD_REQUEST)
+                        .message(USER_NOT_FOUND)
+                        .build();
+            }
+
+            Job job = jobRepository.findById(jobId).orElse(null);
+            if(job == null){
+                return ServiceResponse.builder()
+                        .status(ResponseDataStatus.INVALID)
+                        .statusCode(HttpStatus.BAD_REQUEST)
+                        .message(JOB_NOT_FOUND)
+                        .build();
+            }
+
+            user.getFavoriteJobs().add(job);
+            appUserRepository.save(user);
+
+            return ServiceResponse.builder()
+                    .status(ResponseDataStatus.SUCCESS)
+                    .statusCode(HttpStatus.CREATED)
+                    .message(ADD_FAVORITE_JOB_SUCCESS)
+                    .build();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new UndefinedException(ADD_FAVORITE_JOB_FAIL);
+        }
+    }
+
+    public ServiceResponse deleteFavoriteJob(Long id) {
+        try{
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            AppUser user = appUserRepository.findByEmail(email).orElse(null);
+            if(user == null){
+                return ServiceResponse.builder()
+                        .status(ResponseDataStatus.INVALID)
+                        .statusCode(HttpStatus.BAD_REQUEST)
+                        .message(USER_NOT_FOUND)
+                        .build();
+            }
+
+            Job job = jobRepository.findById(id).orElse(null);
+            if(job == null){
+                return ServiceResponse.builder()
+                        .status(ResponseDataStatus.INVALID)
+                        .statusCode(HttpStatus.BAD_REQUEST)
+                        .message(JOB_NOT_FOUND)
+                        .build();
+            }
+
+            user.getFavoriteJobs().remove(job);
+            appUserRepository.save(user);
+
+            return ServiceResponse.builder()
+                    .status(ResponseDataStatus.SUCCESS)
+                    .statusCode(HttpStatus.OK)
+                    .message(DELETE_FAVORITE_JOB_SUCCESS)
+                    .build();
+        }catch (Exception e){
+            log.error(e.getMessage());
+            throw new UndefinedException(DELETE_FAVORITE_JOB_FAIL);
         }
     }
 }

@@ -2,11 +2,16 @@ package com.edu.hcmute.service.user;
 
 
 import com.edu.hcmute.constant.Message;
+import com.edu.hcmute.dto.CvDTO;
 import com.edu.hcmute.dto.ProfileDTO;
 import com.edu.hcmute.entity.AppUser;
+import com.edu.hcmute.entity.CV;
 import com.edu.hcmute.exception.ResourceNotFoundException;
+import com.edu.hcmute.exception.UndefinedException;
 import com.edu.hcmute.mapper.AppUserMapper;
+import com.edu.hcmute.mapper.CVMapper;
 import com.edu.hcmute.repository.AppUserRepository;
+import com.edu.hcmute.repository.CVRepository;
 import com.edu.hcmute.response.ResponseDataStatus;
 import com.edu.hcmute.response.ServiceResponse;
 import com.edu.hcmute.service.FileServiceImpl;
@@ -26,10 +31,15 @@ public class AppUserServiceImpl implements AppUserService {
     private static final String UPDATE_USER_PROFILE_SUCCESS = "Cập nhật thông tin cá nhân thành công";
     private static final String GET_USER_PROFILE_SUCCESS = "Lấy thông tin cá nhân thành công";
     private static final String USER_NOT_FOUND_BY_EMAIL = "Không tìm thấy người dùng với email %s";
+    private static final String USER_NOT_FOUND = "Không tìm thấy người dùng";
+    private static  final String GET_ALL_CV_SUCCESS = "Lấy danh sách CV thành công";
+    private static final String GET_ALL_CV_FAIL = "Lấy danh sách CV thất bại";
     private static final Long MAX_FILE_SIZE = 10 * 1024 * 1024L;
     private final FileServiceImpl fileService;
     private final AppUserRepository appUserRepository;
     private final AppUserMapper appUserMapper;
+    private final CVRepository cvRepository;
+    private final CVMapper cvMapper;
 
     @Override
     public ServiceResponse changeUserAvatar(MultipartFile multipartFile) {
@@ -127,5 +137,27 @@ public class AppUserServiceImpl implements AppUserService {
                 .message(GET_USER_PROFILE_SUCCESS)
                 .data(Map.of("profile", profileDTO))
                 .build();
+    }
+
+    @Override
+    public ServiceResponse getAllCVOfUser(Long id) {
+        try{
+            AppUser appUser = appUserRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
+
+            List<CV> userCVList = cvRepository.findAllByAppUser(appUser);
+
+            List<CvDTO> cvDTOList = userCVList.stream().map(cvMapper::toCvDTO).toList();
+
+            return ServiceResponse.builder()
+                    .statusCode(HttpStatus.OK)
+                    .status(ResponseDataStatus.SUCCESS)
+                    .message(GET_ALL_CV_SUCCESS)
+                    .data(Map.of("cvList", cvDTOList))
+                    .build();
+        }catch (Exception e){
+            log.error(e.getMessage());
+            throw new UndefinedException(GET_ALL_CV_FAIL);
+        }
     }
 }
