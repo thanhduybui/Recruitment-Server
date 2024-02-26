@@ -81,7 +81,7 @@ public class CompanyController {
     }
 
 
-    @PutMapping("/verify")
+    @PostMapping("/business-license")
     public ResponseEntity<ResponseData> verifyCompany(@RequestParam("file") MultipartFile multipartFile) {
         ServiceResponse response = companyService.uploadBusinessFile(multipartFile);
         return ResponseEntity.status(response.getStatusCode())
@@ -92,5 +92,14 @@ public class CompanyController {
                         .build());
     }
 
-
+    @DeleteMapping("/business-license")
+    public ResponseEntity<ResponseData> deleteBusinessFile() {
+        ServiceResponse response = companyService.deleteBusinessFile();
+        return ResponseEntity.status(response.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(response.getStatus())
+                        .message(response.getMessage())
+                        .data(response.getData())
+                        .build());
+    }
 }

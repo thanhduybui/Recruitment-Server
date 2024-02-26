@@ -18,7 +18,6 @@ public class FileServiceImpl implements FileService {
     private static final String BUCKET_NAME = "jobhunt-b08b1.appspot.com";
     private static final String CREDENTIAL_PATH = "src/main/resources/firebase.json";
 
-
     @Override
     public String uploadFile(MultipartFile multipartFile, String fileName) throws IOException {
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(multipartFile.getBytes())) {

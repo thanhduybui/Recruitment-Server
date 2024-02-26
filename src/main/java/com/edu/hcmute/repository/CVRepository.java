@@ -10,5 +10,5 @@ import java.util.List;
 
 @Repository
 public interface CVRepository extends JpaRepository<CV, Integer> {
-    List<CV> findAllByAppUser(AppUser user);
+    List<CV> findAllByCandidate(AppUser user);
 }

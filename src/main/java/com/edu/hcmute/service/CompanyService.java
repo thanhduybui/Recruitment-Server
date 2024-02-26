@@ -1,10 +1,11 @@
 package com.edu.hcmute.service;
 
 
+import com.edu.hcmute.constant.Message;
 import com.edu.hcmute.constant.Status;
-import com.edu.hcmute.dto.CandidateJobDTO;
 import com.edu.hcmute.dto.CompanyDTO;
 import com.edu.hcmute.dto.CompanyRequestBody;
+import com.edu.hcmute.dto.JobDTO;
 import com.edu.hcmute.entity.AppUser;
 import com.edu.hcmute.entity.Company;
 import com.edu.hcmute.entity.Job;
@@ -29,8 +30,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +49,9 @@ public class CompanyService {
     private static final String COMPANY_NOT_FOUND = "Lấy thông tin công ty thành công";
     private static final String UPDATE_BUSINESS_LICENSE_SUCCESS = "Cập nhật giấy phép kinh doanh thành công";
     private static final String UPDATE_BUSINESS_LICENSE_FAIL = "Cập nhật giấy phép kinh doanh thất bại";
+    private static final Long MAX_FILE_SIZE = 10 * 1024 * 1024L;
+    private static final String FILE_EXTENSION_NOT_SUPPORT = "File không hợp lệ";
+    private static final String DELETE_FILE_SUCCESS = "Xóa giấy xác nhận doanh nghiệp thành công";
 
     private final AppUserRepository appUserRepository;
     private final CompanyMapper companyMapper;
@@ -112,7 +118,7 @@ public class CompanyService {
                 break;
         }
 
-        List<CandidateJobDTO> jobDTOs = companyJobs.getContent().stream().map(jobMapper::jobToCandidateJobDTO).collect(Collectors.toList());
+        List<JobDTO> jobDTOs = companyJobs.getContent().stream().map(jobMapper::jobToJobDTO).collect(Collectors.toList());
 
         PagingResponseData data = PagingResponseData.builder()
                 .totalPages(companyJobs.getTotalPages())
@@ -131,7 +137,7 @@ public class CompanyService {
     }
 
     public ServiceResponse getAllCompany(Integer page, Integer size, Boolean all) {
-        try{
+        try {
             Pageable pageable = PageRequest.of(page, size);
             Page<Company> companies;
             if (all) {
@@ -155,7 +161,7 @@ public class CompanyService {
                     .data(Map.of("companies", data))
                     .build();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
             throw new UndefinedException(GET_ALL_COMPANY_FAIL);
         }
@@ -178,7 +184,26 @@ public class CompanyService {
 
     public ServiceResponse uploadBusinessFile(MultipartFile multipartFile) {
         try {
-            String fileUrl = fileService.uploadFile(multipartFile, multipartFile.getOriginalFilename());
+            List<String> extArray = Arrays.asList(".docx", ".doc", ".pdf");
+            String fileExtension = fileService.getExtension(multipartFile.getOriginalFilename());
+            if (!extArray.contains(fileExtension)) {
+                return ServiceResponse.builder()
+                        .status(ResponseDataStatus.ERROR)
+                        .statusCode(HttpStatus.BAD_REQUEST)
+                        .message(FILE_EXTENSION_NOT_SUPPORT)
+                        .build();
+            }
+
+            if (multipartFile.getSize() > MAX_FILE_SIZE) {
+                return ServiceResponse.builder()
+                        .status(ResponseDataStatus.ERROR)
+                        .statusCode(HttpStatus.BAD_REQUEST)
+                        .message(Message.FILE_SIZE_EXCEEDED_LIMIT)
+                        .build();
+            }
+
+            String fileName = UUID.randomUUID() + fileExtension;
+            String fileUrl = fileService.uploadFile(multipartFile, fileName);
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
             AppUser appUser = appUserRepository.findByEmail(email)
@@ -195,5 +220,18 @@ public class CompanyService {
             log.error(e.getMessage());
             throw new UndefinedException(UPDATE_BUSINESS_LICENSE_FAIL);
         }
+    }
+
+    public ServiceResponse deleteBusinessFile() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        AppUser appUser = appUserRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
+        appUser.getCompany().setBusinessLicense(null);
+        companyRepository.save(appUser.getCompany());
+        return ServiceResponse.builder()
+                .status(ResponseDataStatus.SUCCESS)
+                .statusCode(HttpStatus.OK)
+                .message(DELETE_FILE_SUCCESS)
+                .build();
     }
 }

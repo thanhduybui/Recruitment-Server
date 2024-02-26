@@ -60,7 +60,6 @@ public class AppUserServiceImpl implements AppUserService {
             }
 
 
-
             if (multipartFile.getSize() > MAX_FILE_SIZE) {
                 return ServiceResponse.builder()
                         .status(ResponseDataStatus.ERROR)
@@ -145,7 +144,7 @@ public class AppUserServiceImpl implements AppUserService {
             AppUser appUser = appUserRepository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
 
-            List<CV> userCVList = cvRepository.findAllByAppUser(appUser);
+            List<CV> userCVList = cvRepository.findAllByCandidate(appUser);
 
             List<CvDTO> cvDTOList = userCVList.stream().map(cvMapper::toCvDTO).toList();
 
