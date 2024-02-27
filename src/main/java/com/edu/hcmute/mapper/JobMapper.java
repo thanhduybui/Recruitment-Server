@@ -36,6 +36,8 @@ public interface JobMapper {
 
     ShortData majorToShortData(Major major);
 
+    ShortData locationToShortData(Location location);
+
     ShortData workModeToShortData(WorkMode workMode);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -54,5 +56,6 @@ public interface JobMapper {
     @Mapping(source = "company.image", target = "companyImage")
     @Mapping(source = "salaryRange.name", target = "salaryRange")
     @Mapping(source = "deadline", target = "restAppliedDays")
+    @Mapping(source = "location.id", target = "locationId")
     CandidateJobDTO jobToCandidateJobDTO(Job job);
 }

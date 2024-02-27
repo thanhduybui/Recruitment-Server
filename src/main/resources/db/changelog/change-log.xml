@@ -44,4 +44,63 @@
         </sql>
     </changeSet>
 
+    <changeSet author="yourName" id="insertlocationData">
+        <sql>
+            INSERT INTO location (id, name, status) VALUES (1, 'Hồ Chí Minh', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (2, 'Hà Nội', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (3, 'Đà Nẵng', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (4, 'Bình Dương', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (5, 'Đồng Nai', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (6, 'Long An', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (7, 'An Giang', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (8, 'Bà Rịa - Vũng Tàu', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (9, 'Bắc Giang', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (10, 'Bắc Kạn', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (11, 'Bạc Liêu', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (12, 'Bắc Ninh', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (13, 'Bến Tre', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (14, 'Bình Định', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (15, 'Bình Phước', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (16, 'Bình Thuận', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (17, 'Cà Mau', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (18, 'Cần Thơ', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (19, 'Cao Bằng', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (20, 'Đắk Lắk', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (21, 'Đắk Nông', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (22, 'Điện Biên', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (23, 'Đồng Tháp', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (24, 'Gia Lai', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (25, 'Hà Giang', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (26, 'Hà Nam', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (27, 'Hà Tĩnh', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (28, 'Hải Dương', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (29, 'Hải Phòng', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (30, 'Hậu Giang', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (31, 'Hòa Bình', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (32, 'Hưng Yên', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (33, 'Khánh Hòa', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (34, 'Kiên Giang', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (35, 'Kon Tum', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (36, 'Lai Châu', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (37, 'Lâm Đồng', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (38, 'Lạng Sơn', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (39, 'Lào Cai', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (40, 'Lạng Sơn', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (41, 'Lào Cai', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (42, 'Lai Châu', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (43, 'Long An', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (44, 'Nam Định', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (45, 'Nghệ An', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (46, 'Ninh Bình', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (47, 'Ninh Thuận', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (48, 'Phú Thọ', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (49, 'Phú Yên', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (50, 'Quảng Bình', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (51, 'Quảng Nam', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (52, 'Quảng Ngãi', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (53, 'Quảng Ninh', 'ACTIVE');
+            INSERT INTO location (id, name, status) VALUES (54, 'Quảng Trị', 'ACTIVE');
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>
