@@ -86,8 +86,6 @@ public class Job implements Serializable {
     @JoinColumn(name = "salary_range_id")
     private SalaryRange salaryRange;
 
-    private Integer locationId;
-
     @ManyToOne
     @JoinColumn(name = "company_id")
     private Company company;
@@ -107,6 +105,10 @@ public class Job implements Serializable {
     @ManyToOne
     @JoinColumn(name = "field_id")
     private Field field;
+
+    @ManyToOne
+    @JoinColumn(name = "location_id")
+    private Location location;
 
     @ManyToOne
     @JoinColumn(name = "experience_range_id")
