@@ -28,7 +28,7 @@ public interface JobRepository extends JpaRepository<Job, Long> {
 
     @Query("SELECT j FROM Job j " +
             "WHERE (:keyword IS NULL OR j.title LIKE %:keyword%) " +
-            "AND (:locationId IS NULL OR j.locationId = :locationId) " +
+            "AND (:locationId IS NULL OR j.location.id = :locationId) " +
             "AND (:wokeModeId IS NULL OR j.workMode.id = :wokeModeId) " +
             "AND (:fieldId IS NULL OR j.field.id = :fieldId) " +
             "AND (:majorId IS NULL OR j.major.id = :majorId) " +

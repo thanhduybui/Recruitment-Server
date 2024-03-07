@@ -14,7 +14,8 @@ public class CandidateJobDTO {
     private Boolean isHot;
     private String companyName;
     private String salaryRange;
-    private String locationId;
+    private Integer locationId;
+    private String deadline;
     private Boolean isFavorite;
     private Integer restAppliedDays;
     private String companyImage;
