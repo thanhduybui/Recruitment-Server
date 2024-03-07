@@ -43,6 +43,7 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.GET, "/majors/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/work-modes/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/experience-ranges/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/locations/**").permitAll()
                 .anyRequest().authenticated()
         ).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

@@ -12,8 +12,6 @@ import java.util.Optional;
 @SpringBootApplication
 @EnableJpaAuditing(auditorAwareRef = "auditorProvider")
 public class RecruitmentAppApplication {
-
-
 	public static void main(String[] args) {
 		SpringApplication.run(RecruitmentAppApplication.class, args);
 	}
