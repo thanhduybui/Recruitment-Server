@@ -19,14 +19,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
+import static com.edu.hcmute.constant.Message.USER_NOT_FOUND_BY_EMAIL;
+import static com.edu.hcmute.service.FileService.MAX_FILE_SIZE;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class AppUserServiceImpl implements AppUserService {
     private static final String UPDATE_USER_PROFILE_SUCCESS = "Cập nhật thông tin cá nhân thành công";
     private static final String GET_USER_PROFILE_SUCCESS = "Lấy thông tin cá nhân thành công";
-    private static final String USER_NOT_FOUND_BY_EMAIL = "Không tìm thấy người dùng với email %s";
-    private static final Long MAX_FILE_SIZE = 10 * 1024 * 1024L;
+
+
     private final FileServiceImpl fileService;
     private final AppUserRepository appUserRepository;
     private final AppUserMapper appUserMapper;
@@ -48,8 +51,6 @@ public class AppUserServiceImpl implements AppUserService {
                             .message(Message.FILE_EXTENSION_NOT_SUPPORT)
                             .build();
             }
-
-
 
             if (multipartFile.getSize() > MAX_FILE_SIZE) {
                 return ServiceResponse.builder()
@@ -91,7 +92,7 @@ public class AppUserServiceImpl implements AppUserService {
             return ServiceResponse.builder()
                     .status(ResponseDataStatus.ERROR)
                     .statusCode(HttpStatus.NOT_FOUND)
-                    .message(String.format(Message.USER_NOT_FOUND_BY_EMAIL, email))
+                    .message(String.format(USER_NOT_FOUND_BY_EMAIL, email))
                     .build();
         }
 
@@ -115,7 +116,7 @@ public class AppUserServiceImpl implements AppUserService {
             return ServiceResponse.builder()
                     .status(ResponseDataStatus.ERROR)
                     .statusCode(HttpStatus.NOT_FOUND)
-                    .message(String.format(Message.USER_NOT_FOUND_BY_EMAIL, email))
+                    .message(String.format(USER_NOT_FOUND_BY_EMAIL, email))
                     .build();
         }
 

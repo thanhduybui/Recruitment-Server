@@ -1,6 +1,7 @@
 package com.edu.hcmute.entity;
 
 
+import com.edu.hcmute.constant.JobApplyStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,13 +14,17 @@ public class JobApplication {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     @Column(name = "email")
     private String email;
     @Column(name = "phone")
     private String phone;
     @Column(name = "name")
     private String name;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private JobApplyStatus jobApplyStatus;
 
     @ManyToOne
     @JoinColumn(name = "cv_id")

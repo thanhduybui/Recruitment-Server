@@ -45,6 +45,7 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.GET, "/locations/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/experience-ranges/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/locations/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/cv/**").permitAll()
                 .anyRequest().authenticated()
         ).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

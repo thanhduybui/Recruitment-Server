@@ -3,7 +3,6 @@ package com.edu.hcmute.constant;
 public class Message {
     public static final String PASSWORD_VALIDATION_ERROR = "Mật khẩu phải chứa kí tự chữ và số và có độ dài ít nhất 8 kí tự";
     public static final String EMAIL_VALIDATION_ERROR = "Email không hợp lệ";
-    public static final String USER_NOT_FOUND_BY_EMAIL = "Không tìm thấy người dùng với email %s";
     public static final String EMAIL_ALREADY_EXISTS = "Email này đã được sử dụng cho một tài khoản khác";
     public static final String INVALID_ROLE = "Vai trò không hợp lệ";
     public static final String PASSWORD_NOT_MATCHING = "Mật khẩu không khớp";
@@ -24,6 +23,6 @@ public class Message {
     public static final String FILE_EXTENSION_NOT_SUPPORT = "Định dạng file không được hỗ trợ";
     public static final String FILE_SIZE_EXCEEDED_LIMIT = "Kích thước file vượt quá giới hạn cho phép";
     public static final String PHONE_VALIDATION_ERROR = "Số điện thoại không hợp lệ";
-
+    public static final String USER_NOT_FOUND_BY_EMAIL = "Không tìm thấy người dùng với email %s";
     public static final String INVALID_GENDER = "Giới tính không hợp lệ";
 }
