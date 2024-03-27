@@ -26,4 +26,5 @@ public class Message {
     public static final String PHONE_VALIDATION_ERROR = "Số điện thoại không hợp lệ";
 
     public static final String INVALID_GENDER = "Giới tính không hợp lệ";
+    public static final String INVALID_JOB = "Mã công việc không hợp lệ";
 }
