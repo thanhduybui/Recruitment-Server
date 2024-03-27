@@ -1,6 +1,7 @@
 package com.edu.hcmute.entity;
 
 
+import com.edu.hcmute.constant.JobApplicationStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,4 +33,9 @@ public class JobApplication {
     @ManyToOne
     @JoinColumn(name = "job_id")
     private Job job;
+
+    @Column(name = "apply_status" , nullable = false)
+    @Enumerated(EnumType.STRING)
+    private JobApplicationStatus applyStatus;
+
 }
