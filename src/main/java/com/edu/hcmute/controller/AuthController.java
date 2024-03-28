@@ -1,9 +1,6 @@
 package com.edu.hcmute.controller;
 
-import com.edu.hcmute.dto.LoginDTO;
-import com.edu.hcmute.dto.RecruiterRegisterDTO;
-import com.edu.hcmute.dto.RegisterDTO;
-import com.edu.hcmute.dto.VerifyDTO;
+import com.edu.hcmute.dto.*;
 import com.edu.hcmute.response.ResponseData;
 import com.edu.hcmute.response.ServiceResponse;
 import com.edu.hcmute.service.auth.GenericAuthServiceImpl;
@@ -63,6 +60,38 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ResponseData> candidate(@RequestBody LoginDTO loginDTO) {
         ServiceResponse responseService = candidateAuthService.login(loginDTO);
+        return ResponseEntity.status(responseService.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(responseService.getStatus())
+                        .message(responseService.getMessage())
+                        .data(responseService.getData())
+                        .build());
+    }
+
+    @PostMapping("/forget-password/send-code")
+    public ResponseEntity<ResponseData> sendCode(@RequestBody @Valid ForgetPasswordDTO forgetPasswordDTO) {
+        ServiceResponse responseService = candidateAuthService.forgetPassword(forgetPasswordDTO);
+        return ResponseEntity.status(responseService.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(responseService.getStatus())
+                        .message(responseService.getMessage())
+                        .data(responseService.getData())
+                        .build());
+    }
+    @PostMapping("/forget-password/verify-code")
+    public ResponseEntity<ResponseData> sendCode(@RequestBody @Valid VerifyDTO verifyDTO) {
+        ServiceResponse responseService = candidateAuthService.verifyForgetPassword(verifyDTO);
+        return ResponseEntity.status(responseService.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(responseService.getStatus())
+                        .message(responseService.getMessage())
+                        .data(responseService.getData())
+                        .build());
+    }
+
+    @PostMapping("/forget-password/create-password")
+    public ResponseEntity<ResponseData> sendCode(@RequestBody @Valid UpdatePasswordDTO updatePasswordDTO) {
+        ServiceResponse responseService = candidateAuthService.updatePassword(updatePasswordDTO);
         return ResponseEntity.status(responseService.getStatusCode())
                 .body(ResponseData.builder()
                         .status(responseService.getStatus())

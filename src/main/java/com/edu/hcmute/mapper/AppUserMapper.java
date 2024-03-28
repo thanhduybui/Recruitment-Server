@@ -1,6 +1,7 @@
 package com.edu.hcmute.mapper;
 
 
+import com.edu.hcmute.dto.ForgetPasswordDTO;
 import com.edu.hcmute.dto.ProfileDTO;
 import com.edu.hcmute.dto.RegisterDTO;
 import com.edu.hcmute.entity.AppUser;
@@ -18,4 +19,7 @@ public interface AppUserMapper {
     void updateAppUserFromRequest(ProfileDTO profileDTO, @MappingTarget AppUser appUser);
 
     ProfileDTO appUserToProfileDTO(AppUser user);
+
+    AppUser forgetPasswordDTOToAppUser(ForgetPasswordDTO user);
+
 }
