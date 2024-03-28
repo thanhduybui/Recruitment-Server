@@ -25,4 +25,26 @@ public class CVController {
                         .data(res.getData())
                         .build());
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseData> getCV(@PathVariable("id") Long id) {
+        ServiceResponse res = cvService.getOneCV(id);
+        return ResponseEntity.status(res.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(res.getStatus())
+                        .message(res.getMessage())
+                        .data(res.getData())
+                        .build());
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<ResponseData> getCVByUser() {
+        ServiceResponse res = cvService.getUserCv();
+        return ResponseEntity.status(res.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(res.getStatus())
+                        .message(res.getMessage())
+                        .data(res.getData())
+                        .build());
+    }
 }

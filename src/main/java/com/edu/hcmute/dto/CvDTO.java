@@ -12,9 +12,7 @@ public class CvDTO {
     private Long id;
     private String name;
     private String cvUrl;
-
     private Boolean isDefault;
-
-    private Instant createAt;
-    private Instant updateAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 }
