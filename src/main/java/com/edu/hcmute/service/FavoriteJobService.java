@@ -88,6 +88,9 @@ public class FavoriteJobService {
         return !favoriteJobList.isEmpty();
     }
 
+    // Change branch problem
+    // Error when push origin get-all-favorite-job-list
+
     public ServiceResponse getAllByUser(Integer page, Integer size) {
         Instant conditionRenderTime = Instant.now().minusSeconds(24*7*60*60);
 
