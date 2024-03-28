@@ -10,10 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/favorite-jobs")
@@ -24,7 +21,7 @@ public class FavoriteJobController {
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('CANDIDATE')")
-    public ResponseEntity<ResponseData>  addFavoriteJob(@RequestBody @Valid FavoriteJobDTO favoriteJobDTO) {
+    public ResponseEntity<ResponseData> addFavoriteJob(@RequestBody @Valid FavoriteJobDTO favoriteJobDTO) {
         ServiceResponse serviceResponse = favoriteJobService.addFavoriteJobToList(favoriteJobDTO);
         return ResponseEntity.status(serviceResponse.getStatusCode())
                 .body(ResponseData.builder()
@@ -32,5 +29,18 @@ public class FavoriteJobController {
                         .message(serviceResponse.getMessage())
                         .data(serviceResponse.getData())
                         .build());
+    }
+
+    @GetMapping("/get-all")
+    @PreAuthorize("hasAnyAuthority('CANDIDATE')")
+    public ResponseEntity<ResponseData> getAllByUser(@RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
+                                                     @RequestParam(value = "size", defaultValue = "10", required = false) Integer size) {
+        ServiceResponse serviceResponse = favoriteJobService.getAllByUser(page, size);
+        return ResponseEntity.status(serviceResponse.getStatusCode())
+                .body(ResponseData.builder()
+                        .message(serviceResponse.getMessage())
+                        .data(serviceResponse.getData())
+                        .build());
+
     }
 }
