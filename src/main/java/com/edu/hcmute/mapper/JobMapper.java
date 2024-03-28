@@ -58,4 +58,14 @@ public interface JobMapper {
     @Mapping(source = "deadline", target = "restAppliedDays")
     @Mapping(source = "location.id", target = "locationId")
     CandidateJobDTO jobToCandidateJobDTO(Job job);
+
+    @Mapping(source = "job.company.name", target = "companyName")
+    @Mapping(source = "job.title", target = "title")
+    @Mapping(source = "job.isHot" , target = "isHot")
+    @Mapping(source = "job.company.image", target = "companyImage")
+    @Mapping(source = "job.salaryRange.name", target = "salaryRange")
+    @Mapping(source = "job.deadline", target = "restAppliedDays")
+    @Mapping(source = "job.location.id", target = "locationId")
+    CandidateJobDTO jobDTOToCandidateJobDTO(JobDTO job);
+
 }
