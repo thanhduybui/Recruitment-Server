@@ -11,6 +11,7 @@ import com.edu.hcmute.repository.AppUserRepository;
 import com.edu.hcmute.repository.CvRepository;
 import com.edu.hcmute.response.ResponseDataStatus;
 import com.edu.hcmute.response.ServiceResponse;
+import com.edu.hcmute.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -34,7 +35,6 @@ public class CVService {
     private static final String GET_ONE_CV_FAILED = "Lấy CV thất bại";
     private static final String CV_NOT_FOUND = "Không tìm thấy CV";
     private static final String CREATED_CV_SUCCESS = "Tạo CV thành công";
-    private static final String GET_ALL_CV_FAILED = "Lấy tất cả CV của người dùng thất bại";
     private static final String GET_ALL_CV_SUCCESS = "Lấy tất cả CV của người dùng thành công";
     private static final String GET_ONE_CV_SUCCESS = "Lấy CV thành công";
     private final CvRepository cvRepository;
@@ -46,9 +46,11 @@ public class CVService {
     public ServiceResponse uploadCV(MultipartFile multipartFile, String name) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         CV cv = null;
+        String fileUrl = "";
         try {
 
             String fileExtension = fileService.getExtension(multipartFile.getOriginalFilename());
+
 
             if (!extension.contains(fileExtension)) {
                 return ServiceResponse.builder()
@@ -68,7 +70,13 @@ public class CVService {
 
 
             String fileName = UUID.randomUUID() + fileExtension;
-            String fileUrl = fileService.uploadFile(multipartFile, fileName);
+
+
+            fileUrl = fileService.uploadFile(multipartFile, fileName);
+
+
+
+
 
 
             if (email.equals("anonymousUser")) {
