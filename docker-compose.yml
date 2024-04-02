@@ -1,0 +1,38 @@
+version: "3.8"
+services:
+  mysql:
+    image: mysql:8.1.0
+    restart: always
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+      MYSQL_DATABASE: jobhunt
+
+  redis:
+    image: "redis:7.2.4-alpine"
+    restart: always
+    ports:
+      - "6379:6379"
+    environment:
+        - ALLOW_EMPTY_PASSWORD=yes
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    container_name: "server"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+      - mysql
+    volumes:
+      - ./target:/target
+    environment:
+      - JAR_FILE=/target/recruitmentApp-0.0.1-SNAPSHOT.jar
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=jobhunt
+      - DB_USER=root
+      - DB_PASSWORD=12345

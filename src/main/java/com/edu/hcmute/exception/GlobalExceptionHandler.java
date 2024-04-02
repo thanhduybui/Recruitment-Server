@@ -86,6 +86,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseData> globalExceptionHandler(Exception ex, WebRequest request) {
+        System.out.println(ex.getMessage());
         ResponseData responseData = ResponseData.builder()
                 .status(ResponseDataStatus.ERROR)
                 .message(NOT_DEFINED_ERROR)

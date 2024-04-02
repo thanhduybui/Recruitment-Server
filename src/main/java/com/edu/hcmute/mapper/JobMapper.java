@@ -21,7 +21,6 @@ public interface JobMapper {
     @Mapping(source = "workModeId", target = "workMode")
     Job jobRequestBodyToJob(JobRequestBody jobRequest);
 
-
     @Mapping(source = "deadline", target = "restAppliedDays")
     JobDTO jobToJobDTO(Job job);
 
