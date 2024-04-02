@@ -5,6 +5,10 @@ import com.edu.hcmute.constant.JobApplicationStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.Instant;
 
 @Entity
 @Data
@@ -33,6 +37,15 @@ public class JobApplication {
     @ManyToOne
     @JoinColumn(name = "job_id")
     private Job job;
+
+
+    @CreatedDate
+    @Column(name = "created_at")
+    private Instant createdAt;
+
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private Instant updatedAt;
 
     @Column(name = "apply_status" , nullable = false)
     @Enumerated(EnumType.STRING)

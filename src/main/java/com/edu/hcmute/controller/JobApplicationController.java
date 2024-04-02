@@ -42,6 +42,8 @@ public class JobApplicationController {
                         .data(serviceResponse.getData()).build());
     }
 
+
+
 //    @GetMapping("/get-by-user/{id}")
 //    public ResponseEntity<ResponseData> getByUser(@PathVariable("id") Long userId) {
 //        ServiceResponse serviceResponse = jobApplicationService.getByUser(userId);

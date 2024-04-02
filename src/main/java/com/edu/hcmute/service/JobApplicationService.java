@@ -21,6 +21,7 @@ import org.hibernate.annotations.Cascade;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -128,4 +129,9 @@ public class JobApplicationService {
             throw e;
         }
     }
+
+//    public ServiceResponse getAllJobApplicationByJob(Integer page, Integer size,Long jobId) {
+//        Instant conditionRenderTime = Instant.now().minusSeconds(24*7*60*60);
+//
+//    }
 }
