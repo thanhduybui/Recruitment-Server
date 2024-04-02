@@ -11,6 +11,7 @@ import com.edu.hcmute.repository.FavoriteJobRepository;
 import com.edu.hcmute.response.PagingResponseData;
 import com.edu.hcmute.response.ResponseDataStatus;
 import com.edu.hcmute.response.ServiceResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,12 +37,14 @@ public class FavoriteJobService {
     private static final String UNAUTHORIZED = "Tài khoản không hợp lệ";
     private static final String GET_ALL_SUCCESS = "Lấy danh sách yêu thích thành công";
     private static final String GET_ALL_FAIL = "Lấy danh sách yêu thích thành công";
+    private static final String DELETE_FAVORITE_JOB_SUCCESS = "Xóa công việc yêu thích thành công";
+    private static final String DELETE_FAVORITE_JOB_FAIL = "Xóa công việc yêu thích thất bại";
+    private static final String NOT_PERMISSION ="Không có quyền xóa công việc yêu thích này" ;
 
     private final FavoriteJobRepository favoriteJobRepository;
     private final FavoriteJobMapper favoriteJobMapper;
     private final AppUserRepository appUserRepository;
 
-    private final JobMapper jobMapper;
 
     public ServiceResponse addFavoriteJobToList(FavoriteJobDTO favoriteJobDTO) {
         try {
@@ -63,6 +66,7 @@ public class FavoriteJobService {
                         .message(JOB_EXISTED_LIST)
                         .build();
             }
+
             favoriteJob.setUser(user);
             favoriteJobRepository.save(favoriteJob);
 
@@ -88,11 +92,8 @@ public class FavoriteJobService {
         return !favoriteJobList.isEmpty();
     }
 
-    // Change branch problem
-    // Error when push origin get-all-favorite-job-list
 
     public ServiceResponse getAllByUser(Integer page, Integer size) {
-        Instant conditionRenderTime = Instant.now().minusSeconds(24*7*60*60);
 
         try {
 
@@ -106,7 +107,7 @@ public class FavoriteJobService {
                         .build();
             }
 
-            System.out.println(user.getId());
+            log.info(user.getId() + "");
 
             Pageable pageable = PageRequest.of(page,size);
             Page<FavoriteJob> favoriteJobPage = favoriteJobRepository.findAllByUser(user,pageable);
@@ -132,4 +133,45 @@ public class FavoriteJobService {
             throw new UndefinedException(GET_ALL_FAIL);
         }
     }
+
+    @Transactional
+    public ServiceResponse removeFavoriteJob(Long id) {
+        try {
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            AppUser user = appUserRepository.findByEmail(email).orElse(null);
+
+            if (user == null) {
+                return ServiceResponse.builder()
+                        .status(ResponseDataStatus.INVALID)
+                        .statusCode(HttpStatus.BAD_REQUEST)
+                        .message(UNAUTHORIZED)
+                        .build();
+            }
+
+            // Check if the user has permission to delete this favorite job
+            boolean hasPermission = favoriteJobRepository.existsByUserIdAndJobId(user.getId(), id);
+            if (!hasPermission) {
+                return ServiceResponse.builder()
+                        .status(ResponseDataStatus.ERROR)
+                        .statusCode(HttpStatus.FORBIDDEN)
+                        .message(NOT_PERMISSION)
+                        .build();
+            }
+
+            // Perform deletion
+            favoriteJobRepository.deleteByJobId(id);
+
+            return ServiceResponse.builder()
+                    .status(ResponseDataStatus.SUCCESS)
+                    .statusCode(HttpStatus.OK)
+                    .message(DELETE_FAVORITE_JOB_SUCCESS)
+                    .build();
+        } catch (Exception e) {
+            log.error("An error occurred while removing favorite job with ID: {}", id, e);
+            throw new UndefinedException(DELETE_FAVORITE_JOB_FAIL);
+        }
+    }
+
+
+
 }

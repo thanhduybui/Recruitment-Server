@@ -9,7 +9,7 @@ import org.hibernate.usertype.StaticUserTypeSupport;
 @Data
 @Builder
 public class CandidateJobDTO {
-    private Integer id;
+    private Long id;
     private String title;
     private Boolean isHot;
     private String companyName;
