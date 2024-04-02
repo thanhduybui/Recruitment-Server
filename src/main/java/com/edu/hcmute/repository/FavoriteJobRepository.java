@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 
 @Repository
@@ -14,5 +15,5 @@ public interface FavoriteJobRepository extends JpaRepository<FavoriteJob, Intege
 
     List<FavoriteJob> findFavoriteJobByUserIdAndJobId(Long userId, Long JobId);
 
-    Page<FavoriteJob> findAllByUser(AppUser user, Pageable pageable);
+    Page<FavoriteJob> findAllByUser(AppUser user, Instant instant, Pageable pageable);
 }

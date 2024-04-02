@@ -109,7 +109,7 @@ public class FavoriteJobService {
             System.out.println(user.getId());
 
             Pageable pageable = PageRequest.of(page,size);
-            Page<FavoriteJob> favoriteJobPage = favoriteJobRepository.findAllByUser(user,pageable);
+            Page<FavoriteJob> favoriteJobPage = favoriteJobRepository.findAllByUser(user,conditionRenderTime,pageable);
 
             PagingResponseData data = PagingResponseData.builder()
                     .totalPages(favoriteJobPage.getTotalPages())
