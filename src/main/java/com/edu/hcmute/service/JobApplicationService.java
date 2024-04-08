@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Cascade;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,70 +39,65 @@ public class JobApplicationService {
     private static final String GET_BY_USER_SUCCESS = "Lấy đơn ứng tuyển của ứng viên thành công";
 
 
-
     private final JobApplicationMapper jobApplicationMapper;
     private final JobApplicationRepository jobApplicationRepository;
     private final AppUserRepository appUserRepository;
 
 
+    public AppUser getUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<AppUser> appUser = appUserRepository.findByEmail(email);
+        return appUser.orElse(null);
+    }
+
+
     public ServiceResponse createJobApplication(JobApplicationRequestBody jobApplicationRequestBody) {
+
         try {
+
+            List<JobApplication> applications;
             JobApplication newJobApplication = jobApplicationMapper.jobApplicationRequestBodyToJobApplication(jobApplicationRequestBody);
-            List<JobApplication> applications = getByUser(jobApplicationRequestBody.getUserId());
 
-            boolean check = false;
+            if (getUser() != null) {
+                newJobApplication.setAppUser(getUser());
 
-            for(JobApplication item : applications) {
-                if (Objects.equals(item.getJob().getId(), jobApplicationRequestBody.getJobId())) {
-                    check = true;
-                    break;
+                applications = jobApplicationRepository.findByAppUserId(getUser().getId());
+                boolean check = false;
+                for (JobApplication item : applications) {
+                    if (Objects.equals(item.getJob().getId(), jobApplicationRequestBody.getJobId())) {
+                        check = true;
+                        break;
+                    }
                 }
-            }
 
-            if(check) {
+                if (check) {
+                    return ServiceResponse.builder()
+                            .status(ResponseDataStatus.ERROR)
+                            .statusCode(HttpStatus.CREATED)
+                            .message(USER_APPLIED_JOB_APPLICATION)
+                            .build();
 
-                System.out.println("Why not");
-
-                return ServiceResponse.builder()
-                        .status(ResponseDataStatus.ERROR)
-                        .statusCode(HttpStatus.CREATED)
-                        .message(USER_APPLIED_JOB_APPLICATION)
-                        .build();
-
+                }
 
             }
-            else {
-                newJobApplication.setApplyStatus(JobApplicationStatus.APPLIED);
 
-                jobApplicationRepository.save(newJobApplication);
+            newJobApplication.setApplyStatus(JobApplicationStatus.APPLIED);
 
-                return ServiceResponse.builder()
-                        .status(ResponseDataStatus.SUCCESS)
-                        .statusCode(HttpStatus.CREATED)
-                        .message(CREATE_JOB_APPLICATION_SUCCESS)
-                        .build();
-            }
+            jobApplicationRepository.save(newJobApplication);
 
-        }
-        catch (Exception e) {
+            return ServiceResponse.builder()
+                    .status(ResponseDataStatus.SUCCESS)
+                    .statusCode(HttpStatus.CREATED)
+                    .message(CREATE_JOB_APPLICATION_SUCCESS)
+                    .build();
+
+
+        } catch (Exception e) {
             log.error(e.getMessage());
             throw new UndefinedException(CREATE_JOB_APPLICATION_FAILURE);
         }
     }
-    public Boolean checkAppliedJobApplication(Long jobId , String email) {
-//        List<JobApplication> jobApplication = this.jobApplicationRepository.findAll();
-//        this.jobApplicationRepository.flush();
-//        System.out.println(jobApplication);
-//
-//        for (JobApplication item : jobApplication) {
-//            if(Objects.equals(item.getAppUser().getId(), appUser.getId())) {
-//                if(Objects.equals(item.getJob().getId(), job.getId())) {
-//                    return true;
-//                }
-//            }
-//        }
-        return false;
-    }
+
 
     public ServiceResponse getAll() {
         try {
@@ -111,9 +107,8 @@ public class JobApplicationService {
                     .status(ResponseDataStatus.SUCCESS)
                     .statusCode(HttpStatus.OK)
                     .message(GET_ALL_SUCCESS)
-                    .data(Map.of("job_applications",listJobApplication)).build();
-        }
-        catch (Exception e) {
+                    .data(Map.of("job_applications", listJobApplication)).build();
+        } catch (Exception e) {
             log.error(e.getMessage());
             throw new UndefinedException(CREATE_JOB_APPLICATION_FAILURE);
         }
@@ -122,8 +117,7 @@ public class JobApplicationService {
     public List<JobApplication> getByUser(Long userId) {
         try {
             return jobApplicationRepository.findByAppUserId(userId);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage());
             throw e;
         }
