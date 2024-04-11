@@ -47,6 +47,6 @@ public class RecruiterRegisterDTO implements Serializable, RegisterContainer {
     @Pattern(regexp = "^(MALE|FEMALE|OTHER)$", message = INVALID_ROLE)
     private String gender;
     public boolean isPasswordMatching() {
-        return password != null && password.equals(confirmPassword);
+        return password == null || !password.equals(confirmPassword);
     }
 }

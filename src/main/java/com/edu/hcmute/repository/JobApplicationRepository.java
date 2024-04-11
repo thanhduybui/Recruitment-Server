@@ -1,18 +1,16 @@
 package com.edu.hcmute.repository;
 
-import com.edu.hcmute.constant.Status;
-import com.edu.hcmute.entity.AppUser;
-import com.edu.hcmute.entity.Job;
 import com.edu.hcmute.entity.JobApplication;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.awt.print.Pageable;
+import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
-public interface JobApplicationRepository extends JpaRepository<JobApplication, Long> {
+public interface JobApplicationRepository extends JpaRepository<JobApplication, Integer> {
     List<JobApplication> findByAppUserId(Long userID);
+    Page<JobApplication> findAllByJobId(Long jobId, Pageable pageable);
 }

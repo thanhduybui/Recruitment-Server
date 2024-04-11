@@ -2,7 +2,10 @@ package com.edu.hcmute.service.user;
 
 import com.edu.hcmute.config.security.AuthUser;
 import com.edu.hcmute.constant.Message;
+import com.edu.hcmute.constant.Status;
+import com.edu.hcmute.dto.AccountDTO;
 import com.edu.hcmute.dto.ProfileDTO;
+import com.edu.hcmute.dto.RegisterDTO;
 import com.edu.hcmute.entity.AppUser;
 import com.edu.hcmute.repository.AppUserRepository;
 import com.edu.hcmute.response.ServiceResponse;
@@ -20,4 +23,7 @@ public interface AppUserService {
 
     ServiceResponse updateUserProfile(ProfileDTO profileDTO);
     ServiceResponse getUserProfile();
+    ServiceResponse deleteUser(Long userId, Status status);
+    ServiceResponse createUser(RegisterDTO registerDTO);
+    ServiceResponse changeInfoUser(AccountDTO accountDTO);
 }

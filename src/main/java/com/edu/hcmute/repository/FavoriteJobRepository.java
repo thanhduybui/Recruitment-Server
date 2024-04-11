@@ -15,5 +15,5 @@ public interface FavoriteJobRepository extends JpaRepository<FavoriteJob, Intege
 
     List<FavoriteJob> findFavoriteJobByUserIdAndJobId(Long userId, Long JobId);
 
-    Page<FavoriteJob> findAllByUser(AppUser user, Instant instant, Pageable pageable);
+    Page<FavoriteJob> findAllByUser(AppUser user, Pageable pageable);
 }

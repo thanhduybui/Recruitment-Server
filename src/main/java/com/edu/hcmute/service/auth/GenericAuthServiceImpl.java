@@ -22,8 +22,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.Map;
-import java.util.Optional;
-
 
 @Slf4j
 @Service
@@ -31,6 +29,7 @@ import java.util.Optional;
 public class GenericAuthServiceImpl<T extends RegisterContainer> implements AuthService<T> {
 
     private final AppUserRepository userRepository;
+    @SuppressWarnings("rawtypes")
     private final RedisTemplate redisTemplate;
     private final MailUtils mailUtils;
 
@@ -38,7 +37,10 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
     private static final String SEND_CODE_SUCCESS = "Đã gửi mã về email thành công";
     private static final String SET_PASSWORD_SUCCESS = "Đặt password thành công";
     private static final String SET_PASSWORD_FAIL = "Đặt password thất bại";
+    private static final String CHANGE_ACCOUNT_SUCCESS = "Cập nhật tài khoản thành công";
+    private static final String CHANGE_ACCOUNT_FAIL = "Cập nhật tài khoản thất bại";
 
+    @SuppressWarnings("unchecked")
     @Override
     public ServiceResponse register(T registerDTO) {
 
@@ -55,7 +57,7 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
                     .build();
         }
 
-        if (!registerDTO.isPasswordMatching()) {
+        if (registerDTO.isPasswordMatching()) {
             return ServiceResponse.builder()
                     .statusCode(HttpStatus.BAD_REQUEST)
                     .status(ResponseDataStatus.ERROR)
@@ -74,6 +76,7 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
                 .build();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public ServiceResponse verifyRegister(VerifyDTO verifyDTO) {
         Object dto = redisTemplate.opsForValue().get(verifyDTO.getEmail());
@@ -87,7 +90,7 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
         }
 
         String verifyCode = (String) redisTemplate.opsForValue().get(verifyDTO.getEmail() + "_otp");
-        log.info("verifyCode: {}", verifyCode);
+        log.info("verifyCodeRe: {}", verifyCode);
 
 
         if (verifyCode == null) {
@@ -107,16 +110,14 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
         }
 
         AppUser user = null;
-        if (dto instanceof RegisterDTO) {
-            RegisterDTO registerDTO = (RegisterDTO) dto;
+        if (dto instanceof RegisterDTO registerDTO) {
             user = AppUser.builder()
                     .email(registerDTO.getEmail())
                     .password(BcryptUtils.hashPassword(registerDTO.getPassword()))
                     .fullName(registerDTO.getFullName())
                     .role(Role.CANDIDATE)
                     .build();
-        } else if (dto instanceof RecruiterRegisterDTO) {
-            RecruiterRegisterDTO recruiterRegisterDTO = (RecruiterRegisterDTO) dto;
+        } else if (dto instanceof RecruiterRegisterDTO recruiterRegisterDTO) {
             Company company = Company.builder()
                     .name(recruiterRegisterDTO.getCompanyName())
                     .build();
@@ -130,6 +131,7 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
                     .build();
         }
 
+        assert user != null;
         userRepository.save(user);
 
         // delete otp save in redis
@@ -144,6 +146,7 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
                 .build();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public ServiceResponse resendVerifyCode(String email) {
         Object dto = redisTemplate.opsForValue().get(email);
@@ -200,6 +203,7 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
                 .build();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public ServiceResponse forgetPassword(ForgetPasswordDTO forgetPasswordDTO) {
         AppUser user = userRepository.findByEmail(forgetPasswordDTO.getEmail().trim())
