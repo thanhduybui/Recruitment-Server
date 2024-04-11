@@ -17,7 +17,6 @@ public class JobApplicationRequestBody {
     @JsonAlias("cv_id")
     private int cvId;
 
-    @NotBlank
     @Pattern(regexp = "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$", message = EMAIL_VALIDATION_ERROR)
     private String email;
 

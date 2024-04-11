@@ -4,13 +4,17 @@ import com.edu.hcmute.constant.JobApplicationStatus;
 import com.edu.hcmute.dto.JobApplicationRequestBody;
 
 import com.edu.hcmute.entity.AppUser;
+import com.edu.hcmute.entity.CV;
 import com.edu.hcmute.entity.Job;
 import com.edu.hcmute.entity.JobApplication;
+import com.edu.hcmute.exception.ResourceNotFoundException;
 import com.edu.hcmute.exception.UndefinedException;
 import com.edu.hcmute.mapper.JobApplicationMapper;
 import com.edu.hcmute.repository.AppUserRepository;
+import com.edu.hcmute.repository.CvRepository;
 import com.edu.hcmute.repository.JobApplicationRepository;
 
+import com.edu.hcmute.repository.JobRepository;
 import com.edu.hcmute.response.ResponseDataStatus;
 import com.edu.hcmute.response.ServiceResponse;
 import jakarta.persistence.CascadeType;
@@ -36,12 +40,17 @@ public class JobApplicationService {
     private static final String CREATE_JOB_APPLICATION_FAILURE = "Nộp đơn ứng tuyển thất bại";
     private static final String USER_APPLIED_JOB_APPLICATION = "Ứng viên đã ứng tuyển công việc này";
     private static final String GET_ALL_SUCCESS = "Lấy thông tin đơn ứng tuyển thành công";
-    private static final String GET_BY_USER_SUCCESS = "Lấy đơn ứng tuyển của ứng viên thành công";
+
+    private static final String CV_NOT_FOUND = "Không tìm thấy CV";
+
+    private static final String JOB_NOT_FOUND = "Không tìm thấy công việc";
 
 
     private final JobApplicationMapper jobApplicationMapper;
     private final JobApplicationRepository jobApplicationRepository;
     private final AppUserRepository appUserRepository;
+    private final CvRepository cvRepository;
+    private final JobRepository jobRepository;
 
 
     public AppUser getUser() {
@@ -53,10 +62,12 @@ public class JobApplicationService {
 
     public ServiceResponse createJobApplication(JobApplicationRequestBody jobApplicationRequestBody) {
 
-        try {
-
             List<JobApplication> applications;
             JobApplication newJobApplication = jobApplicationMapper.jobApplicationRequestBodyToJobApplication(jobApplicationRequestBody);
+
+           cvRepository.findById(Long.valueOf(jobApplicationRequestBody.getCvId())).orElseThrow(() -> new ResourceNotFoundException(CV_NOT_FOUND));
+
+           jobRepository.findById(jobApplicationRequestBody.getJobId()).orElseThrow(() -> new ResourceNotFoundException(JOB_NOT_FOUND));
 
             if (getUser() != null) {
                 newJobApplication.setAppUser(getUser());
@@ -91,11 +102,6 @@ public class JobApplicationService {
                     .message(CREATE_JOB_APPLICATION_SUCCESS)
                     .build();
 
-
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new UndefinedException(CREATE_JOB_APPLICATION_FAILURE);
-        }
     }
 
 
