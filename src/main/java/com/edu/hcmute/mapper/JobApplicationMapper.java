@@ -5,7 +5,7 @@ import com.edu.hcmute.dto.JobApplicationRequestBody;
 import com.edu.hcmute.entity.JobApplication;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {JobApplicationMapperHelper.class})
 public interface JobApplicationMapper {
     @Mapping(source = "jobId" , target = "job.id")
     @Mapping(source = "cvId" , target = "cv.id")

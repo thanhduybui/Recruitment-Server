@@ -7,11 +7,12 @@ import com.edu.hcmute.service.JobApplicationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/job-application")
+@RequestMapping("/job-applications")
 @RequiredArgsConstructor
 public class JobApplicationController {
 
@@ -31,6 +32,18 @@ public class JobApplicationController {
     @GetMapping("/get-all")
     public ResponseEntity<ResponseData> getAllJobApplication() {
         ServiceResponse serviceResponse = jobApplicationService.getAll();
+        return ResponseEntity.status(serviceResponse.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(serviceResponse.getStatus())
+                        .message(serviceResponse.getMessage())
+                        .data(serviceResponse.getData()).build());
+    }
+
+
+    @PreAuthorize("hasAnyAuthority('CANDIDATE')")
+    @GetMapping("/candidate")
+    public ResponseEntity<ResponseData> getAllJobApplicationByCandidate() {
+        ServiceResponse serviceResponse = jobApplicationService.getAllByCandidate();
         return ResponseEntity.status(serviceResponse.getStatusCode())
                 .body(ResponseData.builder()
                         .status(serviceResponse.getStatus())

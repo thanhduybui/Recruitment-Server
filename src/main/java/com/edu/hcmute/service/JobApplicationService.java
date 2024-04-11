@@ -1,11 +1,10 @@
 package com.edu.hcmute.service;
 
 import com.edu.hcmute.constant.JobApplicationStatus;
+import com.edu.hcmute.dto.JobApplicationDTO;
 import com.edu.hcmute.dto.JobApplicationRequestBody;
 
 import com.edu.hcmute.entity.AppUser;
-import com.edu.hcmute.entity.CV;
-import com.edu.hcmute.entity.Job;
 import com.edu.hcmute.entity.JobApplication;
 import com.edu.hcmute.exception.ResourceNotFoundException;
 import com.edu.hcmute.exception.UndefinedException;
@@ -15,13 +14,13 @@ import com.edu.hcmute.repository.CvRepository;
 import com.edu.hcmute.repository.JobApplicationRepository;
 
 import com.edu.hcmute.repository.JobRepository;
+import com.edu.hcmute.response.PagingResponseData;
 import com.edu.hcmute.response.ResponseDataStatus;
 import com.edu.hcmute.response.ServiceResponse;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.OneToOne;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.Cascade;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -30,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+
+
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +45,7 @@ public class JobApplicationService {
     private static final String CV_NOT_FOUND = "Không tìm thấy CV";
 
     private static final String JOB_NOT_FOUND = "Không tìm thấy công việc";
+    private static final String USER_NOT_FOUND = "Không tìm thấy người dùng";
 
 
     private final JobApplicationMapper jobApplicationMapper;
@@ -120,12 +122,28 @@ public class JobApplicationService {
         }
     }
 
-    public List<JobApplication> getByUser(Long userId) {
+
+    public ServiceResponse getAllByCandidate() {
         try {
-            return jobApplicationRepository.findByAppUserId(userId);
+            AppUser user = getUser();
+
+            List<JobApplication> listJobApplication = jobApplicationRepository.findByAppUserId(user.getId());
+            List<JobApplicationDTO> jobApplicationDTOs = listJobApplication.stream()
+                    .map(jobApplicationMapper::jobApplicationToJobApplicationDTO)
+                    .toList();
+
+            PagingResponseData pagingResponseData = PagingResponseData.builder()
+                    .listData(jobApplicationDTOs)
+                    .build();
+
+            return ServiceResponse.builder()
+                    .status(ResponseDataStatus.SUCCESS)
+                    .statusCode(HttpStatus.OK)
+                    .message(GET_ALL_SUCCESS)
+                    .data(Map.of("job_applications", pagingResponseData)).build();
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw e;
+            throw new UndefinedException("Lấy thông tin đơn ứng tuyển thất bại");
         }
     }
 }
