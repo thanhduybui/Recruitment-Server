@@ -7,6 +7,7 @@ import com.edu.hcmute.constant.Status;
 import com.edu.hcmute.dto.AccountDTO;
 import com.edu.hcmute.dto.ProfileDTO;
 import com.edu.hcmute.dto.RegisterDTO;
+import com.edu.hcmute.dto.ResetPasswordDTO;
 import com.edu.hcmute.entity.AppUser;
 import com.edu.hcmute.exception.ResourceNotFoundException;
 import com.edu.hcmute.exception.UndefinedException;
@@ -39,6 +40,9 @@ public class AppUserServiceImpl implements AppUserService {
     private static final String CREATE_ACCOUNT_FAIL = "Tạo tài khoản thất bại";
     private static final String CHANGE_ACCOUNT_SUCCESS = "Thay đổi tài khoản thành công";
     private static final String CHANGE_ACCOUNT_FAIL = "Thay đổi tài khoản không thành công";
+    private static final String RESET_PASSWORD_SUCCESS = "Đặt lại mật khẩu thành công";
+    private static final String RESET_PASSWORD_FAIL = "Đặt lại mật khẩu thất bại";
+    private static final String INCORRECT_PASSWORD = "Mật khẩu không đúng";
     private static final Long MAX_FILE_SIZE = 10 * 1024 * 1024L;
     private final FileServiceImpl fileService;
     private final AppUserRepository appUserRepository;
@@ -143,34 +147,41 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public ServiceResponse deleteUser(Long userId, Status status) {
+    public ServiceResponse deleteUser(Long userId, String status) {
 
         try {
 
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
             AppUser user = this.appUserRepository.findByEmail(email).orElse(null);
 
+            AppUser deleteUser = this.appUserRepository.findById(userId).orElse(null);
+
             if(user == null) {
                 return responseFail(INVALID_ROLE);
             }
 
-            if(user.getRole() == Role.ADMIN) {
-                user.setStatus(status);
-                appUserRepository.save(user);
-
-                return responseFail(DELETE_USER_SUCCESS);
+            if(deleteUser == null) {
+                return responseFail(Message.USER_NOT_FOUND_BY_EMAIL);
             }
-            else if(user.getRole() == Role.CANDIDATE || user.getRole() == Role.RECRUITER) {
+            else {
+                if(user.getRole() == Role.ADMIN) {
 
-                if(Objects.equals(user.getId(), userId)) {
-                    user.setStatus(Status.LOCK);
+                    deleteUser.setStatus(Status.valueOf(status));
+                    appUserRepository.save(deleteUser);
 
-                    appUserRepository.save(user);
-
-                    return responseFail(DELETE_USER_SUCCESS);
+                    return responseSuccess(DELETE_USER_SUCCESS);
                 }
-                else {
-                    return responseFail(INVALID_ROLE);
+                else if(user.getRole() == Role.CANDIDATE || user.getRole() == Role.RECRUITER) {
+
+                    if(Objects.equals(user.getId(), userId)) {
+                        deleteUser.setStatus(Status.LOCK);
+                        appUserRepository.save(deleteUser);
+
+                        return responseSuccess(DELETE_USER_SUCCESS);
+                    }
+                    else {
+                        return responseFail(INVALID_ROLE);
+                    }
                 }
             }
 
@@ -202,6 +213,7 @@ public class AppUserServiceImpl implements AppUserService {
                    .password(BcryptUtils.hashPassword(registerDTO.getPassword()))
                    .fullName(registerDTO.getFullName())
                    .role(Role.valueOf(registerDTO.getRole()))
+                   .status(Status.ACTIVE)
                    .build();
 
            appUserRepository.save(appUser);
@@ -221,15 +233,28 @@ public class AppUserServiceImpl implements AppUserService {
 
             AppUser user = appUserRepository.findById(accountDTO.getId()).orElse(null);
 
+
             if(user == null) {
                 return responseFail(USER_NOT_FOUND_BY_EMAIL);
             }
 
-            user.setStatus(Status.valueOf(accountDTO.getStatus()));
-            user.setEmail(accountDTO.getEmail());
-            user.setFullName(accountDTO.getFullName());
-            user.setRole(Role.valueOf(accountDTO.getRole()));
-            user.setPassword(BcryptUtils.hashPassword(accountDTO.getPassword()));
+            if(accountDTO.getStatus() != null) {
+                user.setStatus(Status.valueOf(accountDTO.getStatus()));
+            }
+            if(accountDTO.getRole() != null) {
+                user.setRole(Role.valueOf(accountDTO.getRole()));
+            }
+            if(accountDTO.getEmail() != null) {
+                user.setEmail(accountDTO.getEmail());
+            }
+            if(accountDTO.getFullName() != null) {
+                user.setFullName(accountDTO.getFullName());
+            }
+            if(accountDTO.getPassword() != null) {
+                user.setPassword(BcryptUtils.hashPassword(accountDTO.getPassword()));
+            }
+
+            System.out.println(user);
 
             appUserRepository.save(user);
 
@@ -238,6 +263,39 @@ public class AppUserServiceImpl implements AppUserService {
         catch (Exception e) {
             log.error("Change user failed: {}", e.getMessage());
             throw new UndefinedException(CHANGE_ACCOUNT_FAIL);
+        }
+    }
+
+    @Override
+    public ServiceResponse resetPassword(ResetPasswordDTO resetPasswordDTO) {
+
+        try {
+
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            AppUser user = this.appUserRepository.findByEmail(email).orElse(null);
+
+            if(user == null) {
+                return responseFail(INVALID_ROLE);
+            }
+
+            // False
+            if (resetPasswordDTO.isPasswordMatching()) {
+                return responseFail(Message.PASSWORD_NOT_MATCHING);
+            }
+
+            // True
+            if(!BcryptUtils.verifyPassword(resetPasswordDTO.getOld_password(), user.getPassword())) {
+                return responseFail(INCORRECT_PASSWORD);
+            }
+
+            user.setPassword(BcryptUtils.hashPassword(resetPasswordDTO.getNew_password()));
+            appUserRepository.save(user);
+
+            return responseSuccess(RESET_PASSWORD_SUCCESS);
+        }
+        catch (Exception e) {
+            log.error("Reset password failed: {}", e.getMessage());
+            throw new UndefinedException(RESET_PASSWORD_FAIL);
         }
     }
 

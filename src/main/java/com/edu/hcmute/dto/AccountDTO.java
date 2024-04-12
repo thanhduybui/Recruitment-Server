@@ -2,6 +2,7 @@ package com.edu.hcmute.dto;
 
 import com.edu.hcmute.constant.Status;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -11,13 +12,13 @@ import static com.edu.hcmute.constant.Message.*;
 
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AccountDTO {
 
     private Long id;
 
     @Pattern(regexp = "^[a-zA-Z\\s\\p{L}]*$", message = FULL_NAME_VALIDATION_ERROR)
     @Size(max = 100, message = FULL_NAME_INVALID_LENGTH)
-    @NotBlank(message = FULL_NAME_NOT_EMPTY)
     @JsonAlias("full_name")
     private String fullName;
 

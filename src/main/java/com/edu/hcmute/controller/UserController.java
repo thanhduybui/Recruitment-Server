@@ -2,13 +2,11 @@ package com.edu.hcmute.controller;
 
 
 import com.edu.hcmute.constant.Status;
-import com.edu.hcmute.dto.AccountDTO;
-import com.edu.hcmute.dto.LoginDTO;
-import com.edu.hcmute.dto.ProfileDTO;
-import com.edu.hcmute.dto.RegisterDTO;
+import com.edu.hcmute.dto.*;
 import com.edu.hcmute.response.ResponseData;
 import com.edu.hcmute.response.ServiceResponse;
 import com.edu.hcmute.service.user.AppUserService;
+import com.edu.hcmute.utils.BcryptUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.Put;
@@ -101,9 +99,21 @@ public class UserController {
     }
 
     @PutMapping("/delete-user/{userId}/{status}")
-    public ResponseEntity<ResponseData> deleteUser(@PathVariable Long userId, @PathVariable Status status) {
+    public ResponseEntity<ResponseData> deleteUser(@PathVariable Long userId, @PathVariable String status) {
 
         ServiceResponse serviceResponse = appUserService.deleteUser(userId, status);
+        return ResponseEntity.status(serviceResponse.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(serviceResponse.getStatus())
+                        .message(serviceResponse.getMessage())
+                        .data(serviceResponse.getData())
+                        .build());
+    }
+
+    @PutMapping("/reset-password")
+    public ResponseEntity<ResponseData> resetPassword(@RequestBody @Valid ResetPasswordDTO resetPasswordDTO) {
+
+        ServiceResponse serviceResponse = appUserService.resetPassword(resetPasswordDTO);
         return ResponseEntity.status(serviceResponse.getStatusCode())
                 .body(ResponseData.builder()
                         .status(serviceResponse.getStatus())

@@ -47,7 +47,9 @@ public class AppUser {
     private String phoneNumber;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private Status status;
+
     @Lob
     @Column(name = "avatar_url")
     private String avatar;
