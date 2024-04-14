@@ -4,8 +4,10 @@ package com.edu.hcmute.service.auth;
 import com.edu.hcmute.dto.*;
 import com.edu.hcmute.repository.AppUserRepository;
 import com.edu.hcmute.response.ServiceResponse;
+import com.google.auth.oauth2.OAuth2Credentials;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.Token;
 import org.hibernate.sql.Update;
 import org.springframework.stereotype.Service;
 
@@ -24,5 +26,5 @@ public interface AuthService<T> {
      ServiceResponse verifyForgetPassword(VerifyDTO verifyDTO);
 
      ServiceResponse updatePassword(UpdatePasswordDTO updatePasswordDTO);
+     ServiceResponse googleAuth(TokenDTO tokenDTO);
 }
-

@@ -1,8 +1,6 @@
 package com.edu.hcmute.service.auth;
 
-import com.edu.hcmute.constant.Gender;
-import com.edu.hcmute.constant.Message;
-import com.edu.hcmute.constant.Role;
+import com.edu.hcmute.constant.*;
 import com.edu.hcmute.dto.*;
 import com.edu.hcmute.entity.AppUser;
 import com.edu.hcmute.entity.Company;
@@ -14,6 +12,7 @@ import com.edu.hcmute.utils.BcryptUtils;
 import com.edu.hcmute.utils.CustomClaim;
 import com.edu.hcmute.utils.JwtUtils;
 import com.edu.hcmute.utils.MailUtils;
+import com.google.auth.oauth2.OAuth2Credentials;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -34,11 +33,12 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
     private final MailUtils mailUtils;
 
     private static  final String ACCOUNT_NOT_EXISTED = "Tài khoản không tồn tại";
+    private static final String LOGIN_FAIL = "Đăng nhập thất bại";
     private static final String SEND_CODE_SUCCESS = "Đã gửi mã về email thành công";
     private static final String SET_PASSWORD_SUCCESS = "Đặt password thành công";
     private static final String SET_PASSWORD_FAIL = "Đặt password thất bại";
-    private static final String CHANGE_ACCOUNT_SUCCESS = "Cập nhật tài khoản thành công";
-    private static final String CHANGE_ACCOUNT_FAIL = "Cập nhật tài khoản thất bại";
+
+    private final AppUserRepository appUserRepository;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -116,6 +116,7 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
                     .password(BcryptUtils.hashPassword(registerDTO.getPassword()))
                     .fullName(registerDTO.getFullName())
                     .role(Role.CANDIDATE)
+                    .loginType(LoginType.NORMAL)
                     .build();
         } else if (dto instanceof RecruiterRegisterDTO recruiterRegisterDTO) {
             Company company = Company.builder()
@@ -305,6 +306,58 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
             log.error(e.getMessage());
             throw new UndefinedException(SET_PASSWORD_FAIL);
         }
+    }
 
+    @Override
+    public ServiceResponse googleAuth(TokenDTO tokenDTO) {
+
+        try {
+            CredentialDTO data = JwtUtils.decodeToken(tokenDTO.getToken());
+
+            AppUser appUser = userRepository.findByEmail(data.getEmail()).orElse(null);
+
+            if(appUser != null) {
+
+                CustomClaim customClaim = CustomClaim.builder()
+                        .email(appUser.getEmail())
+                        .role(appUser.getRole() + "")
+                        .build();
+
+                return ServiceResponse.builder()
+                        .statusCode(HttpStatus.OK)
+                        .status(ResponseDataStatus.SUCCESS)
+                        .message(Message.LOGIN_SUCCESS)
+                        .data(Map.of("access_token", JwtUtils.generateToken(customClaim)))
+                        .build();
+            }
+
+            AppUser newUser = AppUser.builder()
+                    .email(data.getEmail())
+                    .fullName(data.getName())
+                    .avatar(data.getPicture())
+                    .role(Role.valueOf(tokenDTO.getRole()))
+                    .loginType(LoginType.GOOGLE)
+                    .status(Status.ACTIVE)
+                    .build();
+
+            appUserRepository.save(newUser);
+
+
+            CustomClaim customClaim = CustomClaim.builder()
+                    .email(newUser.getEmail())
+                    .role(newUser.getRole() + "")
+                    .build();
+
+            return ServiceResponse.builder()
+                    .statusCode(HttpStatus.OK)
+                    .status(ResponseDataStatus.SUCCESS)
+                    .message(Message.LOGIN_SUCCESS)
+                    .data(Map.of("access_token", JwtUtils.generateToken(customClaim)))
+                    .build();
+        }
+        catch (Exception e) {
+            log.error(e.getMessage());
+            throw new UndefinedException(LOGIN_FAIL);
+        }
     }
 }

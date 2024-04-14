@@ -4,6 +4,7 @@ import com.edu.hcmute.dto.*;
 import com.edu.hcmute.response.ResponseData;
 import com.edu.hcmute.response.ServiceResponse;
 import com.edu.hcmute.service.auth.GenericAuthServiceImpl;
+import com.google.auth.oauth2.OAuth2Credentials;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -92,6 +93,18 @@ public class AuthController {
     @PostMapping("/forget-password/create-password")
     public ResponseEntity<ResponseData> sendCode(@RequestBody @Valid UpdatePasswordDTO updatePasswordDTO) {
         ServiceResponse responseService = candidateAuthService.updatePassword(updatePasswordDTO);
+        return ResponseEntity.status(responseService.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(responseService.getStatus())
+                        .message(responseService.getMessage())
+                        .data(responseService.getData())
+                        .build());
+    }
+
+    @PostMapping("/google-oauth/login")
+    public ResponseEntity<ResponseData> loginByGoogle(@RequestBody @Valid TokenDTO tokenDTO) {
+        ServiceResponse responseService = candidateAuthService.googleAuth(tokenDTO);
+
         return ResponseEntity.status(responseService.getStatusCode())
                 .body(ResponseData.builder()
                         .status(responseService.getStatus())

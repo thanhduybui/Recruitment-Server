@@ -10,7 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.Optional;
 
 @SpringBootApplication
-@EnableJpaAuditing(auditorAwareRef = "auditorProvider")
+@EnableJpaAuditing()
 public class RecruitmentAppApplication {
 
 
