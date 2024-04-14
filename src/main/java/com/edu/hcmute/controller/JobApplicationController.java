@@ -1,7 +1,6 @@
 package com.edu.hcmute.controller;
 
 import com.edu.hcmute.dto.JobApplicationRequestBody;
-import com.edu.hcmute.entity.JobApplication;
 import com.edu.hcmute.response.ResponseData;
 import com.edu.hcmute.response.ServiceResponse;
 import com.edu.hcmute.service.JobApplicationService;
@@ -11,10 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
-@RequestMapping("/job-application")
+@RequestMapping("/job-applications")
 @RequiredArgsConstructor
 public class JobApplicationController {
 
@@ -22,7 +20,6 @@ public class JobApplicationController {
 
     @PostMapping
     public ResponseEntity<ResponseData> createNewJobApplication(@RequestBody @Valid JobApplicationRequestBody jobApplicationRequestBody) {
-
         ServiceResponse serviceResponse = jobApplicationService.createJobApplication(jobApplicationRequestBody);
         return ResponseEntity.status(serviceResponse.getStatusCode())
                 .body(ResponseData.builder()
@@ -42,13 +39,17 @@ public class JobApplicationController {
                         .data(serviceResponse.getData()).build());
     }
 
-//    @GetMapping("/get-by-user/{id}")
-//    public ResponseEntity<ResponseData> getByUser(@PathVariable("id") Long userId) {
-//        ServiceResponse serviceResponse = jobApplicationService.getByUser(userId);
-//        return ResponseEntity.status(serviceResponse.getStatusCode())
-//                .body(ResponseData.builder()
-//                        .status(serviceResponse.getStatus())
-//                        .message(serviceResponse.getMessage())
-//                        .data(serviceResponse.getData()).build());
-//    }
+
+    @PreAuthorize("hasAnyAuthority('CANDIDATE')")
+    @GetMapping("/candidate")
+    public ResponseEntity<ResponseData> getAllJobApplicationByCandidate() {
+        ServiceResponse serviceResponse = jobApplicationService.getAllByCandidate();
+        return ResponseEntity.status(serviceResponse.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(serviceResponse.getStatus())
+                        .message(serviceResponse.getMessage())
+                        .data(serviceResponse.getData()).build());
+    }
+
+
 }

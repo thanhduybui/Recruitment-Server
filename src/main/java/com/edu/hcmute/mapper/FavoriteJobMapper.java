@@ -20,6 +20,7 @@ public interface FavoriteJobMapper {
     @Mapping(source = "job.salaryRange.name", target = "salaryRange")
     @Mapping(source = "job.deadline", target = "restAppliedDays")
     @Mapping(source = "job.location.id", target = "locationId")
+    @Mapping(source = "job.id", target = "id")
     CandidateJobDTO favoriteJobJobToCandidateDTO(FavoriteJob favoriteJob);
 }
 

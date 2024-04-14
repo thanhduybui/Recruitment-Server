@@ -14,6 +14,7 @@ import com.edu.hcmute.utils.BcryptUtils;
 import com.edu.hcmute.utils.CustomClaim;
 import com.edu.hcmute.utils.JwtUtils;
 import com.edu.hcmute.utils.MailUtils;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;

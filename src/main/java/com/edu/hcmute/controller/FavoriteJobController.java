@@ -31,7 +31,7 @@ public class FavoriteJobController {
                         .build());
     }
 
-    @GetMapping("/get-all")
+    @GetMapping
     @PreAuthorize("hasAnyAuthority('CANDIDATE')")
     public ResponseEntity<ResponseData> getAllByUser(@RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
                                                      @RequestParam(value = "size", defaultValue = "10", required = false) Integer size) {
@@ -42,5 +42,17 @@ public class FavoriteJobController {
                         .data(serviceResponse.getData())
                         .build());
 
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('CANDIDATE')")
+    public ResponseEntity<ResponseData> removeFavoriteJob(@PathVariable("id") Long id) {
+        ServiceResponse serviceResponse = favoriteJobService.removeFavoriteJob(id);
+        return ResponseEntity.status(serviceResponse.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(serviceResponse.getStatus())
+                        .message(serviceResponse.getMessage())
+                        .data(serviceResponse.getData())
+                        .build());
     }
 }
