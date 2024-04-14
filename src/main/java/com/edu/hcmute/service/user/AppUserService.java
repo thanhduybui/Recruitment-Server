@@ -9,9 +9,11 @@ import com.edu.hcmute.dto.RegisterDTO;
 import com.edu.hcmute.dto.ResetPasswordDTO;
 import com.edu.hcmute.entity.AppUser;
 import com.edu.hcmute.repository.AppUserRepository;
+import com.edu.hcmute.response.ResponseData;
 import com.edu.hcmute.response.ServiceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,4 +30,8 @@ public interface AppUserService {
     ServiceResponse createUser(RegisterDTO registerDTO);
     ServiceResponse changeInfoUser(AccountDTO accountDTO);
     ServiceResponse resetPassword(ResetPasswordDTO resetPasswordDTO);
+
+    ServiceResponse getAllUserByRole(Integer page, Integer size, String role);
+
+ ServiceResponse searchUser(String email);
 }

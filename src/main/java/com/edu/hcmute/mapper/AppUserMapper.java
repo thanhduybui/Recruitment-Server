@@ -4,6 +4,7 @@ package com.edu.hcmute.mapper;
 import com.edu.hcmute.dto.ForgetPasswordDTO;
 import com.edu.hcmute.dto.ProfileDTO;
 import com.edu.hcmute.dto.RegisterDTO;
+import com.edu.hcmute.dto.UserDTO;
 import com.edu.hcmute.entity.AppUser;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -21,5 +22,7 @@ public interface AppUserMapper {
     ProfileDTO appUserToProfileDTO(AppUser user);
 
     AppUser forgetPasswordDTOToAppUser(ForgetPasswordDTO user);
+
+    UserDTO appUserToUserDTO(AppUser user);
 
 }

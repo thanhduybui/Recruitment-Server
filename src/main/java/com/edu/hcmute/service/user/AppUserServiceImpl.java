@@ -4,27 +4,30 @@ package com.edu.hcmute.service.user;
 import com.edu.hcmute.constant.Message;
 import com.edu.hcmute.constant.Role;
 import com.edu.hcmute.constant.Status;
-import com.edu.hcmute.dto.AccountDTO;
-import com.edu.hcmute.dto.ProfileDTO;
-import com.edu.hcmute.dto.RegisterDTO;
-import com.edu.hcmute.dto.ResetPasswordDTO;
+import com.edu.hcmute.dto.*;
 import com.edu.hcmute.entity.AppUser;
 import com.edu.hcmute.exception.ResourceNotFoundException;
 import com.edu.hcmute.exception.UndefinedException;
 import com.edu.hcmute.mapper.AppUserMapper;
 import com.edu.hcmute.repository.AppUserRepository;
+import com.edu.hcmute.response.PagingResponseData;
 import com.edu.hcmute.response.ResponseDataStatus;
 import com.edu.hcmute.response.ServiceResponse;
 import com.edu.hcmute.service.FileServiceImpl;
 import com.edu.hcmute.utils.BcryptUtils;
+import com.edu.hcmute.utils.ResponseUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.edu.hcmute.constant.Message.USER_NOT_FOUND_BY_EMAIL;
 import static com.edu.hcmute.service.FileService.MAX_FILE_SIZE;
@@ -47,6 +50,9 @@ public class AppUserServiceImpl implements AppUserService {
     private static final String RESET_PASSWORD_FAIL = "Đặt lại mật khẩu thất bại";
     private static final String INCORRECT_PASSWORD = "Mật khẩu không đúng";
     private static final Long MAX_FILE_SIZE = 10 * 1024 * 1024L;
+    private static final String GET_ALL_USER_SUCCESS = "Lấy tất cả người dùng thành công";
+    private static final String GET_ALL_USER_FAIL = "Lấy tất cả người dùng thất bại";
+    private static final String FOUND_USER = "Tìm thấy người dùng";
 
 
     private final FileServiceImpl fileService;
@@ -299,6 +305,57 @@ public class AppUserServiceImpl implements AppUserService {
         catch (Exception e) {
             log.error("Reset password failed: {}", e.getMessage());
             throw new UndefinedException(RESET_PASSWORD_FAIL);
+        }
+    }
+
+    @Override
+    public ServiceResponse getAllUserByRole(Integer page, Integer size, String role) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<AppUser> appUsers;
+
+            if (role == null) {
+                appUsers = appUserRepository.findAll(pageable);
+            }else {
+                appUsers = appUserRepository.findAllByRole(Role.valueOf(role), pageable);
+            }
+
+            List<UserDTO> userDTOS = appUsers.getContent().stream()
+                    .map(appUserMapper::appUserToUserDTO)
+                    .toList();
+
+            PagingResponseData pagingResponseData = PagingResponseData.builder()
+                    .totalPages(appUsers.getTotalPages())
+                    .totalItems(appUsers.getTotalElements())
+                    .currentPage(appUsers.getNumber())
+                    .pageSize(appUsers.getSize())
+                    .listData(userDTOS)
+                    .build();
+
+            return ResponseUtils.responseSuccess(HttpStatus.OK, ResponseDataStatus.SUCCESS, GET_ALL_USER_SUCCESS, pagingResponseData);
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new UndefinedException(GET_ALL_USER_FAIL);
+        }
+    }
+
+    @Override
+    public ServiceResponse searchUser(String email) {
+        try {
+            List<AppUser> users = appUserRepository.findByEmailLike(email);
+            if (users.isEmpty()) {
+                throw new ResourceNotFoundException(String.format(USER_NOT_FOUND_BY_EMAIL, email));
+            }
+
+            List<UserDTO> userDTOs = users.stream()
+                    .map(appUserMapper::appUserToUserDTO)
+                    .collect(Collectors.toList());
+
+            return ResponseUtils.responseSuccess(HttpStatus.OK, ResponseDataStatus.SUCCESS, FOUND_USER, userDTOs);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new UndefinedException("Lỗi không xác định");
         }
     }
 

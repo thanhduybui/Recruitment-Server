@@ -57,20 +57,32 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<ResponseData> searchUser(@RequestParam("keyword") String keyword) {
-       return null;
+    public ResponseEntity<ResponseData> searchUser(@RequestParam("email") String email) {
+       ServiceResponse serviceResponse = appUserService.searchUser(email);
+         return ResponseEntity.status(serviceResponse.getStatusCode())
+                .body(ResponseData.builder()
+                          .status(serviceResponse.getStatus())
+                          .message(serviceResponse.getMessage())
+                          .data(serviceResponse.getData())
+                          .build());
     }
 
-    @GetMapping("/get-all")
+    @GetMapping
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<ResponseData> getAllUserByRole(@RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
                                                          @RequestParam(value = "size", defaultValue = "10", required = false) Integer size,
-                                                         @RequestParam(value = "role" , required = true) String role)
-    {
-        return null;
+                                                         @RequestParam(value = "role" , required = false) String role) {
+
+        ServiceResponse serviceResponse = appUserService.getAllUserByRole(page, size, role);
+        return ResponseEntity.status(serviceResponse.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(serviceResponse.getStatus())
+                        .message(serviceResponse.getMessage())
+                        .data(serviceResponse.getData())
+                        .build());
     }
 
-    @PostMapping("/create")
+    @PostMapping
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<ResponseData> createUser(@RequestBody @Valid RegisterDTO registerDTO) {
 
