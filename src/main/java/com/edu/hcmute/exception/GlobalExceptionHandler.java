@@ -10,17 +10,14 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-@ControllerAdvice
+@RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
     private static final String INVALID_ARGUMENT = "Tham số đường dẫn không hợp lệ";
@@ -28,7 +25,7 @@ public class GlobalExceptionHandler {
     private static final String NOT_DEFINED_ERROR = "Lỗi không xác định khi xử lý yêu cầu";
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ResponseData> handleValidationException(MethodArgumentNotValidException ex) {
         List<String> errors = new ArrayList<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
@@ -37,11 +34,13 @@ public class GlobalExceptionHandler {
         for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
             errors.add(error.getDefaultMessage());
         }
+        log.error("Validation error: {}", errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ResponseData.builder()
                         .status(ResponseDataStatus.ERROR)
                         .message(errors.get(0)).build());
     }
+
 
     @ExceptionHandler({DuplicateEntryException.class})
     public ResponseEntity<ResponseData> handleDuplicateEntryException(Exception ex) {
@@ -86,6 +85,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseData> globalExceptionHandler(Exception ex, WebRequest request) {
+        System.out.println(ex.getMessage());
         ResponseData responseData = ResponseData.builder()
                 .status(ResponseDataStatus.ERROR)
                 .message(NOT_DEFINED_ERROR)

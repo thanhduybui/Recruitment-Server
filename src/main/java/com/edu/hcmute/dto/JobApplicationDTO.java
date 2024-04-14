@@ -18,13 +18,10 @@ public class JobApplicationDTO {
     private String phone;
 
     @JsonAlias("cv_id")
-    private CV cv;
-
-    @JsonAlias("candidate_id")
-    private AppUser appUser;
+    private CvDTO cv;
 
     @JsonAlias("job_id")
-    private Job job;
+    private CandidateJobDTO job;
 
     @JsonAlias("create_at")
     private String createAt;
