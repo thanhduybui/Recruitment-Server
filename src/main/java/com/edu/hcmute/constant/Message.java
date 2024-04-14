@@ -26,5 +26,6 @@ public class Message {
     public static final String USER_NOT_FOUND_BY_EMAIL = "Không tìm thấy người dùng với email %s";
     public static final String INVALID_GENDER = "Giới tính không hợp lệ";
     public static final String INVALID_JOB = "Mã công việc không hợp lệ";
+    public static final String INVALID_STATUS = "Tỉnh trạng không hợp lệ";
     public static final String FIELD_INVALID = "Dữ liệu không hợp lệ";
 }

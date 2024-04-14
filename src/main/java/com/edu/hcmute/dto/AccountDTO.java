@@ -1,23 +1,24 @@
 package com.edu.hcmute.dto;
 
-import com.edu.hcmute.service.auth.RegisterContainer;
+import com.edu.hcmute.constant.Status;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
 import lombok.Data;
-
-import java.io.Serializable;
 
 import static com.edu.hcmute.constant.Message.*;
 
+
 @Data
-@Builder
-public class RegisterDTO implements Serializable, RegisterContainer {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class AccountDTO {
+
+    private Long id;
+
     @Pattern(regexp = "^[a-zA-Z\\s\\p{L}]*$", message = FULL_NAME_VALIDATION_ERROR)
     @Size(max = 100, message = FULL_NAME_INVALID_LENGTH)
-    @NotBlank(message = FULL_NAME_NOT_EMPTY)
     @JsonAlias("full_name")
     private String fullName;
 
@@ -27,13 +28,10 @@ public class RegisterDTO implements Serializable, RegisterContainer {
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", message = PASSWORD_VALIDATION_ERROR)
     private String password;
 
-    @NotBlank(message = "Confirm Password is required")
-    @JsonAlias("confirm_password")
-    private String confirmPassword;
-
     @Pattern(regexp = "^(CANDIDATE|EMPLOYER|ADMIN)$", message = INVALID_ROLE)
     private String role;
-    public boolean isPasswordMatching() {
-        return password == null || !password.equals(confirmPassword);
-    }
+
+    @Pattern(regexp = "^(ACTIVE|INACTIVE|LOCK|BAN)$", message = INVALID_STATUS)
+    private String status;
+
 }

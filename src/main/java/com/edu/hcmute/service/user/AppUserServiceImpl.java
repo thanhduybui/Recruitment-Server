@@ -2,14 +2,21 @@ package com.edu.hcmute.service.user;
 
 
 import com.edu.hcmute.constant.Message;
+import com.edu.hcmute.constant.Role;
+import com.edu.hcmute.constant.Status;
+import com.edu.hcmute.dto.AccountDTO;
 import com.edu.hcmute.dto.ProfileDTO;
+import com.edu.hcmute.dto.RegisterDTO;
+import com.edu.hcmute.dto.ResetPasswordDTO;
 import com.edu.hcmute.entity.AppUser;
 import com.edu.hcmute.exception.ResourceNotFoundException;
+import com.edu.hcmute.exception.UndefinedException;
 import com.edu.hcmute.mapper.AppUserMapper;
 import com.edu.hcmute.repository.AppUserRepository;
 import com.edu.hcmute.response.ResponseDataStatus;
 import com.edu.hcmute.response.ServiceResponse;
 import com.edu.hcmute.service.FileServiceImpl;
+import com.edu.hcmute.utils.BcryptUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -28,6 +35,18 @@ import static com.edu.hcmute.service.FileService.MAX_FILE_SIZE;
 public class AppUserServiceImpl implements AppUserService {
     private static final String UPDATE_USER_PROFILE_SUCCESS = "Cập nhật thông tin cá nhân thành công";
     private static final String GET_USER_PROFILE_SUCCESS = "Lấy thông tin cá nhân thành công";
+    private static final String USER_NOT_FOUND_BY_EMAIL = "Không tìm thấy người dùng với email %s";
+    private static final String INVALID_ROLE = "Không có quyền truy cập";
+    private static final String DELETE_USER_SUCCESS = "Khóa tài khoản thành công";
+    private static final String DELETE_USER_FAIL = "Khóa tài khoản không thành công";
+    private static final String CREATE_ACCOUNT_SUCCESS = "Tạo tài khoản thành công";
+    private static final String CREATE_ACCOUNT_FAIL = "Tạo tài khoản thất bại";
+    private static final String CHANGE_ACCOUNT_SUCCESS = "Thay đổi tài khoản thành công";
+    private static final String CHANGE_ACCOUNT_FAIL = "Thay đổi tài khoản không thành công";
+    private static final String RESET_PASSWORD_SUCCESS = "Đặt lại mật khẩu thành công";
+    private static final String RESET_PASSWORD_FAIL = "Đặt lại mật khẩu thất bại";
+    private static final String INCORRECT_PASSWORD = "Mật khẩu không đúng";
+    private static final Long MAX_FILE_SIZE = 10 * 1024 * 1024L;
 
 
     private final FileServiceImpl fileService;
@@ -42,7 +61,7 @@ public class AppUserServiceImpl implements AppUserService {
             AppUser user = appUserRepository.findByEmail(email)
                     .orElseThrow(() -> new ResourceNotFoundException(String.format(USER_NOT_FOUND_BY_EMAIL, email)));
 
-            String fileExtension = fileService.getExtension(multipartFile.getOriginalFilename());
+            String fileExtension = fileService.getExtension(Objects.requireNonNull(multipartFile.getOriginalFilename()));
 
             if (!extArray.contains(fileExtension)) {
                     return ServiceResponse.builder()
@@ -74,7 +93,7 @@ public class AppUserServiceImpl implements AppUserService {
                     .build();
 
         } catch (Exception e) {
-            log.error("Upload file failed: " + e.getMessage());
+            log.error("Upload file failed: {}", e.getMessage());
             return ServiceResponse.builder()
                     .status(ResponseDataStatus.ERROR)
                     .statusCode(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -127,6 +146,176 @@ public class AppUserServiceImpl implements AppUserService {
                 .statusCode(HttpStatus.OK)
                 .message(GET_USER_PROFILE_SUCCESS)
                 .data(Map.of("profile", profileDTO))
+                .build();
+    }
+
+    @Override
+    public ServiceResponse deleteUser(Long userId, String status) {
+
+        try {
+
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            AppUser user = this.appUserRepository.findByEmail(email).orElse(null);
+
+            AppUser deleteUser = this.appUserRepository.findById(userId).orElse(null);
+
+            if(user == null) {
+                return responseFail(INVALID_ROLE);
+            }
+
+            if(deleteUser == null) {
+                return responseFail(Message.USER_NOT_FOUND_BY_EMAIL);
+            }
+            else {
+                if(user.getRole() == Role.ADMIN) {
+
+                    deleteUser.setStatus(Status.valueOf(status));
+                    appUserRepository.save(deleteUser);
+
+                    return responseSuccess(DELETE_USER_SUCCESS);
+                }
+                else if(user.getRole() == Role.CANDIDATE || user.getRole() == Role.RECRUITER) {
+
+                    if(Objects.equals(user.getId(), userId)) {
+                        deleteUser.setStatus(Status.LOCK);
+                        appUserRepository.save(deleteUser);
+
+                        return responseSuccess(DELETE_USER_SUCCESS);
+                    }
+                    else {
+                        return responseFail(INVALID_ROLE);
+                    }
+                }
+            }
+
+            return responseFail(INVALID_ROLE);
+        }
+        catch (Exception e) {
+            log.error("Delete user failed: {}", e.getMessage());
+            throw new UndefinedException(DELETE_USER_FAIL);
+        }
+    }
+
+    @Override
+    public ServiceResponse createUser(RegisterDTO registerDTO) {
+
+       try {
+           AppUser user = appUserRepository.findByEmail(registerDTO.getEmail().trim())
+                   .orElse(null);
+
+           if (user != null) {
+              return responseFail(Message.EMAIL_ALREADY_EXISTS);
+           }
+
+           if (registerDTO.isPasswordMatching()) {
+               return responseFail(Message.PASSWORD_NOT_MATCHING);
+           }
+
+           AppUser appUser = AppUser.builder()
+                   .email(registerDTO.getEmail())
+                   .password(BcryptUtils.hashPassword(registerDTO.getPassword()))
+                   .fullName(registerDTO.getFullName())
+                   .role(Role.valueOf(registerDTO.getRole()))
+                   .status(Status.ACTIVE)
+                   .build();
+
+           appUserRepository.save(appUser);
+
+           return responseSuccess(CREATE_ACCOUNT_SUCCESS);
+       }
+       catch (Exception e) {
+           log.error("Create user failed: {}", e.getMessage());
+           throw new UndefinedException(CREATE_ACCOUNT_FAIL);
+       }
+    }
+
+    @Override
+    public ServiceResponse changeInfoUser(AccountDTO accountDTO) {
+
+        try{
+
+            AppUser user = appUserRepository.findById(accountDTO.getId()).orElse(null);
+
+
+            if(user == null) {
+                return responseFail(USER_NOT_FOUND_BY_EMAIL);
+            }
+
+            if(accountDTO.getStatus() != null) {
+                user.setStatus(Status.valueOf(accountDTO.getStatus()));
+            }
+            if(accountDTO.getRole() != null) {
+                user.setRole(Role.valueOf(accountDTO.getRole()));
+            }
+            if(accountDTO.getEmail() != null) {
+                user.setEmail(accountDTO.getEmail());
+            }
+            if(accountDTO.getFullName() != null) {
+                user.setFullName(accountDTO.getFullName());
+            }
+            if(accountDTO.getPassword() != null) {
+                user.setPassword(BcryptUtils.hashPassword(accountDTO.getPassword()));
+            }
+
+            System.out.println(user);
+
+            appUserRepository.save(user);
+
+            return responseSuccess(CHANGE_ACCOUNT_SUCCESS);
+        }
+        catch (Exception e) {
+            log.error("Change user failed: {}", e.getMessage());
+            throw new UndefinedException(CHANGE_ACCOUNT_FAIL);
+        }
+    }
+
+    @Override
+    public ServiceResponse resetPassword(ResetPasswordDTO resetPasswordDTO) {
+
+        try {
+
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            AppUser user = this.appUserRepository.findByEmail(email).orElse(null);
+
+            if(user == null) {
+                return responseFail(INVALID_ROLE);
+            }
+
+            // False
+            if (resetPasswordDTO.isPasswordMatching()) {
+                return responseFail(Message.PASSWORD_NOT_MATCHING);
+            }
+
+            // True
+            if(!BcryptUtils.verifyPassword(resetPasswordDTO.getOld_password(), user.getPassword())) {
+                return responseFail(INCORRECT_PASSWORD);
+            }
+
+            user.setPassword(BcryptUtils.hashPassword(resetPasswordDTO.getNew_password()));
+            appUserRepository.save(user);
+
+            return responseSuccess(RESET_PASSWORD_SUCCESS);
+        }
+        catch (Exception e) {
+            log.error("Reset password failed: {}", e.getMessage());
+            throw new UndefinedException(RESET_PASSWORD_FAIL);
+        }
+    }
+
+    public ServiceResponse responseFail(String message) {
+
+        return ServiceResponse.builder()
+                .statusCode(HttpStatus.BAD_REQUEST)
+                .status(ResponseDataStatus.ERROR)
+                .message(message)
+                .build();
+    }
+    public ServiceResponse responseSuccess(String message) {
+
+        return ServiceResponse.builder()
+                .statusCode(HttpStatus.OK)
+                .status(ResponseDataStatus.SUCCESS)
+                .message(message)
                 .build();
     }
 }

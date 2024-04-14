@@ -23,7 +23,6 @@ public class UserDetailServiceImpl implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(
                         String.format(Message.USER_NOT_FOUND_BY_EMAIL, email)));
 
-        AuthUser userDetail = AuthUser.create(user);
-        return userDetail;
+        return AuthUser.create(user);
     }
 }

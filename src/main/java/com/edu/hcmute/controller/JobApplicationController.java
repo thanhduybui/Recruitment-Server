@@ -23,10 +23,10 @@ public class JobApplicationController {
         ServiceResponse serviceResponse = jobApplicationService.createJobApplication(jobApplicationRequestBody);
         return ResponseEntity.status(serviceResponse.getStatusCode())
                 .body(ResponseData.builder()
-                .status(serviceResponse.getStatus())
-                .message(serviceResponse.getMessage())
-                .data(serviceResponse.getData())
-                .build());
+                        .status(serviceResponse.getStatus())
+                        .message(serviceResponse.getMessage())
+                        .data(serviceResponse.getData())
+                        .build());
     }
 
     @GetMapping("/get-all")
@@ -39,6 +39,18 @@ public class JobApplicationController {
                         .data(serviceResponse.getData()).build());
     }
 
+    @GetMapping("/get-all-by-job")
+    @PreAuthorize("hasAnyAuthority('RECRUITER')")
+    public ResponseEntity<ResponseData> getAllJobApplicationByJob(@RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
+                                                                  @RequestParam(value = "size", defaultValue = "10", required = false) Integer size,
+                                                                  @RequestParam(value = "jobId") Long jobId) {
+        ServiceResponse serviceResponse = jobApplicationService.getAllJobApplicationByJob(page, size, jobId);
+        return ResponseEntity.status(serviceResponse.getStatusCode())
+                .body(ResponseData.builder()
+                        .message(serviceResponse.getMessage())
+                        .data(serviceResponse.getData())
+                        .build());
+    }
 
     @PreAuthorize("hasAnyAuthority('CANDIDATE')")
     @GetMapping("/candidate")
@@ -53,3 +65,4 @@ public class JobApplicationController {
 
 
 }
+
