@@ -18,7 +18,7 @@ public class JobApplication {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     @Column(name = "email")
     private String email;
     @Column(name = "phone")

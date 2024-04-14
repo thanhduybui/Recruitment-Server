@@ -13,6 +13,7 @@ import com.edu.hcmute.utils.CustomClaim;
 import com.edu.hcmute.utils.JwtUtils;
 import com.edu.hcmute.utils.MailUtils;
 import com.google.auth.oauth2.OAuth2Credentials;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;

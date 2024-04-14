@@ -1,15 +1,18 @@
 package com.edu.hcmute.service;
 
 import com.edu.hcmute.constant.JobApplicationStatus;
+import com.edu.hcmute.dto.JobApplicationDTO;
 import com.edu.hcmute.dto.JobApplicationRequestBody;
 
 import com.edu.hcmute.entity.AppUser;
 import com.edu.hcmute.entity.Company;
 import com.edu.hcmute.entity.Job;
 import com.edu.hcmute.entity.JobApplication;
+import com.edu.hcmute.exception.ResourceNotFoundException;
 import com.edu.hcmute.exception.UndefinedException;
 import com.edu.hcmute.mapper.JobApplicationMapper;
 import com.edu.hcmute.repository.AppUserRepository;
+import com.edu.hcmute.repository.CvRepository;
 import com.edu.hcmute.repository.JobApplicationRepository;
 
 import com.edu.hcmute.repository.JobRepository;
@@ -23,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -31,6 +35,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -46,72 +52,70 @@ public class JobApplicationService {
     private static final String GET_ALL_BY_JOB_FAIL = "Lấy tất cả đơn ứng tuyển của công việc thất bại";
     private static final String REQUEST_METHOD_INVALID = "Phương thức không hợp lệ";
 
+    private static final String CV_NOT_FOUND = "Không tìm thấy CV";
+
+    private static final String JOB_NOT_FOUND = "Không tìm thấy công việc";
+    private static final String USER_NOT_FOUND = "Không tìm thấy người dùng";
 
 
     private final JobApplicationMapper jobApplicationMapper;
     private final JobApplicationRepository jobApplicationRepository;
     private final AppUserRepository appUserRepository;
     private final JobRepository jobRepository;
+    private final CvRepository cvRepository;
+
+
+    public AppUser getUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<AppUser> appUser = appUserRepository.findByEmail(email);
+        return appUser.orElse(null);
+    }
 
 
     public ServiceResponse createJobApplication(JobApplicationRequestBody jobApplicationRequestBody) {
-        try {
-            JobApplication newJobApplication = jobApplicationMapper.jobApplicationRequestBodyToJobApplication(jobApplicationRequestBody);
-            List<JobApplication> applications = getByUser(jobApplicationRequestBody.getUserId());
 
+        List<JobApplication> applications;
+        JobApplication newJobApplication = jobApplicationMapper.jobApplicationRequestBodyToJobApplication(jobApplicationRequestBody);
+
+        cvRepository.findById(Long.valueOf(jobApplicationRequestBody.getCvId())).orElseThrow(() -> new ResourceNotFoundException(CV_NOT_FOUND));
+
+        jobRepository.findById(jobApplicationRequestBody.getJobId()).orElseThrow(() -> new ResourceNotFoundException(JOB_NOT_FOUND));
+
+        if (getUser() != null) {
+            newJobApplication.setAppUser(getUser());
+
+            applications = jobApplicationRepository.findByAppUserId(getUser().getId());
             boolean check = false;
-
-            for(JobApplication item : applications) {
+            for (JobApplication item : applications) {
                 if (Objects.equals(item.getJob().getId(), jobApplicationRequestBody.getJobId())) {
                     check = true;
                     break;
                 }
             }
 
-            if(check) {
-
-                System.out.println("Why not");
-
+            if (check) {
                 return ServiceResponse.builder()
                         .status(ResponseDataStatus.ERROR)
-                        .statusCode(HttpStatus.BAD_REQUEST)
+                        .statusCode(HttpStatus.CREATED)
                         .message(USER_APPLIED_JOB_APPLICATION)
                         .build();
 
-
-            }
-            else {
-                newJobApplication.setApplyStatus(JobApplicationStatus.APPLIED);
-
-                jobApplicationRepository.save(newJobApplication);
-
-                return ServiceResponse.builder()
-                        .status(ResponseDataStatus.SUCCESS)
-                        .statusCode(HttpStatus.CREATED)
-                        .message(CREATE_JOB_APPLICATION_SUCCESS)
-                        .build();
             }
 
         }
-        catch (Exception e) {
-            log.error(e.getMessage());
-            throw new UndefinedException(CREATE_JOB_APPLICATION_FAILURE);
-        }
+
+        newJobApplication.setApplyStatus(JobApplicationStatus.APPLIED);
+
+        jobApplicationRepository.save(newJobApplication);
+
+        return ServiceResponse.builder()
+                .status(ResponseDataStatus.SUCCESS)
+                .statusCode(HttpStatus.CREATED)
+                .message(CREATE_JOB_APPLICATION_SUCCESS)
+                .build();
+
     }
-    public Boolean checkAppliedJobApplication(Long jobId , String email) {
-//        List<JobApplication> jobApplication = this.jobApplicationRepository.findAll();
-//        this.jobApplicationRepository.flush();
-//        System.out.println(jobApplication);
-//
-//        for (JobApplication item : jobApplication) {
-//            if(Objects.equals(item.getAppUser().getId(), appUser.getId())) {
-//                if(Objects.equals(item.getJob().getId(), job.getId())) {
-//                    return true;
-//                }
-//            }
-//        }
-        return false;
-    }
+
 
     public ServiceResponse getAll() {
         try {
@@ -121,42 +125,52 @@ public class JobApplicationService {
                     .status(ResponseDataStatus.SUCCESS)
                     .statusCode(HttpStatus.OK)
                     .message(GET_ALL_SUCCESS)
-                    .data(Map.of("job_applications",listJobApplication)).build();
-        }
-        catch (Exception e) {
+                    .data(Map.of("job_applications", listJobApplication)).build();
+        } catch (Exception e) {
             log.error(e.getMessage());
             throw new UndefinedException(CREATE_JOB_APPLICATION_FAILURE);
         }
     }
 
-    public List<JobApplication> getByUser(Long userId) {
+
+    public ServiceResponse getAllByCandidate() {
         try {
-            return jobApplicationRepository.findByAppUserId(userId);
-        }
-        catch (Exception e) {
+            AppUser user = getUser();
+
+            List<JobApplication> listJobApplication = jobApplicationRepository.findByAppUserId(user.getId());
+            List<JobApplicationDTO> jobApplicationDTOs = listJobApplication.stream()
+                    .map(jobApplicationMapper::jobApplicationToJobApplicationDTO)
+                    .toList();
+
+            PagingResponseData pagingResponseData = PagingResponseData.builder()
+                    .listData(jobApplicationDTOs)
+                    .build();
+
+            return ServiceResponse.builder()
+                    .status(ResponseDataStatus.SUCCESS)
+                    .statusCode(HttpStatus.OK)
+                    .message(GET_ALL_SUCCESS)
+                    .data(Map.of("job_applications", pagingResponseData)).build();
+        } catch (Exception e) {
             log.error(e.getMessage());
-            throw e;
+            throw new UndefinedException("Lấy thông tin đơn ứng tuyển thất bại");
         }
     }
 
-    public ServiceResponse getAllJobApplicationByJob(Integer page, Integer size,Long jobId) {
-        Instant conditionRenderTime = Instant.now().minusSeconds(24*7*60*60);
-
+    public ServiceResponse getAllJobApplicationByJob(Integer page, Integer size, Long jobId) {
         try {
-
-            if(!checkValidMethod(jobId)) {
+            if (!checkValidJob(jobId)) {
                 return ServiceResponse.builder()
                         .status(ResponseDataStatus.ERROR)
                         .statusCode(HttpStatus.BAD_REQUEST)
-                        .message(REQUEST_METHOD_INVALID)
+                        .message(JOB_NOT_FOUND)
                         .build();
             }
 
 
-            Pageable pageable = PageRequest.of(page,size);
-            Page<JobApplication> jobApplicationPage = jobApplicationRepository.findAllByJobId(jobId,pageable);
+            Pageable pageable = PageRequest.of(page, size);
+            Page<JobApplication> jobApplicationPage = jobApplicationRepository.findAllByJobId(jobId, pageable);
 
-            System.out.println("Check");
 
             PagingResponseData data = PagingResponseData.builder()
                     .totalPages(jobApplicationPage.getTotalPages())
@@ -170,10 +184,9 @@ public class JobApplicationService {
                     .status(ResponseDataStatus.SUCCESS)
                     .statusCode(HttpStatus.OK)
                     .message(GET_ALL_BY_JOB_SUCEESS)
-                    .data(Map.of("job-applications",data)).build();
+                    .data(Map.of("job-applications", data)).build();
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage());
             System.out.println(e.getMessage());
             throw new UndefinedException(GET_ALL_BY_JOB_FAIL);
@@ -187,24 +200,22 @@ public class JobApplicationService {
         return appUserRepository.findByEmail(email).orElse(null);
     }
 
-    public Boolean checkValidMethod(Long jobId) {
+    public Boolean checkValidJob(Long jobId) {
         AppUser recruiter = getRecruiter();
 
-        if(recruiter == null) {
+        if (recruiter == null) {
             return false;
         }
 
         Job job = jobRepository.findById(jobId).orElse(null);
 
-        if(job == null) {
+        if (job == null) {
             return false;
         }
 
-        if(job.getCompany().getRecruiter() == recruiter) {
-            return true;
-        }
 
-        return false;
+
+        return true;
     }
 
 }

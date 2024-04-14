@@ -2,6 +2,7 @@ package com.edu.hcmute.service;
 
 
 import com.edu.hcmute.constant.Status;
+import com.edu.hcmute.dto.CandidateJobDTO;
 import com.edu.hcmute.dto.JobDTO;
 import com.edu.hcmute.dto.JobFilterCriteria;
 import com.edu.hcmute.dto.JobRequestBody;
@@ -12,6 +13,7 @@ import com.edu.hcmute.exception.ResourceNotFoundException;
 import com.edu.hcmute.exception.UndefinedException;
 import com.edu.hcmute.mapper.JobMapper;
 import com.edu.hcmute.repository.AppUserRepository;
+import com.edu.hcmute.repository.FavoriteJobRepository;
 import com.edu.hcmute.repository.JobRepository;
 import com.edu.hcmute.response.PagingResponseData;
 import com.edu.hcmute.response.ResponseDataStatus;
@@ -26,7 +28,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -46,6 +51,7 @@ public class JobService {
     private final JobRepository jobRepository;
     private final AppUserRepository appUserRepository;
     private final JobMapper jobMapper;
+    private final FavoriteJobRepository favoriteJobRepository;
     public ServiceResponse create(JobRequestBody jobRequestBody) {
         try {
             if (!checkValidPost()){
@@ -139,6 +145,14 @@ public class JobService {
         }
     }
 
+    private boolean checkFavoriteJob(Long userId, Long jobId) {
+         log.info(String.valueOf(favoriteJobRepository.existsByUserIdAndJobId(userId, jobId)));
+         return favoriteJobRepository.existsByUserIdAndJobId(userId, jobId);
+    }
+
+
+
+
     public ServiceResponse getAll(Integer page, Integer size, JobFilterCriteria filterCriteria) {
         Instant conditionRenderTime = Instant.now().minusSeconds(24*7*60*60);
         try {
@@ -156,12 +170,25 @@ public class JobService {
                         conditionRenderTime,
                         pageable);
 
+            List<CandidateJobDTO> jobDTOs = jobs.getContent().stream().map(jobMapper::jobToCandidateJobDTO).toList();
+
+
+
+            if (!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")) {
+                String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+                Optional<AppUser> userOptional = appUserRepository.findByEmail(userEmail);
+                if (userOptional.isPresent()) {
+                    AppUser user = userOptional.get();
+                    jobDTOs = jobDTOs.stream().peek(jobDTO -> jobDTO.setIsFavorite(checkFavoriteJob(user.getId(), jobDTO.getId()))).toList(); // Collect the stream to a list
+                }
+            }
+
             PagingResponseData data = PagingResponseData.builder()
                     .totalPages(jobs.getTotalPages())
                     .currentPage(jobs.getNumber())
                     .totalItems(jobs.getTotalElements())
                     .pageSize(jobs.getSize())
-                    .listData(jobs.getContent().stream().map(jobMapper::jobToCandidateJobDTO))
+                    .listData(jobDTOs)
                     .build();
             return ServiceResponse.builder()
                     .status(ResponseDataStatus.SUCCESS)
