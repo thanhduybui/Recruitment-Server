@@ -2,6 +2,7 @@ package com.edu.hcmute.entity;
 
 
 import com.edu.hcmute.constant.Gender;
+import com.edu.hcmute.constant.LoginType;
 import com.edu.hcmute.constant.Role;
 import com.edu.hcmute.constant.Status;
 import jakarta.persistence.*;
@@ -9,6 +10,7 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 import java.util.List;
@@ -20,6 +22,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
+@EntityListeners(AuditingEntityListener.class)
 public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,6 +52,10 @@ public class AppUser {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @Column(name = "login_type")
+    @Enumerated(EnumType.STRING)
+    private LoginType loginType;
 
     @Lob
     @Column(name = "avatar_url")

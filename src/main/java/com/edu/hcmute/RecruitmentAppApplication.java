@@ -11,7 +11,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import java.util.Optional;
 
 @SpringBootApplication
-@EnableJpaAuditing(auditorAwareRef = "auditorProvider")
+@EnableJpaAuditing()
 public class RecruitmentAppApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(RecruitmentAppApplication.class, args);

@@ -1,11 +1,15 @@
 package com.edu.hcmute.utils;
 
+import com.edu.hcmute.dto.CredentialDTO;
 import com.edu.hcmute.entity.AppUser;
 import com.edu.hcmute.repository.AppUserRepository;
+import com.google.api.client.json.Json;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import com.google.gson.Gson;
 
+import java.util.Base64;
 import java.util.Date;
 
 @Slf4j
@@ -48,6 +52,19 @@ public class JwtUtils {
 
     public static boolean isTokenValid(String token) {
         return parseToken(token) != null;
+    }
+
+
+    public static CredentialDTO decodeToken(String token) {
+        String[] chunks = token.split("\\.");
+
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+        String header = new String(decoder.decode(chunks[0]));
+        String payload = new String(decoder.decode(chunks[1]));
+
+        Gson gson = new Gson();
+
+        return gson.fromJson(payload, CredentialDTO.class);
     }
 
 }
