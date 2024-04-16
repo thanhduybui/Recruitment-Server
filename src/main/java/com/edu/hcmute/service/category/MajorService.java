@@ -1,4 +1,4 @@
-package com.edu.hcmute.service;
+package com.edu.hcmute.service.category;
 
 
 import com.edu.hcmute.constant.Status;
@@ -10,6 +10,7 @@ import com.edu.hcmute.mapper.MajorMapper;
 import com.edu.hcmute.repository.MajorRepository;
 import com.edu.hcmute.response.ResponseDataStatus;
 import com.edu.hcmute.response.ServiceResponse;
+import com.edu.hcmute.service.category.GenericService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;

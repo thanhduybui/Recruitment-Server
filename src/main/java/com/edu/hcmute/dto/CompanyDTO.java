@@ -14,4 +14,6 @@ public class CompanyDTO {
     private String webUrl;
     private String image;
     private String status;
+    private String businessLicense;
+    private Boolean isVerified;
 }

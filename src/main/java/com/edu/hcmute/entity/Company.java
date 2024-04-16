@@ -46,6 +46,9 @@ public class Company {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
+    @Lob
+    @Column(name = "business_license")
+    private String businessLicense;
     @CreatedDate
     @Column(name = "created_at")
     private Instant createdAt;

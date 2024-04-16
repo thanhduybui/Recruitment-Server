@@ -3,7 +3,7 @@ package com.edu.hcmute.controller;
 
 import com.edu.hcmute.response.ResponseData;
 import com.edu.hcmute.response.ServiceResponse;
-import com.edu.hcmute.service.ExperienceRangeService;
+import com.edu.hcmute.service.category.ExperienceRangeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

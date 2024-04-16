@@ -11,6 +11,7 @@ import com.edu.hcmute.repository.AppUserRepository;
 import com.edu.hcmute.repository.CvRepository;
 import com.edu.hcmute.response.ResponseDataStatus;
 import com.edu.hcmute.response.ServiceResponse;
+import com.edu.hcmute.service.file.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

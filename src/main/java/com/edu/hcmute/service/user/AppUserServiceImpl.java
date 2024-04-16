@@ -13,7 +13,7 @@ import com.edu.hcmute.repository.AppUserRepository;
 import com.edu.hcmute.response.PagingResponseData;
 import com.edu.hcmute.response.ResponseDataStatus;
 import com.edu.hcmute.response.ServiceResponse;
-import com.edu.hcmute.service.FileServiceImpl;
+import com.edu.hcmute.service.file.FileServiceImpl;
 import com.edu.hcmute.utils.BcryptUtils;
 import com.edu.hcmute.utils.ResponseUtils;
 import lombok.RequiredArgsConstructor;
@@ -28,9 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.edu.hcmute.constant.Message.USER_NOT_FOUND_BY_EMAIL;
-import static com.edu.hcmute.service.FileService.MAX_FILE_SIZE;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -357,6 +354,55 @@ public class AppUserServiceImpl implements AppUserService {
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new UndefinedException("Lỗi không xác định");
+        }
+    }
+
+    @Override
+    public ServiceResponse uploadBusinessLicense(MultipartFile multipartFile) {
+        List<String> extArray = Arrays.asList(".pdf", ".doc", ".docx");
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        try {
+            AppUser user = appUserRepository.findByEmail(email)
+                    .orElseThrow(() -> new ResourceNotFoundException(String.format(USER_NOT_FOUND_BY_EMAIL, email)));
+
+            String fileExtension = fileService.getExtension(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+
+            if (!extArray.contains(fileExtension)) {
+                return ServiceResponse.builder()
+                        .status(ResponseDataStatus.ERROR)
+                        .statusCode(HttpStatus.BAD_REQUEST)
+                        .message(Message.FILE_EXTENSION_NOT_SUPPORT)
+                        .build();
+            }
+
+            if (multipartFile.getSize() > MAX_FILE_SIZE) {
+                return ServiceResponse.builder()
+                        .status(ResponseDataStatus.ERROR)
+                        .statusCode(HttpStatus.BAD_REQUEST)
+                        .message(Message.FILE_SIZE_EXCEEDED_LIMIT)
+                        .build();
+            }
+
+            String fileName = UUID.randomUUID() + fileExtension;
+            String imgUrl = fileService.uploadFile(multipartFile, fileName);
+
+            user.getCompany().setBusinessLicense(imgUrl);
+            appUserRepository.save(user);
+
+            return ServiceResponse.builder()
+                    .status(ResponseDataStatus.SUCCESS)
+                    .statusCode(HttpStatus.OK)
+                    .message(Message.UPLOAD_FILE_SUCCESS)
+                    .data(Map.of("business_license", imgUrl))
+                    .build();
+
+        } catch (Exception e) {
+            log.error("Upload file failed: {}", e.getMessage());
+            return ServiceResponse.builder()
+                    .status(ResponseDataStatus.ERROR)
+                    .statusCode(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .message(Message.UPLOAD_FILE_FAILED)
+                    .build();
         }
     }
 
