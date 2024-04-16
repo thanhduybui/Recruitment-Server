@@ -124,7 +124,6 @@ public class UserController {
 
     @PutMapping("/reset-password")
     public ResponseEntity<ResponseData> resetPassword(@RequestBody @Valid ResetPasswordDTO resetPasswordDTO) {
-
         ServiceResponse serviceResponse = appUserService.resetPassword(resetPasswordDTO);
         return ResponseEntity.status(serviceResponse.getStatusCode())
                 .body(ResponseData.builder()
@@ -133,4 +132,6 @@ public class UserController {
                         .data(serviceResponse.getData())
                         .build());
     }
+
+
 }

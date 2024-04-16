@@ -1,4 +1,4 @@
-package com.edu.hcmute.service;
+package com.edu.hcmute.service.category;
 
 
 import com.edu.hcmute.response.ServiceResponse;

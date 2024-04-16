@@ -1,4 +1,4 @@
-package com.edu.hcmute.service;
+package com.edu.hcmute.service.job;
 
 import com.edu.hcmute.constant.JobApplyStatus;
 import com.edu.hcmute.dto.JobApplicationDTO;

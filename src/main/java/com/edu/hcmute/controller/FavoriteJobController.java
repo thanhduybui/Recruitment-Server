@@ -2,10 +2,9 @@ package com.edu.hcmute.controller;
 
 
 import com.edu.hcmute.dto.FavoriteJobDTO;
-import com.edu.hcmute.dto.JobRequestBody;
 import com.edu.hcmute.response.ResponseData;
 import com.edu.hcmute.response.ServiceResponse;
-import com.edu.hcmute.service.FavoriteJobService;
+import com.edu.hcmute.service.job.FavoriteJobService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.edu.hcmute.service;
+package com.edu.hcmute.service.job;
 
 import com.edu.hcmute.dto.FavoriteJobDTO;
 import com.edu.hcmute.entity.AppUser;

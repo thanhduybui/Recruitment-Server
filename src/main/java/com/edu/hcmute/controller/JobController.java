@@ -6,7 +6,7 @@ import com.edu.hcmute.dto.JobFilterCriteria;
 import com.edu.hcmute.dto.JobRequestBody;
 import com.edu.hcmute.response.ResponseData;
 import com.edu.hcmute.response.ServiceResponse;
-import com.edu.hcmute.service.JobService;
+import com.edu.hcmute.service.job.JobService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

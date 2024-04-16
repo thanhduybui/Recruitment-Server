@@ -1,4 +1,4 @@
-package com.edu.hcmute.service;
+package com.edu.hcmute.service.mail;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

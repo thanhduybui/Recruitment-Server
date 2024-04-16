@@ -4,7 +4,7 @@ package com.edu.hcmute.controller;
 import com.edu.hcmute.dto.OptionDTO;
 import com.edu.hcmute.response.ResponseData;
 import com.edu.hcmute.response.ServiceResponse;
-import com.edu.hcmute.service.WorkModeService;
+import com.edu.hcmute.service.category.WorkModeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

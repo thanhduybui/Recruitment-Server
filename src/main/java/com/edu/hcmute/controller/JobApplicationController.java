@@ -3,7 +3,7 @@ package com.edu.hcmute.controller;
 import com.edu.hcmute.dto.JobApplicationRequestBody;
 import com.edu.hcmute.response.ResponseData;
 import com.edu.hcmute.response.ServiceResponse;
-import com.edu.hcmute.service.JobApplicationService;
+import com.edu.hcmute.service.job.JobApplicationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

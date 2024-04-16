@@ -1,6 +1,6 @@
 package com.edu.hcmute.utils;
 
-import com.edu.hcmute.service.EmailSender;
+import com.edu.hcmute.service.mail.EmailSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;

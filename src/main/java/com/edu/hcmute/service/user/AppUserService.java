@@ -22,16 +22,23 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 public interface AppUserService {
-   ServiceResponse changeUserAvatar(MultipartFile multipartFile);
+    ServiceResponse changeUserAvatar(MultipartFile multipartFile);
 
     ServiceResponse updateUserProfile(ProfileDTO profileDTO);
+
     ServiceResponse getUserProfile();
+
     ServiceResponse deleteUser(Long userId, String status);
+
     ServiceResponse createUser(RegisterDTO registerDTO);
+
     ServiceResponse changeInfoUser(AccountDTO accountDTO);
+
     ServiceResponse resetPassword(ResetPasswordDTO resetPasswordDTO);
 
     ServiceResponse getAllUserByRole(Integer page, Integer size, String role);
 
- ServiceResponse searchUser(String email);
+    ServiceResponse searchUser(String email);
+
+    ServiceResponse uploadBusinessLicense(MultipartFile multipartFile);
 }
