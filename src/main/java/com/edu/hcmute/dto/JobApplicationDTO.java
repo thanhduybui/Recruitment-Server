@@ -1,13 +1,8 @@
 package com.edu.hcmute.dto;
 
-import com.edu.hcmute.constant.JobApplicationStatus;
-import com.edu.hcmute.entity.AppUser;
-import com.edu.hcmute.entity.CV;
-import com.edu.hcmute.entity.Job;
+import com.edu.hcmute.constant.JobApplyStatus;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Data;
-
-import java.time.Instant;
 
 @Data
 public class JobApplicationDTO {
@@ -23,12 +18,12 @@ public class JobApplicationDTO {
     @JsonAlias("job_id")
     private CandidateJobDTO job;
 
-    @JsonAlias("create_at")
-    private String createAt;
+    @JsonAlias("created_at")
+    private String createdAt;
 
-    @JsonAlias("update_at")
-    private String updateAt;
+    @JsonAlias("updated_at")
+    private String updatedAt;
 
-    @JsonAlias("apply_status")
-    private JobApplicationStatus jobApplicationStatus;
+    @JsonAlias("status")
+    private JobApplyStatus status;
 }

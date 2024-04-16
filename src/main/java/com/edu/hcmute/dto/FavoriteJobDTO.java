@@ -8,8 +8,5 @@ import lombok.Data;
 
 @Data
 public class FavoriteJobDTO {
-
-    @Pattern(regexp = "^[0-9]$", message = Message.INVALID_JOB)
-    @NotNull(message = Message.INVALID_JOB)
     private Long jobId;
 }

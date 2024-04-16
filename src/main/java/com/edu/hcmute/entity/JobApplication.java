@@ -1,12 +1,13 @@
 package com.edu.hcmute.entity;
 
 
-import com.edu.hcmute.constant.JobApplicationStatus;
+import com.edu.hcmute.constant.JobApplyStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 
@@ -14,6 +15,7 @@ import java.time.Instant;
 @Data
 @Table(name = "job_application")
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class JobApplication {
     @Id
     @Column(name = "id")
@@ -47,8 +49,7 @@ public class JobApplication {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
-    @Column(name = "apply_status" , nullable = false)
+    @Column(name = "status" , nullable = false)
     @Enumerated(EnumType.STRING)
-    private JobApplicationStatus applyStatus;
-
+    private JobApplyStatus status;
 }

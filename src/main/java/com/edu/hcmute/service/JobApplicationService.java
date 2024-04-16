@@ -1,11 +1,10 @@
 package com.edu.hcmute.service;
 
-import com.edu.hcmute.constant.JobApplicationStatus;
+import com.edu.hcmute.constant.JobApplyStatus;
 import com.edu.hcmute.dto.JobApplicationDTO;
 import com.edu.hcmute.dto.JobApplicationRequestBody;
 
 import com.edu.hcmute.entity.AppUser;
-import com.edu.hcmute.entity.Company;
 import com.edu.hcmute.entity.Job;
 import com.edu.hcmute.entity.JobApplication;
 import com.edu.hcmute.exception.ResourceNotFoundException;
@@ -31,7 +30,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -104,7 +102,7 @@ public class JobApplicationService {
 
         }
 
-        newJobApplication.setApplyStatus(JobApplicationStatus.APPLIED);
+        newJobApplication.setStatus(JobApplyStatus.PENDING);
 
         jobApplicationRepository.save(newJobApplication);
 
@@ -177,7 +175,7 @@ public class JobApplicationService {
                     .currentPage(jobApplicationPage.getNumber())
                     .totalItems(jobApplicationPage.getTotalElements())
                     .pageSize(jobApplicationPage.getSize())
-                    .listData(jobApplicationPage.getContent().stream().map(jobApplicationMapper::jobApplicationToGetJobApplicationDTO))
+                    .listData(jobApplicationPage.getContent().stream().map(jobApplicationMapper::jobApplicationToJobApplicationDTO))
                     .build();
 
             return ServiceResponse.builder()

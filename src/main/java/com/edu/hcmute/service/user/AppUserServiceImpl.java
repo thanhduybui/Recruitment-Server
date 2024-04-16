@@ -270,6 +270,7 @@ public class AppUserServiceImpl implements AppUserService {
             return responseSuccess(CHANGE_ACCOUNT_SUCCESS);
         }
         catch (Exception e) {
+
             log.error("Change user failed: {}", e.getMessage());
             throw new UndefinedException(CHANGE_ACCOUNT_FAIL);
         }

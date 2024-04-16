@@ -1,6 +1,5 @@
 package com.edu.hcmute.mapper;
 
-import com.edu.hcmute.dto.GetJobApplicationDTO;
 import com.edu.hcmute.dto.JobApplicationDTO;
 import com.edu.hcmute.dto.JobApplicationRequestBody;
 import com.edu.hcmute.entity.JobApplication;
@@ -15,12 +14,6 @@ public interface JobApplicationMapper {
     @Mapping(source = "name" , target = "name")
     JobApplication jobApplicationRequestBodyToJobApplication(JobApplicationRequestBody jobApplicationRequestBody);
 
-    @Mapping(source = "job.id", target = "jobId")
-    @Mapping(source = "cv.id" , target = "cvId")
-    @Mapping(source = "applyStatus" , target = "jobApplicationStatus")
-    @Mapping(source = "createdAt" , target = "createAt")
-    @Mapping(source = "updatedAt" , target = "updateAt")
-    GetJobApplicationDTO jobApplicationToGetJobApplicationDTO(JobApplication jobApplication);
 
     JobApplicationDTO jobApplicationToJobApplicationDTO(JobApplication jobApplication);
 }
