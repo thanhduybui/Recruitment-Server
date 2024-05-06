@@ -25,6 +25,8 @@ public class JobMapperHelper {
     private final CompanyRepository companyRepository;
     private final SkillRepository skillRepository;
     private final WorkModeRepository workModeRepository;
+
+    private final LocationRepository locationRepository;
     private static final String CAN_NOT_PARSE_TIME = "Không thể chuyển đổi thời gian";
 
     public Field mapFieldIdToField(Integer fieldId) {
@@ -78,6 +80,13 @@ public class JobMapperHelper {
     public WorkMode mapWorkModeIdToWorkMode(Integer workModeId) {
         if (workModeId != null) {
             return workModeRepository.findById(workModeId).orElse(null);
+        }
+        return null;
+    }
+
+    public Location mapLocationIdToWorkLocation(Integer locationId) {
+        if (locationId != null) {
+            return locationRepository.findById(locationId).orElse(null);
         }
         return null;
     }

@@ -67,11 +67,11 @@ public class AppUserServiceImpl implements AppUserService {
             String fileExtension = fileService.getExtension(Objects.requireNonNull(multipartFile.getOriginalFilename()));
 
             if (!extArray.contains(fileExtension)) {
-                    return ServiceResponse.builder()
-                            .status(ResponseDataStatus.ERROR)
-                            .statusCode(HttpStatus.BAD_REQUEST)
-                            .message(Message.FILE_EXTENSION_NOT_SUPPORT)
-                            .build();
+                return ServiceResponse.builder()
+                        .status(ResponseDataStatus.ERROR)
+                        .statusCode(HttpStatus.BAD_REQUEST)
+                        .message(Message.FILE_EXTENSION_NOT_SUPPORT)
+                        .build();
             }
 
             if (multipartFile.getSize() > MAX_FILE_SIZE) {
@@ -162,38 +162,34 @@ public class AppUserServiceImpl implements AppUserService {
 
             AppUser deleteUser = this.appUserRepository.findById(userId).orElse(null);
 
-            if(user == null) {
+            if (user == null) {
                 return responseFail(INVALID_ROLE);
             }
 
-            if(deleteUser == null) {
+            if (deleteUser == null) {
                 return responseFail(Message.USER_NOT_FOUND_BY_EMAIL);
-            }
-            else {
-                if(user.getRole() == Role.ADMIN) {
+            } else {
+                if (user.getRole() == Role.ADMIN) {
 
                     deleteUser.setStatus(Status.valueOf(status));
                     appUserRepository.save(deleteUser);
 
                     return responseSuccess(DELETE_USER_SUCCESS);
-                }
-                else if(user.getRole() == Role.CANDIDATE || user.getRole() == Role.RECRUITER) {
+                } else if (user.getRole() == Role.CANDIDATE || user.getRole() == Role.RECRUITER) {
 
-                    if(Objects.equals(user.getId(), userId)) {
+                    if (Objects.equals(user.getId(), userId)) {
                         deleteUser.setStatus(Status.LOCK);
                         appUserRepository.save(deleteUser);
 
                         return responseSuccess(DELETE_USER_SUCCESS);
-                    }
-                    else {
+                    } else {
                         return responseFail(INVALID_ROLE);
                     }
                 }
             }
 
             return responseFail(INVALID_ROLE);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Delete user failed: {}", e.getMessage());
             throw new UndefinedException(DELETE_USER_FAIL);
         }
@@ -202,61 +198,60 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public ServiceResponse createUser(RegisterDTO registerDTO) {
 
-       try {
-           AppUser user = appUserRepository.findByEmail(registerDTO.getEmail().trim())
-                   .orElse(null);
+        try {
+            AppUser user = appUserRepository.findByEmail(registerDTO.getEmail().trim())
+                    .orElse(null);
 
-           if (user != null) {
-              return responseFail(Message.EMAIL_ALREADY_EXISTS);
-           }
+            if (user != null) {
+                return responseFail(Message.EMAIL_ALREADY_EXISTS);
+            }
 
-           if (registerDTO.isPasswordMatching()) {
-               return responseFail(Message.PASSWORD_NOT_MATCHING);
-           }
+            if (registerDTO.isPasswordMatching()) {
+                return responseFail(Message.PASSWORD_NOT_MATCHING);
+            }
 
-           AppUser appUser = AppUser.builder()
-                   .email(registerDTO.getEmail())
-                   .password(BcryptUtils.hashPassword(registerDTO.getPassword()))
-                   .fullName(registerDTO.getFullName())
-                   .role(Role.valueOf(registerDTO.getRole()))
-                   .status(Status.ACTIVE)
-                   .build();
+            AppUser appUser = AppUser.builder()
+                    .email(registerDTO.getEmail())
+                    .password(BcryptUtils.hashPassword(registerDTO.getPassword()))
+                    .fullName(registerDTO.getFullName())
+                    .role(Role.valueOf(registerDTO.getRole()))
+                    .status(Status.ACTIVE)
+                    .build();
 
-           appUserRepository.save(appUser);
+            appUserRepository.save(appUser);
 
-           return responseSuccess(CREATE_ACCOUNT_SUCCESS);
-       }
-       catch (Exception e) {
-           log.error("Create user failed: {}", e.getMessage());
-           throw new UndefinedException(CREATE_ACCOUNT_FAIL);
-       }
+            return responseSuccess(CREATE_ACCOUNT_SUCCESS);
+        } catch (Exception e) {
+            log.error("Create user failed: {}", e.getMessage());
+            throw new UndefinedException(CREATE_ACCOUNT_FAIL);
+        }
     }
 
     @Override
     public ServiceResponse changeInfoUser(AccountDTO accountDTO) {
 
-        try{
+        try {
 
             AppUser user = appUserRepository.findById(accountDTO.getId()).orElse(null);
 
 
-            if(user == null) {
+            if (user == null) {
                 return responseFail(USER_NOT_FOUND_BY_EMAIL);
             }
 
-            if(accountDTO.getStatus() != null) {
+            if (accountDTO.getStatus() != null) {
                 user.setStatus(Status.valueOf(accountDTO.getStatus()));
             }
-            if(accountDTO.getRole() != null) {
+            if (accountDTO.getRole() != null) {
                 user.setRole(Role.valueOf(accountDTO.getRole()));
             }
-            if(accountDTO.getEmail() != null) {
+            if (accountDTO.getEmail() != null) {
                 user.setEmail(accountDTO.getEmail());
             }
-            if(accountDTO.getFullName() != null) {
+            if (accountDTO.getFullName() != null) {
                 user.setFullName(accountDTO.getFullName());
             }
-            if(accountDTO.getPassword() != null) {
+            if (accountDTO.getPassword() != null) {
                 user.setPassword(BcryptUtils.hashPassword(accountDTO.getPassword()));
             }
 
@@ -265,8 +260,7 @@ public class AppUserServiceImpl implements AppUserService {
             appUserRepository.save(user);
 
             return responseSuccess(CHANGE_ACCOUNT_SUCCESS);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
             log.error("Change user failed: {}", e.getMessage());
             throw new UndefinedException(CHANGE_ACCOUNT_FAIL);
@@ -281,7 +275,7 @@ public class AppUserServiceImpl implements AppUserService {
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
             AppUser user = this.appUserRepository.findByEmail(email).orElse(null);
 
-            if(user == null) {
+            if (user == null) {
                 return responseFail(INVALID_ROLE);
             }
 
@@ -291,7 +285,7 @@ public class AppUserServiceImpl implements AppUserService {
             }
 
             // True
-            if(!BcryptUtils.verifyPassword(resetPasswordDTO.getOld_password(), user.getPassword())) {
+            if (!BcryptUtils.verifyPassword(resetPasswordDTO.getOld_password(), user.getPassword())) {
                 return responseFail(INCORRECT_PASSWORD);
             }
 
@@ -299,8 +293,7 @@ public class AppUserServiceImpl implements AppUserService {
             appUserRepository.save(user);
 
             return responseSuccess(RESET_PASSWORD_SUCCESS);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Reset password failed: {}", e.getMessage());
             throw new UndefinedException(RESET_PASSWORD_FAIL);
         }
@@ -314,7 +307,7 @@ public class AppUserServiceImpl implements AppUserService {
 
             if (role == null) {
                 appUsers = appUserRepository.findAll(pageable);
-            }else {
+            } else {
                 appUsers = appUserRepository.findAllByRole(Role.valueOf(role), pageable);
             }
 
@@ -359,7 +352,8 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public ServiceResponse uploadBusinessLicense(MultipartFile multipartFile) {
-        List<String> extArray = Arrays.asList(".pdf", ".doc", ".docx");
+        // Hiện tại chỉ hỗ trợ file pdf
+        List<String> extArray = Arrays.asList(".pdf");
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         try {
             AppUser user = appUserRepository.findByEmail(email)
@@ -406,6 +400,52 @@ public class AppUserServiceImpl implements AppUserService {
         }
     }
 
+    @Override
+    public ServiceResponse updateUserCvProfile(FindJobProfileRequestBody findJobProfileRequestBody) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        try {
+            AppUser user = appUserRepository.findByEmail(email).orElse(null);
+
+            if (user == null) {
+                return responseFail(Message.USER_NOT_FOUND_BY_EMAIL);
+            }
+
+            user = appUserMapper.updateUserCvProfileFromRequest(findJobProfileRequestBody, user);
+
+            appUserRepository.save(user);
+
+            return responseSuccess(Message.UPDATE_USER_CV_SUCCESS);
+
+
+        } catch (Exception e) {
+            log.error("Update user cv failed: {}", e.getMessage());
+            throw new UndefinedException("Cập nhật thông tin cv thất bại");
+        }
+    }
+
+    @Override
+    public ServiceResponse getUserCvProfile() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        AppUser user = this.appUserRepository.findByEmail(email).orElse(null);
+
+        if (user == null) {
+            return ServiceResponse.builder()
+                    .status(ResponseDataStatus.ERROR)
+                    .statusCode(HttpStatus.NOT_FOUND)
+                    .message(String.format(USER_NOT_FOUND_BY_EMAIL, email))
+                    .build();
+        }
+
+        FindJobCvProfileDTO findJobCvProfileDTO = appUserMapper.appUserToFindJobCvProfileDTO(user);
+
+        return ServiceResponse.builder()
+                .status(ResponseDataStatus.SUCCESS)
+                .statusCode(HttpStatus.OK)
+                .message(GET_USER_PROFILE_SUCCESS)
+                .data(Map.of("profile", findJobCvProfileDTO))
+                .build();
+    }
+
     public ServiceResponse responseFail(String message) {
 
         return ServiceResponse.builder()
@@ -414,6 +454,7 @@ public class AppUserServiceImpl implements AppUserService {
                 .message(message)
                 .build();
     }
+
     public ServiceResponse responseSuccess(String message) {
 
         return ServiceResponse.builder()

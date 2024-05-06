@@ -82,9 +82,9 @@ public class AppUser {
     @Column(name = "created_by")
     private String createdBy;
 
-
-    @Column(name = "work_location")
-    private Integer workLocation;
+    @ManyToOne
+    @JoinColumn(name = "location_id")
+    private Location workLocation;
 
     @ManyToOne
     @JoinColumn(name = "major_id")

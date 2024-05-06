@@ -1,21 +1,16 @@
 package com.edu.hcmute.controller;
 
 
-import com.edu.hcmute.constant.Status;
 import com.edu.hcmute.dto.*;
 import com.edu.hcmute.response.ResponseData;
 import com.edu.hcmute.response.ServiceResponse;
 import com.edu.hcmute.service.user.AppUserService;
-import com.edu.hcmute.utils.BcryptUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.Put;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Stack;
 
 @RestController
 @RequestMapping("/users")
@@ -134,4 +129,25 @@ public class UserController {
     }
 
 
+    @PutMapping("/cv-profile")
+    public ResponseEntity<ResponseData> getUpdateProfileCV(@RequestBody @Valid FindJobProfileRequestBody findJobProfileRequestBody) {
+        ServiceResponse serviceResponse = appUserService.updateUserCvProfile(findJobProfileRequestBody);
+        return ResponseEntity.status(serviceResponse.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(serviceResponse.getStatus())
+                        .message(serviceResponse.getMessage())
+                        .data(serviceResponse.getData())
+                        .build());
+    }
+
+    @GetMapping("/cv-profile")
+    public ResponseEntity<ResponseData> getUpdateProfileCV() {
+        ServiceResponse serviceResponse = appUserService.getUserCvProfile();
+        return ResponseEntity.status(serviceResponse.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(serviceResponse.getStatus())
+                        .message(serviceResponse.getMessage())
+                        .data(serviceResponse.getData())
+                        .build());
+    }
 }

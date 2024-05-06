@@ -26,7 +26,7 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class GenericAuthServiceImpl<T extends RegisterContainer> implements AuthService<T> {
+public class  GenericAuthServiceImpl<T extends RegisterContainer> implements AuthService<T> {
 
     private final AppUserRepository userRepository;
     @SuppressWarnings("rawtypes")
