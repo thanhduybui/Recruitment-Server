@@ -37,6 +37,10 @@ public class CVService {
     private static final String CREATED_CV_SUCCESS = "Tạo CV thành công";
     private static final String GET_ALL_CV_SUCCESS = "Lấy tất cả CV của người dùng thành công";
     private static final String GET_ONE_CV_SUCCESS = "Lấy CV thành công";
+    private static final String DELETE_CV_SUCCESS = "Xóa CV thành công";
+
+    private static final String DELETE_CV_FAILED = "Xóa CV thất bại";
+
     private final CvRepository cvRepository;
     private final AppUserRepository appUserRepository;
     private final FileService fileService;
@@ -96,6 +100,8 @@ public class CVService {
                         .build();
             }
 
+            cv.setIsActive(true);
+
             CV newCV = cvRepository.save(cv);
 
             CvDTO dataCV = cvMapper.CVtoCvDTO(newCV);
@@ -145,7 +151,7 @@ public class CVService {
                 () -> new ResourceNotFoundException(String.format(USER_NOT_FOUND_BY_EMAIL, email))
         );
 
-        List<CV> cvs = cvRepository.findByCandidate(user);
+        List<CV> cvs = cvRepository.findByCandidateAndIsActive(user, true);
 
         List<CvDTO> dataCV = cvs.stream().map(cvMapper::CVtoCvDTO).toList();
 
@@ -155,5 +161,25 @@ public class CVService {
                 .message(GET_ALL_CV_SUCCESS)
                 .data(Map.of("cvs", dataCV))
                 .build();
+    }
+
+    public ServiceResponse deleteCV(Long id) {
+        try {
+            CV cv = cvRepository.findById(id).orElseThrow(
+                    () -> new ResourceNotFoundException(CV_NOT_FOUND)
+            );
+
+            cv.setIsActive(false);
+            cvRepository.save(cv);
+
+            return ServiceResponse.builder()
+                    .status(ResponseDataStatus.SUCCESS)
+                    .statusCode(HttpStatus.OK)
+                    .message(DELETE_CV_SUCCESS)
+                    .build();
+        } catch (Exception e) {
+            log.error("Delete CV failed: " + e.getMessage());
+            throw new UndefinedException(DELETE_CV_FAILED);
+        }
     }
 }

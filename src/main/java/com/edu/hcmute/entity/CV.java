@@ -30,7 +30,8 @@ public class CV {
     @Column(name = "cv_url")
     @Lob
     private String cvUrl;
-
+    @Column(name = "is_active")
+    private Boolean isActive;
     @Column(name = "is_default")
     private Boolean isDefault;
     @CreatedDate
@@ -42,7 +43,6 @@ public class CV {
     @CreatedBy
     @Column(name = "created_by")
     private String createdBy;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id", referencedColumnName = "id")
     private AppUser candidate;

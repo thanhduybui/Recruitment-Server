@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface CvRepository extends JpaRepository<CV, Long>{
 
-    List<CV> findByCandidate(AppUser user);
+    List<CV> findByCandidateAndIsActive(AppUser user, Boolean isActive);
 }
