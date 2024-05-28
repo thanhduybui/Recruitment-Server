@@ -4,6 +4,7 @@ import com.edu.hcmute.dto.JobApplicationRequestBody;
 import com.edu.hcmute.response.ResponseData;
 import com.edu.hcmute.response.ServiceResponse;
 import com.edu.hcmute.service.job.JobApplicationService;
+import com.edu.hcmute.utils.MailUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class JobApplicationController {
 
     private final JobApplicationService jobApplicationService;
+    private final MailUtils mailUtils;
 
     @PostMapping
     public ResponseEntity<ResponseData> createNewJobApplication(@RequestBody @Valid JobApplicationRequestBody jobApplicationRequestBody) {
@@ -63,6 +65,16 @@ public class JobApplicationController {
                         .data(serviceResponse.getData()).build());
     }
 
+    @GetMapping("/send-mail")
+    public ResponseEntity<ResponseData> sendMail() {
+        ServiceResponse serviceResponse = jobApplicationService.getAllByCandidate();
+        mailUtils.generateCodeAndSendMail("thuthaojava@gmail.com");
+        return ResponseEntity.status(serviceResponse.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(serviceResponse.getStatus())
+                        .message(serviceResponse.getMessage())
+                        .data(serviceResponse.getData()).build());
+    }
 
 }
 

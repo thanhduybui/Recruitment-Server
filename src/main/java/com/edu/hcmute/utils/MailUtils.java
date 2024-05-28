@@ -1,8 +1,10 @@
 package com.edu.hcmute.utils;
 
+import com.edu.hcmute.dto.ContentEmailDTO;
 import com.edu.hcmute.service.mail.EmailSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +24,16 @@ public class MailUtils {
         String verifyCode = VerificationCodeUtils.generateSixDigitCode();
         redisTemplate.opsForValue().set(email + "_otp", verifyCode, Duration.ofMinutes(5));
 
+        ContentEmailDTO contentEmailDTO = new ContentEmailDTO();
+        contentEmailDTO.setTitle("Xác thực tài khoản");
+        contentEmailDTO.setStatus(verifyCode);
+
         log.info("verifyCode: {}", redisTemplate.opsForValue().get(email + "_otp"));
         CompletableFuture.runAsync(() -> {
             emailSender.send(
                     email,
                     "Xác thực tài khoản",
-                    "<h1>Mã xác thực của bạn là: " + verifyCode + "</h1>");
+                    contentEmailDTO);
         });
     }
 }

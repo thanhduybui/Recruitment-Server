@@ -10,9 +10,9 @@ spring:
   main:
     banner-mode: off
   datasource:
-    url: jdbc:mysql://localhost:3306/jobhunt_db
+    url: jdbc:mysql://localhost:3306/recruitment_app
     username: root
-    password: 12345
+    password: thuthao
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -22,13 +22,24 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: jobhuntadm@gmail.com
+    password: tbco crpw inyc pmku
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/change-log.xml
   data:
-    elasticsearch:
-      cluster-name: docker-cluster
-      cluster-nodes: localhost:9200
+#    elasticsearch:
+#      cluster-name: docker-cluster
+#      cluster-nodes: localhost:9200
     redis:
       host: localhost
       port: 6379
