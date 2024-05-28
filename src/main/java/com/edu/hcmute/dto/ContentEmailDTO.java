@@ -10,4 +10,5 @@ public class ContentEmailDTO {
     private String companyName;
     private String dateApply;
     private String status;
+    private String code;
 }
