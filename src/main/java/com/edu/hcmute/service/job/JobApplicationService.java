@@ -5,20 +5,19 @@ import com.edu.hcmute.dto.JobApplicationDTO;
 import com.edu.hcmute.dto.JobApplicationRequestBody;
 
 import com.edu.hcmute.entity.AppUser;
+import com.edu.hcmute.entity.CV;
 import com.edu.hcmute.entity.Job;
 import com.edu.hcmute.entity.JobApplication;
 import com.edu.hcmute.exception.ResourceNotFoundException;
 import com.edu.hcmute.exception.UndefinedException;
 import com.edu.hcmute.mapper.JobApplicationMapper;
-import com.edu.hcmute.repository.AppUserRepository;
-import com.edu.hcmute.repository.CvRepository;
-import com.edu.hcmute.repository.JobApplicationRepository;
+import com.edu.hcmute.repository.*;
 
-import com.edu.hcmute.repository.JobRepository;
 import com.edu.hcmute.response.PagingResponseData;
 import com.edu.hcmute.response.ResponseDataStatus;
 import com.edu.hcmute.response.ServiceResponse;
 
+import com.edu.hcmute.utils.MailUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,12 +54,17 @@ public class JobApplicationService {
     private static final String JOB_NOT_FOUND = "Không tìm thấy công việc";
     private static final String USER_NOT_FOUND = "Không tìm thấy người dùng";
 
+    private static final String HANDLE_APPLICATION_SUCCESS = "Xử lý đơn ứng tuyển thành công!";
+    private static final String HANDLE_APPLICATION_FAILURE = "Xử lý đơn ứng tuyển không thành công!";
+
 
     private final JobApplicationMapper jobApplicationMapper;
     private final JobApplicationRepository jobApplicationRepository;
     private final AppUserRepository appUserRepository;
     private final JobRepository jobRepository;
     private final CvRepository cvRepository;
+    private final MailUtils mailUtils;
+    private final JobApplyRepository jobApplyRepository;
 
 
     public AppUser getUser() {
@@ -75,9 +79,9 @@ public class JobApplicationService {
         List<JobApplication> applications;
         JobApplication newJobApplication = jobApplicationMapper.jobApplicationRequestBodyToJobApplication(jobApplicationRequestBody);
 
-        cvRepository.findById(Long.valueOf(jobApplicationRequestBody.getCvId())).orElseThrow(() -> new ResourceNotFoundException(CV_NOT_FOUND));
+       CV cv = cvRepository.findById(Long.valueOf(jobApplicationRequestBody.getCvId())).orElseThrow(() -> new ResourceNotFoundException(CV_NOT_FOUND));
 
-        jobRepository.findById(jobApplicationRequestBody.getJobId()).orElseThrow(() -> new ResourceNotFoundException(JOB_NOT_FOUND));
+       Job job =  jobRepository.findById(jobApplicationRequestBody.getJobId()).orElseThrow(() -> new ResourceNotFoundException(JOB_NOT_FOUND));
 
         if (getUser() != null) {
             newJobApplication.setAppUser(getUser());
@@ -103,8 +107,13 @@ public class JobApplicationService {
         }
 
         newJobApplication.setStatus(JobApplyStatus.PENDING);
+        newJobApplication.setCv(cv);
+        newJobApplication.setJob(job);
 
+        System.out.println(newJobApplication.getJob().getCompany().getName());
         jobApplicationRepository.save(newJobApplication);
+
+        mailUtils.sendMailJobApplycation(newJobApplication);
 
         return ServiceResponse.builder()
                 .status(ResponseDataStatus.SUCCESS)
@@ -190,6 +199,29 @@ public class JobApplicationService {
             throw new UndefinedException(GET_ALL_BY_JOB_FAIL);
         }
 
+    }
+
+    public ServiceResponse handleApplication(Long jobApplicationId, String status) {
+        try {
+            JobApplication jobApplication = jobApplyRepository.findById(jobApplicationId).orElse(null);
+
+            assert jobApplication != null;
+            jobApplication.setStatus(JobApplyStatus.valueOf(status));
+
+            jobApplicationRepository.save(jobApplication);
+            mailUtils.sendMailJobApplycationResult(jobApplication);
+
+            return ServiceResponse.builder()
+                    .status(ResponseDataStatus.SUCCESS)
+                    .statusCode(HttpStatus.OK)
+                    .message(HANDLE_APPLICATION_SUCCESS)
+                    .build();
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            System.out.println(e.getMessage());
+            throw new UndefinedException(HANDLE_APPLICATION_FAILURE);
+        }
     }
 
     public AppUser getRecruiter() {

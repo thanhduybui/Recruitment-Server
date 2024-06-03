@@ -6,5 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface EmailSender {
-    void send(String to, String subject, ContentEmailDTO contentEmailDTO);
+    void sendVerifyCode(String to, String subject, ContentEmailDTO contentEmailDTO);
+    void sendNotificationApplication(String to, String subject, ContentEmailDTO contentEmailDTO);
+    void sendApplyResult(String to, String subject, ContentEmailDTO contentEmailDTO);
 }

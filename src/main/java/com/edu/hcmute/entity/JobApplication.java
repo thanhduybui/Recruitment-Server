@@ -3,6 +3,7 @@ package com.edu.hcmute.entity;
 
 import com.edu.hcmute.constant.JobApplyStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -15,6 +16,7 @@ import java.time.Instant;
 @Data
 @Table(name = "job_application")
 @NoArgsConstructor
+@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class JobApplication {
     @Id

@@ -11,4 +11,5 @@ public class ContentEmailDTO {
     private String dateApply;
     private String status;
     private String code;
+    private String dateHandle;
 }

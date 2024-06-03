@@ -9,6 +9,7 @@ spring:
 
   main:
     banner-mode: off
+    allow-circular-references: true
   datasource:
     url: jdbc:mysql://localhost:3306/recruitment_app
     username: root

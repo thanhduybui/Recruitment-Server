@@ -2,6 +2,7 @@ package com.edu.hcmute.utils;
 
 import com.edu.hcmute.controller.JobApplicationController;
 import com.edu.hcmute.dto.ContentEmailDTO;
+import com.edu.hcmute.dto.JobApplicationRequestBody;
 import com.edu.hcmute.entity.JobApplication;
 import com.edu.hcmute.service.mail.EmailSender;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,6 @@ public class MailUtils {
 
     private final EmailSender emailSender;
     private final RedisTemplate redisTemplate;
-    private final JobApplicationController jobApplicationController;
 
     public void generateCodeAndSendMail(String email) {
         String verifyCode = VerificationCodeUtils.generateSixDigitCode();
@@ -29,11 +29,10 @@ public class MailUtils {
 
         ContentEmailDTO contentEmailDTO = new ContentEmailDTO();
         contentEmailDTO.setCode(verifyCode);
-        contentEmailDTO.setStatus(verifyCode);
 
         log.info("verifyCode: {}", redisTemplate.opsForValue().get(email + "_otp"));
         CompletableFuture.runAsync(() -> {
-            emailSender.send(
+            emailSender.sendVerifyCode(
                     email,
                     "Xác thực tài khoản",
                     contentEmailDTO);
@@ -51,7 +50,7 @@ public class MailUtils {
         log.info("email: {}" , jobApplication.getEmail());
 
         CompletableFuture.runAsync(() -> {
-            emailSender.send(
+            emailSender.sendNotificationApplication(
                     jobApplication.getEmail(),
                     "Thông báo nộp đơn ứng tuyển",
                     contentEmailDTO1);
@@ -65,11 +64,12 @@ public class MailUtils {
         contentEmailDTO2.setName(jobApplication.getName());
         contentEmailDTO2.setCompanyName(jobApplication.getJob().getCompany().getName());
         contentEmailDTO2.setDateApply(jobApplication.getCreatedAt().toString());
+        contentEmailDTO2.setDateHandle(jobApplication.getUpdatedAt().toString());
 
         log.info("email: {}" , jobApplication.getEmail());
 
         CompletableFuture.runAsync(() -> {
-            emailSender.send(
+            emailSender.sendApplyResult(
                     jobApplication.getEmail(),
                     "Thông báo kết quả ứng tuyển",
                     contentEmailDTO2);
