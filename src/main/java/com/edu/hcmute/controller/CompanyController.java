@@ -70,6 +70,32 @@ public class CompanyController {
                         .build());
     }
 
+    @GetMapping("/admin")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<ResponseData> getAllCompanyForAdmin(@RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
+                                                              @RequestParam(value = "size", defaultValue = "9", required = false) Integer size,
+                                                              @RequestParam(value = "verified", required = false, defaultValue = "false") Boolean verified) {
+        ServiceResponse response = companyService.getAllCompanyForAdmin(page, size, verified);
+        return ResponseEntity.status(response.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(response.getStatus())
+                        .message(response.getMessage())
+                        .data(response.getData())
+                        .build());
+    }
+
+    @PutMapping("/verify/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<ResponseData> verifyCompany(@PathVariable("id") Integer id) {
+        ServiceResponse response = companyService.verifyCompany(id);
+        return ResponseEntity.status(response.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(response.getStatus())
+                        .message(response.getMessage())
+                        .data(response.getData())
+                        .build());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ResponseData> getOneCompany(@PathVariable("id") Integer id) {
         ServiceResponse response = companyService.getOneCompany(id);

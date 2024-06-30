@@ -11,6 +11,7 @@ public class JobApplicationDTO {
     private String email;
     private String name;
     private String phone;
+    private String avatar;
 
     @JsonAlias("cv_id")
     private CvDTO cv;

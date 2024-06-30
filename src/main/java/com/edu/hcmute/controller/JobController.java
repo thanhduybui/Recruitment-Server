@@ -68,7 +68,7 @@ public class JobController {
                         .build());
     }
 
-    @GetMapping
+    @GetMapping("/filter")
     public ResponseEntity<ResponseData> getAllJobs(@RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
                                                    @RequestParam(value = "size", defaultValue = "10", required = false) Integer size,
                                                    @RequestParam(value = "position", defaultValue = "0", required = false) Integer positionId,
@@ -104,5 +104,19 @@ public class JobController {
                         .data(serviceResponse.getData())
                         .build());
     }
+
+    @GetMapping
+    public ResponseEntity<ResponseData> getAllJobs(@RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
+                                                   @RequestParam(value = "size", defaultValue = "10", required = false) Integer size) {
+        ServiceResponse serviceResponse = jobService.getAllJobs(page, size);
+        return ResponseEntity.status(serviceResponse.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(serviceResponse.getStatus())
+                        .message(serviceResponse.getMessage())
+                        .data(serviceResponse.getData())
+                        .build());
+    }
+
+
 
 }

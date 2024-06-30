@@ -18,12 +18,9 @@ import java.util.List;
 @Slf4j
 public class JobMapperHelper {
     private final FieldRepository fieldRepository;
-    private final PositionRepository positionRepository;
     private final ExperienceRangeRepository experienceRangeRepository;
-    private final SalaryRangeRepository salaryRangeRepository;
     private final MajorRepository majorRepository;
     private final CompanyRepository companyRepository;
-    private final SkillRepository skillRepository;
     private final WorkModeRepository workModeRepository;
 
     private final LocationRepository locationRepository;
@@ -36,12 +33,7 @@ public class JobMapperHelper {
         return null;
     }
 
-    public Position mapPositionIdToPosition(Integer positionId) {
-        if (positionId != null) {
-            return positionRepository.findById(positionId).orElse(null);
-        }
-        return null;
-    }
+
 
     public ExperienceRange mapExperienceRangeIdToExperienceRange(Integer experienceRangeId) {
         if (experienceRangeId != null) {
@@ -50,12 +42,7 @@ public class JobMapperHelper {
         return null;
     }
 
-    public SalaryRange mapSalaryIdToSalaryRange(Integer salaryRangeId) {
-        if (salaryRangeId != null) {
-            return salaryRangeRepository.findById(salaryRangeId).orElse(null);
-        }
-        return null;
-    }
+
 
     public Major mapMajorIdToMajor(Integer majorId) {
         if (majorId != null) {
@@ -71,12 +58,6 @@ public class JobMapperHelper {
         return null;
     }
 
-    public List<Skill> mapSkillIdsToSkills(List<Integer> skillIds) {
-        if (skillIds != null) {
-            return skillIds.stream().map(skillId -> skillRepository.findById(skillId).orElse(null)).toList();
-        }
-        return null;
-    }
     public WorkMode mapWorkModeIdToWorkMode(Integer workModeId) {
         if (workModeId != null) {
             return workModeRepository.findById(workModeId).orElse(null);

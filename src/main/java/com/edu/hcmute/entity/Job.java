@@ -82,9 +82,8 @@ public class Job implements Serializable {
     @Column(name = "is_hot")
     private Boolean isHot;
 
-    @ManyToOne
-    @JoinColumn(name = "salary_range_id")
-    private SalaryRange salaryRange;
+    @Column(name = "salary")
+    private Integer salary;
 
     @ManyToOne
     @JoinColumn(name = "company_id")
@@ -93,10 +92,6 @@ public class Job implements Serializable {
     @ManyToOne
     @JoinColumn(name = "work_mode_id")
     private WorkMode workMode;
-
-    @ManyToOne
-    @JoinColumn(name = "position_id")
-    private Position position;
 
     @ManyToOne
     @JoinColumn(name = "major_id")
@@ -114,12 +109,4 @@ public class Job implements Serializable {
     @JoinColumn(name = "experience_range_id")
     private ExperienceRange experienceRange;
 
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "job_skill",
-            joinColumns = @JoinColumn(name = "job_id"),
-            inverseJoinColumns = @JoinColumn(name = "skill_id")
-    )
-    private List<Skill> skills;
 }

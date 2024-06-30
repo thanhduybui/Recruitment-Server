@@ -27,7 +27,6 @@ public class JobApplication {
     private String phone;
     @Column(name = "name")
     private String name;
-
     @ManyToOne
     @JoinColumn(name = "cv_id")
     private CV cv;

@@ -40,6 +40,8 @@ public class CVService {
     private static final String DELETE_CV_SUCCESS = "Xóa CV thành công";
 
     private static final String DELETE_CV_FAILED = "Xóa CV thất bại";
+    private static final String SET_DEFAULT_CV_SUCCESS = "Đặt CV mặc định thành công";
+    private static final String SET_DEFAULT_CV_FAILED = "Đặt CV mặc định thất bại";
 
     private final CvRepository cvRepository;
     private final AppUserRepository appUserRepository;
@@ -96,11 +98,12 @@ public class CVService {
                 cv = CV.builder()
                         .name(name)
                         .cvUrl(fileUrl)
+                        .isActive(true)
                         .candidate(user)
                         .build();
             }
 
-            cv.setIsActive(true);
+
 
             CV newCV = cvRepository.save(cv);
 
@@ -180,6 +183,39 @@ public class CVService {
         } catch (Exception e) {
             log.error("Delete CV failed: " + e.getMessage());
             throw new UndefinedException(DELETE_CV_FAILED);
+        }
+    }
+
+    public ServiceResponse setDefaultCV(Long id) {
+        try {
+            CV cv = cvRepository.findById(id).orElseThrow(
+                    () -> new ResourceNotFoundException(CV_NOT_FOUND)
+            );
+
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+            AppUser user = appUserRepository.findByEmail(email).orElseThrow(
+                    () -> new ResourceNotFoundException(String.format(USER_NOT_FOUND_BY_EMAIL, email))
+            );
+
+            List<CV> cvs = cvRepository.findByCandidateAndIsActive(user, true);
+
+            for (CV c : cvs) {
+                c.setIsDefault(false);
+                cvRepository.save(c);
+            }
+
+            cv.setIsDefault(true);
+            cvRepository.save(cv);
+
+            return ServiceResponse.builder()
+                    .status(ResponseDataStatus.SUCCESS)
+                    .statusCode(HttpStatus.OK)
+                    .message(SET_DEFAULT_CV_SUCCESS)
+                    .build();
+        } catch (Exception e) {
+            log.error("Set default CV failed: " + e.getMessage());
+            throw new UndefinedException(SET_DEFAULT_CV_FAILED);
         }
     }
 }

@@ -59,4 +59,17 @@ public class CVController {
                         .data(res.getData())
                         .build());
     }
+
+
+    @PutMapping("/default-cv/{id}")
+    public ResponseEntity<ResponseData> setDefaultCV(@PathVariable("id") Long id) {
+        ServiceResponse res = cvService.setDefaultCV(id);
+        return ResponseEntity.status(res.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(res.getStatus())
+                        .message(res.getMessage())
+                        .data(res.getData())
+                        .build());
+    }
+
 }

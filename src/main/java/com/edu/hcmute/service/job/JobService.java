@@ -28,10 +28,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -61,6 +60,8 @@ public class JobService {
                         .message(REACH_LIMIT_POST)
                         .build();
             }
+
+
             Job newJob = jobMapper.jobRequestBodyToJob(jobRequestBody);
             newJob.setStatus(Status.ACTIVE);
 
@@ -86,12 +87,9 @@ public class JobService {
         Company checkedCompany = user.getCompany();
 
         if (checkedCompany.getJobs().size() >= 3){
-            if (checkedCompany.getIsVerified()){
-                return true;
-            }
-            return false;
+            return checkedCompany.getIsVerified();
         }
-        return false;
+        return true;
     }
 
     public ServiceResponse update(Long id, JobRequestBody jobRequestBody) {
@@ -154,7 +152,7 @@ public class JobService {
 
 
     public ServiceResponse getAll(Integer page, Integer size, JobFilterCriteria filterCriteria) {
-        Instant conditionRenderTime = Instant.now().minusSeconds(24*7*60*60);
+        Instant conditionRenderTime = Instant.now().minusSeconds(24*3*60*60);
         try {
             Pageable pageable = PageRequest.of(page, size);
             Page<Job> jobs = jobRepository.findByFilterCriteria(filterCriteria.getKeyword(),
@@ -162,9 +160,7 @@ public class JobService {
                         filterCriteria.getWorkModeId(),
                         filterCriteria.getFieldId(),
                         filterCriteria.getMajorId(),
-                        filterCriteria.getSalaryId(),
                         filterCriteria.getExperienceId(),
-                        filterCriteria.getPositionId(),
                         filterCriteria.getHot(),
                         filterCriteria.getStatus(),
                         conditionRenderTime,
@@ -177,6 +173,8 @@ public class JobService {
             if (!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")) {
                 String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
                 Optional<AppUser> userOptional = appUserRepository.findByEmail(userEmail);
+
+
                 if (userOptional.isPresent()) {
                     AppUser user = userOptional.get();
                     jobDTOs = jobDTOs.stream().peek(jobDTO -> jobDTO.setIsFavorite(checkFavoriteJob(user.getId(), jobDTO.getId()))).toList(); // Collect the stream to a list
@@ -190,6 +188,7 @@ public class JobService {
                     .pageSize(jobs.getSize())
                     .listData(jobDTOs)
                     .build();
+
             return ServiceResponse.builder()
                     .status(ResponseDataStatus.SUCCESS)
                     .statusCode(HttpStatus.OK)
@@ -201,4 +200,72 @@ public class JobService {
             throw new UndefinedException(GET_JOB_FAIL);
         }
     }
+
+    public ServiceResponse getAllJobs(Integer page, Integer size) {
+        Instant conditionRenderTime = Instant.now().minusSeconds(24 * 3 * 60 * 60);
+        try {
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            AppUser user;
+            Integer fieldId = null;
+            Integer majorId = null;
+
+            if (!email.equals("anonymousUser")) {
+                user = appUserRepository.findByEmail(email).orElse(null);
+                if (user != null) {
+                    if (user.getField() != null) {
+                        fieldId = user.getField().getId();
+                    }
+                    if (user.getMajor() != null) {
+                        majorId = user.getMajor().getId();
+                    }
+                }
+            } else {
+                user = null;
+            }
+
+            List<Job> jobs;
+            if (fieldId != null || majorId != null) {
+                List<Job> personalJobs = jobRepository.findJobByMajorIdOrFieldId(majorId, fieldId, conditionRenderTime);
+                List<Job> otherJobs = jobRepository.findJobByMajorIdNotAndFieldIdNot(majorId, fieldId, conditionRenderTime);
+                jobs = Stream.concat(personalJobs.stream(), otherJobs.stream()).collect(Collectors.toList());
+            } else {
+                jobs = jobRepository.findAllByStatusAndDeadlineAfter(Status.ACTIVE, conditionRenderTime);
+            }
+
+            // Phân trang cho danh sách công việc
+            int start = (page - 1) * size;
+            int end = Math.min(start + size, jobs.size());
+            long totalItems = jobs.size();
+            List<Job> paginatedJobs = jobs.subList(start, end);
+
+            List<CandidateJobDTO> jobDTOs = paginatedJobs.stream()
+                    .map(jobMapper::jobToCandidateJobDTO)
+                    .collect(Collectors.toList());
+
+            if (user != null) {
+                jobDTOs.forEach(jobDTO -> jobDTO.setIsFavorite(checkFavoriteJob(user.getId(), jobDTO.getId())));
+            }
+
+            // Trả về kết quả
+            PagingResponseData data = PagingResponseData.builder()
+                    .totalPages((int) Math.ceil((double) jobs.size() / size))
+                    .currentPage(page)
+                    .totalItems(totalItems)
+                    .pageSize(size)
+                    .listData(jobDTOs)
+                    .build();
+
+            return ServiceResponse.builder()
+                    .status(ResponseDataStatus.SUCCESS)
+                    .statusCode(HttpStatus.OK)
+                    .message(GET_JOB_SUCCESS)
+                    .data(Map.of("jobs", data))
+                    .build();
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new UndefinedException(GET_JOB_FAIL);
+        }
+    }
+    
 }

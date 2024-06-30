@@ -6,6 +6,7 @@ import com.edu.hcmute.constant.Role;
 import com.edu.hcmute.constant.Status;
 import com.edu.hcmute.dto.*;
 import com.edu.hcmute.entity.AppUser;
+import com.edu.hcmute.entity.Company;
 import com.edu.hcmute.exception.ResourceNotFoundException;
 import com.edu.hcmute.exception.UndefinedException;
 import com.edu.hcmute.mapper.AppUserMapper;
@@ -85,7 +86,11 @@ public class AppUserServiceImpl implements AppUserService {
             String fileName = UUID.randomUUID() + fileExtension;
             String imgUrl = fileService.uploadFile(multipartFile, fileName);
 
+
             user.setAvatar(imgUrl);
+            if (user.getRole() == Role.RECRUITER) {
+                user.getCompany().setImage(imgUrl);
+            }
             appUserRepository.save(user);
 
             return ServiceResponse.builder()
@@ -217,6 +222,10 @@ public class AppUserServiceImpl implements AppUserService {
                     .role(Role.valueOf(registerDTO.getRole()))
                     .status(Status.ACTIVE)
                     .build();
+
+            if (appUser.getRole() == Role.RECRUITER) {
+                appUser.setCompany(Company.builder().isVerified(true).status(Status.ACTIVE).build());
+            }
 
             appUserRepository.save(appUser);
 

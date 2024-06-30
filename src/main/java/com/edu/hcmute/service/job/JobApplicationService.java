@@ -155,7 +155,7 @@ public class JobApplicationService {
         }
     }
 
-    public ServiceResponse getAllJobApplicationByJob(Integer page, Integer size, Long jobId) {
+    public ServiceResponse getAllJobApplicationByJob(Integer page, Integer size, Long jobId, JobApplyStatus status) {
         try {
             if (!checkValidJob(jobId)) {
                 return ServiceResponse.builder()
@@ -167,7 +167,7 @@ public class JobApplicationService {
 
 
             Pageable pageable = PageRequest.of(page, size);
-            Page<JobApplication> jobApplicationPage = jobApplicationRepository.findAllByJobId(jobId, pageable);
+            Page<JobApplication> jobApplicationPage = jobApplicationRepository.findAllByJobIdAndStatus(jobId, status, pageable);
 
 
             PagingResponseData data = PagingResponseData.builder()
@@ -182,7 +182,7 @@ public class JobApplicationService {
                     .status(ResponseDataStatus.SUCCESS)
                     .statusCode(HttpStatus.OK)
                     .message(GET_ALL_BY_JOB_SUCEESS)
-                    .data(Map.of("job-applications", data)).build();
+                    .data(Map.of("jobApplications", data)).build();
 
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -216,4 +216,38 @@ public class JobApplicationService {
         return true;
     }
 
+    public ServiceResponse getOne(Integer id) {
+        try {
+            JobApplication jobApplication = jobApplicationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn ứng tuyển"));
+
+            return ServiceResponse.builder()
+                    .status(ResponseDataStatus.SUCCESS)
+                    .statusCode(HttpStatus.OK)
+                    .message(GET_BY_USER_SUCCESS)
+                    .data(Map.of("job_application", jobApplicationMapper.jobApplicationToJobApplicationDTO(jobApplication))).build();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new UndefinedException("Lấy thông tin đơn ứng tuyển thất bại");
+        }
+    }
+
+    public ServiceResponse updateJobApplication(Integer id, JobApplyStatus status) {
+        try {
+            JobApplication jobApplication = jobApplicationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn ứng tuyển"));
+
+
+            jobApplication.setStatus(status);
+
+            jobApplicationRepository.save(jobApplication);
+
+            return ServiceResponse.builder()
+                    .status(ResponseDataStatus.SUCCESS)
+                    .statusCode(HttpStatus.OK)
+                    .message("Cập nhật đơn ứng tuyển thành công")
+                    .data(Map.of("job_application", jobApplicationMapper.jobApplicationToJobApplicationDTO(jobApplication))).build();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new UndefinedException("Cập nhật đơn ứng tuyển thất bại");
+        }
+    }
 }

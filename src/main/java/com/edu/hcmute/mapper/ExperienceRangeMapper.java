@@ -2,7 +2,6 @@ package com.edu.hcmute.mapper;
 
 import com.edu.hcmute.dto.OptionDTO;
 import com.edu.hcmute.entity.ExperienceRange;
-import com.edu.hcmute.entity.SalaryRange;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
