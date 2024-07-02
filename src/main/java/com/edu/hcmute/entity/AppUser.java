@@ -114,4 +114,7 @@ public class AppUser {
 
     @OneToMany(mappedBy = "candidate", cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<CV> cvList;
+
+    @OneToMany(mappedBy = "receiver", cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<Notification> notifications;
 }

@@ -43,6 +43,7 @@ public class CV {
     @CreatedBy
     @Column(name = "created_by")
     private String createdBy;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id", referencedColumnName = "id")
     private AppUser candidate;
