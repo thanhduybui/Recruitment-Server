@@ -31,7 +31,7 @@ public class RegisterDTO implements Serializable, RegisterContainer {
     @JsonAlias("confirm_password")
     private String confirmPassword;
 
-    @Pattern(regexp = "^(CANDIDATE|EMPLOYER|ADMIN)$", message = INVALID_ROLE)
+    @Pattern(regexp = "^(CANDIDATE|RECRUITER|ADMIN)$", message = INVALID_ROLE)
     private String role;
     public boolean isPasswordMatching() {
         return password == null || !password.equals(confirmPassword);

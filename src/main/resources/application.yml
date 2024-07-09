@@ -1,4 +1,4 @@
-spring.config.import: optional:secrets.yml
+#spring.config.import: optional:secrets.yml
 
 server:
   port: 8080
@@ -6,6 +6,17 @@ server:
     context-path: /api/v1
 
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: bookstoregroup174@gmail.com
+    password: oytw bgpn nexr cpvc
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
   main:
     banner-mode: off
@@ -36,5 +47,6 @@ spring:
 
 logging:
   level:
+    org.springframework.mail: DEBUG
     com.edu.hcmute: TRACE
     root: INFO

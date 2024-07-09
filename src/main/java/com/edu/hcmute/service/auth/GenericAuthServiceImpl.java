@@ -26,7 +26,7 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class GenericAuthServiceImpl<T extends RegisterContainer> implements AuthService<T> {
+public class  GenericAuthServiceImpl<T extends RegisterContainer> implements AuthService<T> {
 
     private final AppUserRepository userRepository;
     @SuppressWarnings("rawtypes")
@@ -211,7 +211,7 @@ public class GenericAuthServiceImpl<T extends RegisterContainer> implements Auth
         AppUser user = userRepository.findByEmail(forgetPasswordDTO.getEmail().trim())
                 .orElse(null);
 
-        if (user != null) {
+        if (user == null) {
             return ServiceResponse.builder()
                     .statusCode(HttpStatus.BAD_REQUEST)
                     .status(ResponseDataStatus.ERROR)

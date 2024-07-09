@@ -28,4 +28,5 @@ public class Message {
     public static final String INVALID_JOB = "Mã công việc không hợp lệ";
     public static final String INVALID_STATUS = "Tỉnh trạng không hợp lệ";
     public static final String FIELD_INVALID = "Dữ liệu không hợp lệ";
+    public static final String UPDATE_USER_CV_SUCCESS = "Cập nhật thông tin tìm việc thành công"; ;
 }

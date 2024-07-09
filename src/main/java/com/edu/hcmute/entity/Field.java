@@ -27,16 +27,22 @@ public class Field {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @Column(name = "name", unique = true)
     private String name;
+
+    @Lob
     @Column(name = "description")
     private String description;
+
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
+
     @CreatedDate
     @Column(name = "created_at")
     private Instant createdAt;
+
     @LastModifiedDate
     @Column(name = "updated_at")
     private Instant updatedAt;

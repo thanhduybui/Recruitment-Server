@@ -15,5 +15,6 @@ public interface JobApplicationMapper {
     JobApplication jobApplicationRequestBodyToJobApplication(JobApplicationRequestBody jobApplicationRequestBody);
 
 
+    @Mapping(source = "appUser.avatar" , target = "avatar")
     JobApplicationDTO jobApplicationToJobApplicationDTO(JobApplication jobApplication);
 }

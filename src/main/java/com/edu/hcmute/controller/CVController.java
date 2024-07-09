@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class CVController {
     private final CVService cvService;
 
+
     @PostMapping("/upload")
     public ResponseEntity<ResponseData> uploadCV(@RequestParam("file") MultipartFile multipartFile, @RequestParam("name") String name) {
         ServiceResponse res = cvService.uploadCV(multipartFile, name);
@@ -47,4 +48,28 @@ public class CVController {
                         .data(res.getData())
                         .build());
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseData> deleteCV(@PathVariable("id") Long id) {
+        ServiceResponse res = cvService.deleteCV(id);
+        return ResponseEntity.status(res.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(res.getStatus())
+                        .message(res.getMessage())
+                        .data(res.getData())
+                        .build());
+    }
+
+
+    @PutMapping("/default-cv/{id}")
+    public ResponseEntity<ResponseData> setDefaultCV(@PathVariable("id") Long id) {
+        ServiceResponse res = cvService.setDefaultCV(id);
+        return ResponseEntity.status(res.getStatusCode())
+                .body(ResponseData.builder()
+                        .status(res.getStatus())
+                        .message(res.getMessage())
+                        .data(res.getData())
+                        .build());
+    }
+
 }

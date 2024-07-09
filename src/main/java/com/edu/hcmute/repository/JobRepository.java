@@ -12,6 +12,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface JobRepository extends JpaRepository<Job, Long> {
@@ -32,9 +35,7 @@ public interface JobRepository extends JpaRepository<Job, Long> {
             "AND (:wokeModeId IS NULL OR j.workMode.id = :wokeModeId) " +
             "AND (:fieldId IS NULL OR j.field.id = :fieldId) " +
             "AND (:majorId IS NULL OR j.major.id = :majorId) " +
-            "AND (:salaryId IS NULL OR j.salaryRange.id = :salaryId) " +
             "AND (:experienceId IS NULL OR j.experienceRange.Id = :experienceId) " +
-            "AND (:positionId IS NULL OR j.position.id = :positionId) " +
             "AND (:isHot IS NULL OR j.isHot = :isHot) " +
             "AND (:date IS NULL OR j.deadline > :date) " +
             "AND  j.status = :status " +
@@ -44,11 +45,17 @@ public interface JobRepository extends JpaRepository<Job, Long> {
                                    @Param("wokeModeId") Integer wokeModeId,
                                    @Param("fieldId") Integer fieldId,
                                    @Param("majorId") Integer majorId,
-                                   @Param("salaryId") Integer salaryId,
                                    @Param("experienceId") Integer experienceId,
-                                   @Param("positionId") Integer positionId,
                                    @Param("isHot") Boolean isHot,
                                    @Param("status") Status status,
                                    @Param("date") Instant date,
                                    Pageable pageable);
+
+    @Query("SELECT j FROM Job j WHERE ((j.major.id IS NULL OR j.major.id != :majorId) AND (j.field.id IS NULL OR j.field.id != :fieldId)) AND j.deadline > :date AND j.status = 'ACTIVE'")
+    List<Job> findJobByMajorIdNotAndFieldIdNot(Integer majorId, Integer fieldId, Instant date);
+
+    @Query("SELECT j FROM Job j WHERE ((j.major.id = :majorId) OR ( j.field.id = :fieldId)) AND j.deadline > :date AND j.status = 'ACTIVE'" )
+    List<Job> findJobByMajorIdOrFieldId(Integer majorId, Integer fieldId, Instant date);
+
+    List<Job> findAllByStatusAndDeadlineAfter(Status status, Instant instant);
 }

@@ -26,6 +26,9 @@ public class AuthController {
                 .build());
     }
 
+
+
+
     @PostMapping("/recruiter/register")
     public ResponseEntity<ResponseData> recruiterRegister(@RequestBody @Valid RecruiterRegisterDTO recruitRegisterDTO) {
 

@@ -1,17 +1,11 @@
 package com.edu.hcmute.mapper;
 
 
-import com.edu.hcmute.dto.ForgetPasswordDTO;
-import com.edu.hcmute.dto.ProfileDTO;
-import com.edu.hcmute.dto.RegisterDTO;
-import com.edu.hcmute.dto.UserDTO;
+import com.edu.hcmute.dto.*;
 import com.edu.hcmute.entity.AppUser;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",  uses = {JobMapperHelper.class})
 public interface AppUserMapper {
 
     AppUser registerDTOToAppUser(RegisterDTO user);
@@ -24,5 +18,14 @@ public interface AppUserMapper {
     AppUser forgetPasswordDTOToAppUser(ForgetPasswordDTO user);
 
     UserDTO appUserToUserDTO(AppUser user);
+
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(source = "fieldId", target = "field")
+    @Mapping(source = "majorId", target = "major")
+    @Mapping(source = "locationId", target = "workLocation")
+    AppUser updateUserCvProfileFromRequest(FindJobProfileRequestBody findJobProfileRequestBody, @MappingTarget  AppUser user);
+
+    FindJobCvProfileDTO appUserToFindJobCvProfileDTO(AppUser user);
 
 }

@@ -3,10 +3,7 @@ package com.edu.hcmute.service;
 
 import com.edu.hcmute.constant.Message;
 import com.edu.hcmute.constant.Status;
-import com.edu.hcmute.dto.CandidateJobDTO;
-import com.edu.hcmute.dto.CompanyDTO;
-import com.edu.hcmute.dto.CompanyRequestBody;
-import com.edu.hcmute.dto.JobDTO;
+import com.edu.hcmute.dto.*;
 import com.edu.hcmute.entity.AppUser;
 import com.edu.hcmute.entity.Company;
 import com.edu.hcmute.entity.Job;
@@ -55,6 +52,7 @@ public class CompanyService {
     private static final String ADD_BUSINESS_LICENSE_SUCCESS = "Thêm giấy phép kinh doanh thành công";
     private static final String GET_BUSINESS_LICENSE_SUCCESS = "Lấy giấy phép kinh doanh thành công";
     private static final String GET_BUSINESS_LICENSE_FAIL = "Lấy giấy phép kinh doanh thất bại";
+    private static final String VERIFY_COMPANY_SUCCESS = "Xác thực công ty thành công";
 
     private final AppUserRepository appUserRepository;
     private final CompanyMapper companyMapper;
@@ -257,16 +255,58 @@ public class CompanyService {
             AppUser user = appUserRepository.findByEmail(email)
                     .orElseThrow(() -> new ResourceNotFoundException(String.format(USER_NOT_FOUND_BY_EMAIL, email)));
 
-            String businessLicense = user.getCompany().getBusinessLicense();
+            BusinessLicenseDTO buisinessLicenseDTO = BusinessLicenseDTO.builder()
+                    .businessLicense(user.getCompany().getBusinessLicense())
+                    .isVerified(user.getCompany().getIsVerified())
+                    .build();
+
 
             return ResponseUtils.responseSuccess(HttpStatus.OK,
                     ResponseDataStatus.SUCCESS, GET_BUSINESS_LICENSE_SUCCESS,
-                    Map.of("business_license", businessLicense));
+                    Map.of("approval", buisinessLicenseDTO));
 
         } catch (Exception e) {
             log.error("Get file failed: {}", e.getMessage());
             return ResponseUtils.responseFail(HttpStatus.INTERNAL_SERVER_ERROR,
                     ResponseDataStatus.ERROR, GET_BUSINESS_LICENSE_FAIL);
         }
+    }
+
+    public ServiceResponse getAllCompanyForAdmin(Integer page, Integer size, Boolean verified) {
+        try{
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Company> companies = companyRepository.findAllByIsVerifiedAndStatusAndBusinessLicenseIsNotNull(verified, Status.ACTIVE, pageable );
+
+
+            PagingResponseData data = PagingResponseData.builder()
+                    .totalPages(companies.getTotalPages())
+                    .totalItems(companies.getTotalElements())
+                    .currentPage(companies.getNumber())
+                    .pageSize(companies.getSize())
+                    .listData(companies.getContent().stream().map(companyMapper::companyToCompanyDTO).collect(Collectors.toList()))
+                    .build();
+
+            return ServiceResponse.builder()
+                    .status(ResponseDataStatus.SUCCESS)
+                    .statusCode(HttpStatus.OK)
+                    .message(GET_ALL_COMPANY_JOB_SUCCESS)
+                    .data(Map.of("companies", data))
+                    .build();
+
+        }catch (Exception e) {
+            log.error(e.getMessage());
+            throw new UndefinedException(GET_ALL_COMPANY_FAIL);
+        }
+    }
+
+    public ServiceResponse verifyCompany(Integer id) {
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(COMPANY_NOT_FOUND));
+
+        company.setIsVerified(true);
+        companyRepository.save(company);
+
+        return ResponseUtils.responseSuccess(HttpStatus.OK,
+                ResponseDataStatus.SUCCESS,VERIFY_COMPANY_SUCCESS, null);
     }
 }

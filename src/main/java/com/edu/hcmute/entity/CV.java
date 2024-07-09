@@ -30,7 +30,8 @@ public class CV {
     @Column(name = "cv_url")
     @Lob
     private String cvUrl;
-
+    @Column(name = "is_active")
+    private Boolean isActive;
     @Column(name = "is_default")
     private Boolean isDefault;
     @CreatedDate
